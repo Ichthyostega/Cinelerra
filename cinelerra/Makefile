@@ -310,7 +310,7 @@ LIBS += \
 	-lXv \
 	-lpthread \
 	-lm \
-	$(XXF86VM) \
+	-lXxf86vm \
 	-lpng \
 	-lz \
 	-ldl

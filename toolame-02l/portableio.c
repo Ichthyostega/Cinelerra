@@ -43,11 +43,14 @@
  * conversions, and accommodated conversions involving +/- infinity,
  * NaN's, and denormalized numbers.
  *
- * $Id: portableio.c,v 1.1 2003/10/04 00:11:19 herman Exp $
+ * $Id: portableio.c,v 1.1.1.1 2003/12/05 21:39:00 j6t Exp $
  *
  * $Log: portableio.c,v $
- * Revision 1.1  2003/10/04 00:11:19  herman
- * New file from 1.1.7 (not in 1.1.6) added from Rich's automakified src tree.
+ * Revision 1.1.1.1  2003/12/05 21:39:00  j6t
+ * Heroine Virtual's release 1.1.8
+ *
+ * Revision 1.1.1.1  2003/10/14 07:54:43  heroine
+ *
  *
  * Revision 1.1  2003/07/29 04:17:52  heroine
  * *** empty log message ***

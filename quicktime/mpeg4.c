@@ -13,7 +13,7 @@
 #include "quicktime.h"
 #include "workarounds.h"
 #include ENCORE_INCLUDE
-#include DECORE_INCLUDE
+//#include DECORE_INCLUDE
 
 
 
@@ -37,8 +37,8 @@ typedef struct
 
 
 // Decore internals
-	DEC_PARAM dec_param[FIELDS];
-	int decode_handle[FIELDS];
+//	DEC_PARAM dec_param[FIELDS];
+//	int decode_handle[FIELDS];
 
 // Last frame decoded
 	long last_frame[FIELDS];
@@ -173,7 +173,7 @@ static void putbits(unsigned char **data,
 	int count, 
 	uint64_t value)
 {
-	value &= 0xffffffffffffffff >> (64 - count);
+	value &= 0xffffffffffffffffLL >> (64 - count);
 
 	while(64 - *bit_pos < count)
 	{
@@ -545,7 +545,7 @@ static int decode_wrapper(quicktime_t *file,
 	int height_i = (int)((float)height / 16 + 0.5) * 16;
 
 //printf("decode_wrapper 1\n");
-	quicktime_set_video_position(file, frame_number, track); 
+	quicktime_set_video_position(file, frame_number, track);
  
 	bytes = quicktime_frame_size(file, frame_number, track); 
 
@@ -638,6 +638,7 @@ static int decode(quicktime_t *file, unsigned char **row_pointers, int track)
 
 	if(!codec->decode_initialized[current_field])
 	{
+		int current_frame = vtrack->current_position;
 		init_decode(codec, current_field, width_i, height_i);
 // Must decode frame with VOL header first but only the first frame in the
 // field sequence has a VOL header.
@@ -647,9 +648,11 @@ static int decode(quicktime_t *file, unsigned char **row_pointers, int track)
 			current_field, 
 			current_field, 
 			track);
+// Reset position because decode wrapper set it
+		quicktime_set_video_position(file, current_frame, track);
 		codec->decode_initialized[current_field] = 1;
 	}
-//printf("decode 1\n");
+//printf("decode 1 %d\n", vtrack->current_position);
 
 // Handle seeking
 	if(quicktime_has_keyframes(file, track) && 
@@ -751,22 +754,6 @@ static int decode(quicktime_t *file, unsigned char **row_pointers, int track)
 //printf("decode 20 %d %p\n", result, codec->picture[current_field].data[0]);
 	if(codec->picture[current_field].data[0])
 	{
-		int y_out_size = codec->decoder_context[current_field]->width * 
-			codec->decoder_context[current_field]->height;
-		int u_out_size = codec->decoder_context[current_field]->width * 
-			codec->decoder_context[current_field]->height / 
-			4;
-		int v_out_size = codec->decoder_context[current_field]->width * 
-			codec->decoder_context[current_field]->height / 
-			4;
-		int y_in_size = codec->picture[current_field].linesize[0] * 
-			codec->decoder_context[current_field]->height;
-		int u_in_size = codec->picture[current_field].linesize[1] * 
-			codec->decoder_context[current_field]->height / 
-			4;
-		int v_in_size = codec->picture[current_field].linesize[2] * 
-			codec->decoder_context[current_field]->height / 
-			4;
 		input_rows = 
 			malloc(sizeof(unsigned char*) * 
 			codec->decoder_context[current_field]->height);
@@ -777,65 +764,28 @@ static int decode(quicktime_t *file, unsigned char **row_pointers, int track)
 				codec->decoder_context[current_field]->width * 
 				cmodel_calculate_pixelsize(input_cmodel);
 
-		if(!codec->temp_frame)
-		{
-			codec->temp_frame = malloc(y_out_size +
-				u_out_size +
-				v_out_size);
-		}
 
-		if(codec->picture[current_field].data[0])
-
-			for(i = 0; i < codec->decoder_context[current_field]->height; i++)
-			{
-				memcpy(codec->temp_frame + i * codec->decoder_context[current_field]->width,
-					codec->picture[current_field].data[0] + i * codec->picture[current_field].linesize[0],
-					codec->decoder_context[current_field]->width);
-			}
-
-			for(i = 0; i < codec->decoder_context[current_field]->height; i += 2)
-			{
-				memcpy(codec->temp_frame + 
-						y_out_size + 
-						i / 2 * 
-						codec->decoder_context[current_field]->width / 2,
-					codec->picture[current_field].data[1] + 
-						i / 2 * 
-						codec->picture[current_field].linesize[1],
-					codec->decoder_context[current_field]->width / 2);
-
-				memcpy(codec->temp_frame + 
-						y_out_size + 
-						u_out_size + 
-						i / 2 * 
-						codec->decoder_context[current_field]->width / 2,
-					codec->picture[current_field].data[2] + 
-						i / 2 * 
-						codec->picture[current_field].linesize[2],
-					codec->decoder_context[current_field]->width / 2);
-			}
-
-			cmodel_transfer(row_pointers, /* Leave NULL if non existent */
-				input_rows,
-				row_pointers[0], /* Leave NULL if non existent */
-				row_pointers[1],
-				row_pointers[2],
-				codec->temp_frame, /* Leave NULL if non existent */
-				codec->temp_frame + y_out_size,
-				codec->temp_frame + y_out_size + u_out_size,
-				file->in_x,        /* Dimensions to capture from input frame */
-				file->in_y, 
-				file->in_w, 
-				file->in_h,
-				0,       /* Dimensions to project on output frame */
-				0, 
-				file->out_w, 
-				file->out_h,
-				input_cmodel, 
-				file->color_model,
-				0,         /* When transfering BC_RGBA8888 to non-alpha this is the background color in 0xRRGGBB hex */
-				codec->decoder_context[current_field]->width,       /* For planar use the luma rowspan */
-				width);
+		cmodel_transfer(row_pointers, /* Leave NULL if non existent */
+			input_rows,
+			row_pointers[0], /* Leave NULL if non existent */
+			row_pointers[1],
+			row_pointers[2],
+			codec->picture[current_field].data[0], /* Leave NULL if non existent */
+			codec->picture[current_field].data[1],
+			codec->picture[current_field].data[2],
+			file->in_x,        /* Dimensions to capture from input frame */
+			file->in_y, 
+			file->in_w, 
+			file->in_h,
+			0,       /* Dimensions to project on output frame */
+			0, 
+			file->out_w, 
+			file->out_h,
+			input_cmodel, 
+			file->color_model,
+			0,         /* When transfering BC_RGBA8888 to non-alpha this is the background color in 0xRRGGBB hex */
+			codec->picture[current_field].linesize[0],       /* For planar use the luma rowspan */
+			width);
 		free(input_rows);
 	}
 

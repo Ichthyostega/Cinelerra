@@ -1,5 +1,4 @@
 HAVE_ALSA := n
-HAVE_LIBXXF86VM := $(shell if [ -f /usr/X11R6/include/X11/extensions/xf86vmode.h ]; then echo y; fi )
 HAVE_XFT := n
 HAVE_ESOUND := y
 HAVE_AVIFILE := n
@@ -43,10 +42,6 @@ CFLAGS += -DHAVE_GL
 endif
 
 
-ifeq ($(HAVE_LIBXXF86VM), y)
-CFLAGS += -DHAVE_LIBXXF86VM
-XXF86VM = -lXxf86vm
-endif
 
 
 ifeq ($(HAVE_ESOUND), y)

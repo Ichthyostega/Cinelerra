@@ -18,6 +18,11 @@ Show and hide plugin while playing back.
 MJPEG recording with kernel driver
 Number of open file descriptors matches reality.
 Nudge audio and video.
+Change number of tracks shared by a plugin on the fly.
+Pan automation
+Fade automation
+Overlay tracks of different sizes
+
 
 
 Background render:
@@ -25,6 +30,8 @@ play with effect
 detach effect and play
 turn effect off and play
 quit during playback
+
+
 
 
 Batch render:
@@ -36,15 +43,14 @@ Cancel batch render.
 Batch record:
 record several batches 1 minute apart.
 
-Load all tests in tests directory in succession.
-
 
 XMovie:
 Load DVD
 
 
+Load all tests in tests directory in succession.
 
-
+track_bounce2.xml - should output monaural audio on both speakers.
 
 
 

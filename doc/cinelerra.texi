@@ -17,31 +17,31 @@ Copyright @copyright{} 2002 Heroine Virtual Ltd.
 
 
 @node TOP
-@top BRIEF CONTENTS
+@top
+
+@contents
 
 
 @menu
-* ABOUT CINELERRA::
-* INSTALLATION::
-* CONFIGURATION::
-* THE MAIN WINDOWS::
-* LOADING AND SAVING FILES::
-* NAVIGATING THE PROJECT::
-* EDITING::
-* USING EFFECTS::
-* SETTING PROJECT ATTRIBUTES::
-* COMPOSITING::
-* KEYFRAMES::
-* CAPTURING MEDIA::
-* IMPROVING PERFORMANCE::
-* TROUBLESHOOTING::
-* SECRETS OF CINELERRA::
-* EFFECT DESCRIPTIONS::
-* PLUGIN AUTHORING::
-* RELEASE NOTES::
+* ABOUT CINELERRA::          Cinelerra in brief.
+* INSTALLATION::             Making Cinelerra work on your system.
+* CONFIGURATION::            Adjusting the behavior of Cinelerra.
+* THE MAIN WINDOWS::         The most often used user interface.
+* LOADING AND SAVING FILES:: Moving media between disk and Cinelerra.
+* NAVIGATING THE PROJECT::   Moving around the media.
+* EDITING::                  Moving the media in time.
+* USING EFFECTS::            Altering the media.
+* SETTING PROJECT ATTRIBUTES:: Changing the way the media is displayed.
+* COMPOSITING::              Overlaying different sources of video.
+* KEYFRAMES::                Making effects change over time.
+* CAPTURING MEDIA::          Moving media from the real world to disk.
+* IMPROVING PERFORMANCE::    Making Cinelerra run better on Linux.
+* TROUBLESHOOTING::          Problems with Cinelerra.
+* SECRETS OF CINELERRA::     Unusual applications of Cinelerra to common problems.
+* SECRETS OF CINELERRA EFFECTS::      How to use the more complicated effects.
+* PLUGIN AUTHORING::         How to write new effects.
+* KEYBOARD SHORTCUTS::       How to accelerate most commands with the keyboard.
 @end menu
-
-@contents
 
 
 
@@ -54,6 +54,12 @@ Copyright @copyright{} 2002 Heroine Virtual Ltd.
 @node ABOUT CINELERRA
 @chapter ABOUT CINELERRA
 
+For years some people have wanted a way to edit their audio and video
+in one place as fluidly as writing text.  Cinelerra tries to be a
+single location for all audio and video editing needs.  All the
+recording, editing, and playback are handled here.  It can be used as
+an audio player.  It can be used to record audio or video.  It can even
+be used as a photo retoucher.
 
 There are two types of moviegoers: producers who create new content,
 going back over their content at future points for further refinement,
@@ -125,11 +131,27 @@ interface.  As always, quality improvements would happen.
 @node ABOUT THIS MANUAL
 @section ABOUT THIS MANUAL
 
+In a way we feel sorry for users who are trying to figure out how to
+use Cinelerra from this document.  Organizing information in the
+easiest manner for users to find out what they need to know is sort of
+like cataloging the internet.  They've been trying to get it right for
+30 years and will probably keep trying until the end of time.
+
+There a lot of fragments of documentation scattered throughout the
+internet about Cinelerra.  This document attempts to combine all the
+pieces of information in one piece.
+
+Like the operating system and compiler for a piece of software, the
+document writing format is the most important thing in choosing our
+document format.  We wanted a format which would be readable regardless
+of corporate whims and fads.  A piece of software which compiles on GCC
+and Linux will be usable as long as there are C compilers.  Documents
+written in Texinfo will be readable as long as there's a C compiler.
+
 After many years of searching for the perfect documentation format
 we've arrived at TexInfo.  This format can be converted to HTML,
 printed, automatically indexed, but most importantly is not bound to
-any commercial word processor.  Documents written in Texinfo will be
-readable as long as there's a C compiler.
+any commercial word processor.
 
 There are no screenshots in this manual.  Screenshots become obsolete
 quickly and as a result confuse the users.  What looks one way in a
@@ -168,22 +190,39 @@ that you wouldn't think of on your own.
 The Cinelerra package contains Cinelerra and most of the libraries
 needed to run it.  We try to include all the dependancies because of
 the difficulty in tracking down the right versions.  Also included are
-some utilities for handling files.
+some utilities for handling files.  The following are the general
+contents of all Cinelerra packages.
 
 @itemize
 
 @item
 
-MPlexhi - Multiplexing of MPEG elementary streams with standards conformance.
+@b{Foreign language translations} - These go into /usr/share/locale.
 
 @item
 
-MPlexlo - Multiplexing of MPEG elementary streams without standards
+@b{Cinelerra executable} - This goes into /usr/bin
+
+@item
+
+@b{Cinelerra plugins} - These go into /usr/lib/cinelerra
+
+@item
+
+@b{soundtest} - Utility for determining sound card buffer size.
+
+@item
+
+@b{mplexhi} - Multiplexing of MPEG elementary streams with standards conformance.
+
+@item
+
+@b{mplexlo} - Multiplexing of MPEG elementary streams without standards
 conformance but more efficiently.
 
 @item
 
-mpeg3toc - Utility for indexing and reading MPEG files.
+@b{mpeg3toc} - Utility for indexing and reading MPEG files.
 
 @end itemize
 
@@ -192,7 +231,14 @@ mpeg3toc - Utility for indexing and reading MPEG files.
 @menu
 * INSTALLING AN RPM::
 * COMPILING FROM SCRATCH::
+* RUNNING CINELERRA::
 @end menu
+
+
+
+
+
+
 
 
 @node INSTALLING AN RPM
@@ -215,25 +261,37 @@ rpm2cpio hvirtual*.rpm | cpio -i --make-directories
 @end example
 
 
+
+
+
+
+
+
+
 @node COMPILING FROM SCRATCH
 @section COMPILING FROM SCRATCH
 
-It should be noted that the compiler used in building Cinelerra binaries is the free GNU compiler and very conservative optimization flags.  You can try
-different compilers and optimization flags by compiling the source.
+It should be noted that the compiler used in building Cinelerra
+binaries is the free GNU compiler and very conservative optimization
+flags.  You can try different compilers and optimization flags by
+compiling the source but this is hard.
 
-The compilation is verified on a vanilla RedHat 9.0 installation, workstation mode.  RedHat 9.0 doesn't install @b{nasm}.  This has to be installed manually for compilation to succeed.
-Compiling the source is hard and there's no warranty if the source code fails to compile, but the method for compiling starts by downloading
-the source code and decompressing.
+The compilation is verified on a vanilla RedHat 9.0 installation,
+workstation mode.  RedHat 9.0 doesn't install @b{nasm}.  This has to be
+installed manually for compilation to succeed. Compiling the source is
+hard and there's no warranty if the source code fails to compile, but
+the method for compiling starts by downloading the source code and
+decompressing.
 
 @example
-tar jxf hvirtual*.tar.bz2
+tar jxf cinelerra*.tar.bz2
 @end example
 
 
 Enter the hvirtual directory
 
 @example
-cd hvirtual
+cd cinelerra
 @end example
 
 and set the CFLAGS environment variable.  The flags for the GCC
@@ -260,6 +318,13 @@ export CFLAGS='-O3 -march=athlon -fmessage-length=0 -funroll-all-loops -fomit-fr
 Then run
 
 @example
+./configure
+@end example
+
+This checks the build environment for the right tools and should give
+you an error if a tool is missing.  Once that succeeds run
+
+@example
 make
 @end example
 
@@ -282,21 +347,30 @@ to install the binaries.  The output is put in the following directories:
 Executables -> /usr/bin
 @item
 Plugins  -> /usr/lib/cinelerra
+@item
+Translations  -> /usr/share/locale/*/LC_MESSAGES/cinelerra.mo
 @end itemize
 
 The main binaries are /usr/bin/cinelerra and several utilities for
 reading MPEG transport streams.
 
-Run Cinelerra by running
+
+@node RUNNING CINELERRA
+@section RUNNING CINELERRA
+
+
+The simplest way to run Cinelerra is by running
 
 
 @example
 /usr/bin/cinelerra
 @end example
 
+This command hides a much more capable command line interface.  Run
+@b{cinelerra -h} to get a listing of command line options.  The use of
+these options is described in several sections.
 
-
-
+For rendering from the command line @xref{RENDERING FILES}.
 
 
 
@@ -323,13 +397,38 @@ Go to @emph{settings->preferences} and run through the options.
 
 
 @menu
-* PLAYBACK::
-* RECORDING::
-* PERFORMANCE::
-* INTERFACE::
+* ENVIRONMENT VARIABLES::  These environment variables are recognized by Cinelerra
+* PLAYBACK::               Configuring parameters related to playback.
+* RECORDING::              Configuring parameters related to recording.
+* PERFORMANCE::            Configuring parameters related to how fast things go.
+* INTERFACE::              Configuring the user interface.
+* ABOUT::                  Viewing information about the program.
 @end menu
 
 
+@node ENVIRONMENT VARIABLES
+@section ENVIRONMENT VARIABLES
+
+In UNIX derivatives, environment variables are global variables in the
+shell which all applications can read.  They are set with a command
+like @b{set VARIABLE=value}.  All the environment variables can be
+viewed with a command like @b{env}.  Cinelerra recognizes the following
+environment variables:
+
+@itemize
+
+@item @b{LADSPA_PATH} - A colon separated list of directories to search
+for LADSPA plugins.  These are not native Cinelerra plugins. 
+@xref{LADSPA EFFECTS}.
+
+@item @b{GLOBAL_PLUGIN_DIR} - The directory Cinelerra should look for
+native plugins in.  The default is /usr/lib/cinelerra but you may need an
+alternate directory if you're sharing the same executable directory
+among many machines via NFS.  Plugins of different binary formats need
+to be in different directories.
+
+
+@end itemize
 
 @node PLAYBACK
 @section PLAYBACK
@@ -351,22 +450,19 @@ These determine what happens when you play sound from the timeline.
 @itemize 
 
 @item
-SAMPLES TO READ FROM DISK
-
-Cinelerra uses a pipeline for rendering audio. The first stage is
-reading large chunks of audio from disk, the samples to read from
-disk.  This is followed by processing small fragments in a virtual
-console.
-
-@item
 SAMPLES TO SEND TO CONSOLE:
 
-The second stage is rendering small fragments through the virtual
-console to the sound driver. A larger value here causes more latency
-when you change mixing parameters but gives more reliable playback.
+For playing audio, small fragments of sound are read from disk and
+processed in a virtual console sequentially.  A larger value here
+causes more latency when you change mixing parameters but gives more
+reliable playback.
 
 Some sound drivers don't allow changing of the console fragment so
 latency is unchanged no matter what this value is.
+
+Unfortunately, since different stages of the rendering pipeline can
+change the rate of the data, there was no way to disconnect size of the
+console fragments from the size of the fragments read from disk.
 
 @item
 
@@ -950,9 +1046,14 @@ network packets to access it.
 
 There is a penalty for doing this though, since Virtual Filesystem
 isn't as refined as NFS.  Operations that access one byte at a time are
-really slow.  Unless you need to run rendering clients without root
-access or have a lot of assets in different directories,  use NFS
-instead.
+really slow.
+
+Certain file format parsers are extemely slow over the Virtual
+Filesystem because they access very small amounts of data at a time. 
+The PCM audio formats do this.  These are best rendered using NFS.
+
+Unless you need to run rendering clients without root access or have a
+lot of assets in different directories,  use NFS instead.
 
 
 
@@ -1062,6 +1163,13 @@ Cinelerra to see it.
 
 
 
+@node ABOUT
+@section ABOUT
+
+This section gives you information about the copyright, the time of the
+current build, the lack of a warranty, and the versions of some of the
+libraries.  Be sure to agree to the terms of the lack of the warranty.
+
 
 
 
@@ -1129,11 +1237,10 @@ audio levels after all mixing is done.
 
 
 @menu
-* LOADING FILES::
-* LOADING THE BACKUP::
-* SAVING FILES::
-* RENDERING FILES::
-* THE RENDER FARM::
+* LOADING FILES::              Loading all types of files
+* LOADING THE BACKUP::         Recovering the session from before a crash
+* SAVING FILES::               Saving edit decision lists
+* RENDERING FILES::            Saving media files
 @end menu
 
 
@@ -1418,51 +1525,73 @@ difficult to retouch any editing decisions in the pure movie file,
 however, so keep the original assets and XML file around several days
 after you render it.
 
-To begin a render operation you need to define a region of the timeline
-to render.  The navigation section describes methods of defining
-regions.  @xref{NAVIGATING THE PROJECT}.  When a region is highlighted
-or in/out points are set, the affected region is rendered.  When no
-region is highlighted, everything after the insertion point is
-rendered.
+All rendering operations are based on a region of the timeling to be
+rendered.  You need to define this region on the timeline.  The
+navigation section describes methods of defining regions. 
+@xref{NAVIGATING THE PROJECT}.  The rendering functions define the
+region based on a set of rules.  When a region is highlighted or in/out
+points are set, the affected region is rendered.  When no region is
+highlighted, everything after the insertion point is rendered.  Merely
+by positioning the insertion point at the beginning of a track and
+unsetting all in/out points, the entire track is rendered.
 
-Go to @emph{File->render} to bring up the render dialog.  Select the
-magnifying glass to bring up a file selection dialog.  This determines
-the filename to write the rendered file to.
 
-In the render dialog select a format from the @emph{File Format} menu. 
+
+@menu
+* SINGLE FILE RENDERING::      Rendering a single file
+* BATCH RENDERING::            Rendering several files unattended
+* THE RENDER FARM::            Rendering using many computers
+* COMMAND LINE RENDERING::     Rendering from the command line without a GUI
+@end menu
+
+
+
+@node SINGLE FILE RENDERING
+@subsection SINGLE FILE RENDERING
+
+The fastest way to get media to disk is to use the single file
+rendering function.
+
+Go to @b{File->render} to bring up the render dialog.  Select the
+magnifying glass @image{magnify} to bring up a file selection dialog.  This determines
+the filename to write the rendered file to and the encoding parameters.
+
+In the render dialog select a format from the @b{File Format} menu. 
 The format of the file determines whether you can render audio or video
-or both.  Select @emph{Render audio tracks} to generate audio tracks
-and @emph{Render video tracks} to generate video tracks.  Select the
-wrench next to each toggle to set compression parameters.  If the file
-format can't store audio or video the compression parameters will be
-blank.  If @emph{Render audio tracks} or @emph{Render video tracks} is
-selected and the file format doesn't support it, trying to render will
-pop up an error.
+or both.  Select the @b{Render audio tracks} toggle to generate
+audio tracks and @b{Render video tracks} to generate video tracks.
 
-The @emph{Create new file at each label} option causes a new file to be
+
+Select the wrench @image{wrench} next to each toggle to set compression
+parameters.  If the file format can't store audio or video the
+compression parameters will be blank.  If @b{Render audio tracks} or
+@b{Render video tracks} is selected and the file format doesn't
+support it, trying to render will pop up an error.
+
+The @b{Create new file at each label} option causes a new file to be
 created when every label in the timeline is encountered.  This is
 useful for dividing long audio recordings into individual tracks.  When
-using the renderfarm, @emph{Create new file at each label} causes one
+using the renderfarm, @b{Create new file at each label} causes one
 renderfarm job to be created at every label instead of using the
 internal load balancing algorithm to space jobs.
 
-When @emph{Create new file at each label} is selected, a new filename
+When @b{Create new file at each label} is selected, a new filename
 is created for every output file.  If the filename given in the render
 dialog has a 2 digit number in it, the 2 digit number is overwritten
 with a different incremental number for every output file.  If no 2
 digit number is given, Cinelerra automatically concatenates a number to
 the end of the given filename for every output file.
 
-In the filename @emph{/hmov/track01.wav} the @emph{01} would be
+In the filename @b{/hmov/track01.wav} the @b{01} would be
 overwritten for every output file.  The filename
-@emph{/hmov/track.wav}; however, would become @emph{/hmov/track.wav001}
+@b{/hmov/track.wav}; however, would become @b{/hmov/track.wav001}
 and so on and so forth.  Filename regeneration is only used when either
 renderfarm mode is active or creating new files for every label is
 active.
 
 Finally the render dialog lets you select an insertion mode.  The
 insertion modes are the same as with loading files.  In this case if
-you select @emph{insert nothing} the file will be written out to disk
+you select @b{insert nothing} the file will be written out to disk
 without changing the current project.  For other insertion strategies
 be sure to prepare the timeline to have the output inserted at the
 right position before the rendering operation is finished. 
@@ -1470,7 +1599,7 @@ right position before the rendering operation is finished.
 at the right position.
 
 It should be noted that even if you only have audio or only have video
-rendered, a @emph{paste} insertion strategy will behave like a normal
+rendered, a @b{paste} insertion strategy will behave like a normal
 paste operation, erasing any selected region of the timeline and
 pasting just the data that was rendered.  If you render only audio and
 have some video tracks armed, the video tracks will get truncated while
@@ -1478,10 +1607,92 @@ the audio output is pasted into the audio tracks.
 
 
 
+@node BATCH RENDERING
+@subsection BATCH RENDERING
 
 
 
+If you want to render many projects to media files without having to
+repeatedly attend to the @b{Render} dialog, @b{batch rendering} is the
+function to use.  In this function, you specify many EDL files to
+render and the unique output files for each.  Then Cinelerra loads each
+EDL file and renders it automatically, without any user intervention. 
+Each EDL file and its output to be rendered is called a @b{batch}. 
+This allows a huge amount of media to be processed and greatly
+increases the value of an expensive computer.
 
+The first thing to do when preparing to do batch rendering is define
+projects to be rendered.  The batch renderer requires a separate EDL
+file for every batch to be rendered.  Set up a project and define the
+region to be rendered either by highlighting it, setting in/out points
+around it, or positioning the insertion point before it.  Then save the
+project as an EDL.  Define as many projects as needed this way.  The
+batch renderer takes the active region from the EDL file for rendering.
+
+With all the EDL files prepared with active regions, go to
+@b{File->batch render}.  This brings up the batch rendering dialog. 
+The interface for batch rendering is a bit more complex than for single
+file rendering.
+
+
+A list of batches must be defined before starting a batch rendering
+operation.  The table of batches appears on the bottom of the batch
+render dialog and is called @b{batches to render}.  Above this are
+the configuration parameters for a single batch.
+
+Set the @b{output path}, @b{file format}, @b{Audio}, @b{Video}, and
+@b{Create new file at each label} parameters as if it was a single
+file.  These parameters apply to only one batch.  In addition to the
+standard rendering parameters, you must select the source EDL to use in
+the batch.  Do this by setting the @b{EDL path}.
+
+If the @b{batches to render} list is empty or nothing is highlighted,
+click @b{New} to create a new batch.  The new batch will contain all
+the parameters you just set.
+
+Repeatedly press the @b{New} button to create more batches with the
+same parameters.  Highlight any batch and edit the configuration on the
+top of the batch render window.  The highlighted batch is always
+synchronized to the information displayed.
+
+Click and drag batches to change the order in which they're rendered. 
+Hit @b{delete} to permanently remove the highlighted batch.
+
+In the list box is a column which enables or disables the batch.  This
+way batches can be skipped without being deleted.  Click on the
+@b{Enabled} column in the list box to enable or disable a batch.  If it
+is checked, the batch is rendered.  If it is blank, the batch is
+skipped.
+
+The other columns in the batch list are informative.
+
+@itemize
+
+@item
+@b{Output} The output path of the batch.
+@item
+@b{EDL} The source EDL of the batch.
+@item
+@b{Elapsed} The amount of time taken to render the batch if it is finished.
+
+@end itemize
+
+To start rendering from the first enabled batch, hit @b{Start}.
+
+Once rendering, the main window shows the progress of the batch.  Once
+the batch finishes, the elapsed column in the batch list is updated and
+the next batch is rendered until all the enabled batches are finished.
+The currently rendering batch is always highlighted red.
+
+
+To stop rendering before the batches are finished without closing the
+batch render dialog, hit @b{Stop}.
+
+To stop rendering before the batches are finished and close the batch
+render dialog, hit @b{Cancel}.
+
+To exit the batch render dialog whether or not anything is being
+rendered, hit @b{Cancel}.
 
 
 
@@ -1490,7 +1701,7 @@ the audio output is pasted into the audio tracks.
 
 
 @node THE RENDER FARM
-@section THE RENDER FARM
+@subsection THE RENDER FARM
 
 When bicubic interpolation and HDTV was first done on Cinelerra, the
 time needed to produce the simplest output became unbearable even on
@@ -1504,7 +1715,7 @@ through the same amount of hassle you would with a several hundred node
 farm.  Renderfarm is invoked transparently for all file->render
 operations when it is enabled in the preferences.
 
-It should be noted that @emph{Create new file at each label} causes a
+It should be noted that @b{Create new file at each label} causes a
 new renderfarm job to be created at each label instead of the default
 load balancing.  If this option is selected when no labels exist, only
 one job will be created.
@@ -1512,7 +1723,12 @@ one job will be created.
 A Cinelerra renderfarm is organized into a master node and any number
 of slave nodes.  The master node is the computer which is running the
 GUI.  The slave nodes are anywhere else on the network and are run from
-the command line.
+the command line.  Run a slave node from the command line with 
+
+@b{cinelerra -d}
+
+The default port number may be overridden by passing a port number
+after the -d.
 
 Cinelerra divides the selected region of the timeline into a certain
 number of jobs which are then dispatched to the different nodes
@@ -1523,7 +1739,7 @@ node to use the same filesystem for assets, mounted over the network.
 
 Since most of the time you'll want to bring in the rendered output and
 fine tune it on the timeline, the jobs are left in individual files. 
-You can load these using @emph{concatenate mode} and render them again
+You can load these using @b{concatenate mode} and render them again
 with renderfarm disabled.  If the track and output dimensions equal the
 asset dimensions, Cinelerra will do a direct copy of all the jobs into
 a single file.  Note that direct copying doesn't work for MPEG Video. 
@@ -1543,6 +1759,36 @@ could have rendered it faster.
 
 
 
+
+
+@node COMMAND LINE RENDERING
+@subsection COMMAND LINE RENDERING
+
+The command line rendering facility consists of a way to load the
+current set of batch rendering jobs and process them without a GUI. 
+This is useful if you're planning on crashing X repeatedly or want to
+do rendering on the other side of a low bandwidth network.  You might
+have access to a supercomputer in India but still be stuck in America,
+exhiled you might say.  A command line interface is ideal for this.
+
+To perform rendering from the command line, first run Cinelerra in
+graphical mode.  Go to @b{file->batch render}.  Create the batches you
+intend to render in the batch window and close the window.  This saves
+the batches in a file.  Set up the desired renderfarm attributes in
+@b{settings->preferences} and exit Cinelerra.  These settings are used
+the next time command line rendering is used.
+
+On the command line run 
+
+@b{cinelerra -r}
+
+to processes the current batch jobs without a GUI.  Setting up all the
+parameters for this operation is hard.  That's why the command line
+aborts if any output files already exist.
+
+Other parameters exist for specifying alternative files for the
+preferences and the batches.  Attempting to use anything but the
+defaults is very involved so it hasn't been tested.
 
 
 
@@ -1580,11 +1826,20 @@ tracks.
 Below the timeline you'll find the zoom panel.  The zoom panel contains
 values for @emph{sample zoom}, @emph{amplitude}, and @emph{track
 zoom}.  These values in addition to the scrollbars are all that's
-needed to position the timeline.
+needed to position the timeline, but at the heart of the batch
+rendering dialog are the same parameters you found in single file
+rendering.
+
+
+
+
+
+
+
 
 @sp 1
 
-@image{zoompanel,,,,}
+@image{zoompanel}
 
 
 Changing the @emph{sample zoom} causes the amount of time visible to
@@ -1602,10 +1857,15 @@ In addition to the graphical tools, you'll probably more often use the
 keyboard to navigate.  Use @emph{PAGE UP} and @emph{PAGE DOWN} to
 scroll up and down the tracks.
 
-Use the @emph{LEFT} and @emph{RIGHT} arrows to move across time. 
-You'll often need to scroll beyond the end of the timeline but
-scrollbars won't let you do it.  Instead use the @emph{RIGHT} arrow to
-scroll past the end of timeline.
+Use the @emph{LEFT} and @emph{RIGHT} arrows to move across time in
+small increments.  You'll often need to scroll beyond the end of the
+timeline but scrollbars won't let you do it.  Instead use the
+@emph{RIGHT} arrow to scroll past the end of timeline.
+
+Use the @emph{HOME} and @emph{END} keys to instantly go to the
+beginning or end of the timeline.  In @emph{I-beam} mode, hold down
+shift while pressing @emph{HOME} or @emph{END} to select the region of
+the timeline between the insertion point and the key pressed.
 
 Use the @emph{UP} and @emph{DOWN} arrows to change the sample zoom by a
 power of 2.
@@ -2024,18 +2284,82 @@ process.  The three main methods are two screen editing, drag and drop
 editing, and cut and paste editing.
 
 There are several concepts Cinelerra uses when editing which apply to
-all the methods.  The timeline is where all editing decisions are
-represented.  Every track on the timeline has a set of attributes on
+all the methods.  The @b{timeline} is where all editing decisions are
+represented.  This is a stack of tracks in the center of the main
+window.  It can be scrolled up, down, left and right with the
+scrollbars on the right and bottom of it.  It can also be scrolled up
+and down with a mouse wheel.
+
+The @b{active region} is the range of time which is affected by editing
+commands on the timeline.  The active region is determined first by the
+presence of in/out points in the timeline.  If those don't exist the
+highlighted region is used.  If no highlighted region exists the
+insertion point is used as the start of the active region.  Some
+commands treat all the space to the right of the insertion point as
+active, like @b{Render}, while others treat the active length as 0 if no
+end point for the active region is defined.
+
+Finally, editing decisions never affect source material.  This is
+@b{non destructive editing} and it became popular with audio because it
+was much faster than if you had to copy all the media affected by an
+edit.  Editing only affects pointers to source material, so if you want
+to have a media file at the end of your editing session which
+represents the editing decisions, you need to @emph{render} it.
+@xref{RENDERING FILES}.
+
+Every track on the timeline has a set of attributes on
 the left, the most important of which is the @emph{arm track}
 attribute.
+
+
+
+@menu
+* THE PATCHBAY::           Enabling different features on different tracks
+* NUDGING TRACKS::         Moving entire tracks horizontally
+* MANIPULATING TRACKS::    Moving whole tracks around
+* TWO SCREEN EDITING::     Using two video windows to edit
+* DRAG AND DROP EDITING::  Dragging objects to edit
+* CUT AND PASTE EDITING::  Editing media like text
+* TRIMMING::               Changing in and out points
+@end menu
+
+
+@node THE PATCHBAY
+@section THE PATCHBAY
+
+
+On the left of the timeline is a region affectionately known as the
+patchbay.  The patchbay enables features specific to each track.  All
+tracks have a text area for naming the track.
+
+All tracks have an @b{expander} @image{expandpatch_checked} for viewing
+more options and for viewing the effects on the track.  Click on the
+expander to expand or collapse the track.  If it's pointing sideways,
+the track is collapsed.  If it's pointing down, the track is expanded. 
+The effects appear below the media for the track if they exist.
+
+All tracks have the following row of toggles for several features.
 
 @sp 1
 @image{track_attributes}
 @emph{Track attributes}
 
-Only the @emph{armed tracks} are affected by editing operations.  Make
-sure you have enough armed destination tracks when you paste or splice
-material or some tracks in the material will get left out.
+
+If the toggle is colored, it is enabled.  If the toggle is the
+background color of most of the windows, it is disabled.  Click on the
+toggle to enable or disable the feature.  Several mouse operations
+speed up the configuration of several tracks at a time.
+
+Click on an attribute and drag across adjacent tracks to toggle the
+same attribute in those tracks.
+
+Hold down @b{shift} while clicking a track's attribute to toggle the
+attribute in all the tracks.
+
+Hold down @b{shift} while clicking an attribute.  Click until all the
+tracks except the selected one are disabled.  Then drag the cursor over
+the adjacent track to enable the attribute in the adjacent track.
+
 
 The other attributes affect the output of the track.
 
@@ -2047,6 +2371,20 @@ The other attributes affect the output of the track.
 it's off, the track is not rendered.  However, if the track is chained
 to any other tracks, the other tracks perform all the effects in the
 chained track, regardless of play status.
+@sp 1
+
+@item
+
+@b{Arm track} determines whether the track is armed or not.   Only the
+@emph{armed tracks} are affected by editing operations.  Make sure you
+have enough armed destination tracks when you paste or splice material
+or some tracks in the material will get left out.
+
+In addition to restricting editing operations, the armed tracks in
+combination with the active region determine where material is inserted
+when loading files.  If the files are loaded with one of the insertion
+strategies which doesn't delete the existing project, the armed tracks
+will be used as destination tracks.
 
 @item
 
@@ -2054,14 +2392,16 @@ chained track, regardless of play status.
 fader you're adjusting.  A fader is only ganged if the @b{arm track} is
 also on.  This is normally used to adjust audio levels on all the
 tracks simultaneously.
+@sp 1
 
 @item
 
-@b{Draw data} determines if picons or waveforms are drawn on the
+@b{Draw media} determines if picons or waveforms are drawn on the
 track.  By default, some file formats load with this off while other
 file formats load with it on.  This depends on whether the file format
 takes a long time to draw on the timeline.  Merely set it to on if you
 want to see picons for any file format.
+@sp 1
 
 @item
 
@@ -2071,39 +2411,38 @@ on.  If the track is part of an effect chain, the output of the effect
 chain track is overlayed on the final output even though it's routed
 back to another track.  Mute track is used to keep the effect chain
 track from overlapping the output of the source track.
+@sp 1
+
+@item
+
+@b{Fader} All tracks have a fader, but the units of each fader depend
+on whether it's audio or video.  Click and drag the fader to fade the
+track in and out.  If it is ganged to other tracks of the same media
+type, with the @b{arm} option enabled, the other faders should follow.
+
+Hold down @b{shift} and drag a fader to center it on 0.
 
 @end itemize
 
-There are two ways to set the same attribute on multiple tracks very
-quickly.  Hold down @b{shift} while clicking a track's attribute to
-match the same attribute in all the other tracks.  If you don't want to
-affect all the other tracks, click on an attribute and drag across
-other tracks to have the same attribute set in them.
 
-In addition to restricting editing operations, the armed tracks in
-combination with the active region determine where material is inserted
-when loading files.  If the files are loaded with one of the insertion
-strategies which doesn't delete the existing project, the armed tracks
-will be used as destination tracks.
 
-The active region is the range of time in the edit decision on the
-timeline.  The active region is determined first by the presence of
-in/out points in the timeline.  If those don't exist the highlighted
-region is used.  If no highlighted region exists the insertion point is
-used as the active region and the active length is 0.
+@node NUDGING TRACKS
+@section NUDGING TRACKS
 
-Finally, editing decisions never affect source material.  Editing only affects
-pointers to source material, so if you want to have a media file at the
-end of your editing session which represents the editing decisions, you
-need to @emph{render} it. @xref{RENDERING FILES}.
+Each track has a nudge textbox in the patchbay under the fader and on
+the right.  You may have to expand the track to see it.  The nudge is
+the amount the track is shifted left or right during playback.  The
+track is not displayed shifted on the timeline, but it is shifted when
+it's played back.  This is useful for synchronizing audio with video,
+creating fake stereo, or compensating for an effect which shifts time,
+all without tampering with any edits.
 
-@menu
-* MANIPULATING TRACKS::
-* TWO SCREEN EDITING::
-* DRAG AND DROP EDITING::
-* CUT AND PASTE EDITING::
-* TRIMMING::
-@end menu
+Merely enter in the amount of time to shift by to instantly shift the
+track.  Negative numbers make the track play later.  Positive numbers
+make the track play sooner.  The nudge units are either @b{seconds} or
+the native units for the track.  Select the units by @b{right clicking}
+on the nudge textbox and using the context sensitive menu.
+
 
 
 
@@ -3154,34 +3493,42 @@ the inner rectangle and keep action inside the outer rectangle.
 @node OVERLAY MODES
 @section OVERLAY MODES
 
-Every track has an overlay mode, accessible by expanding the track. 
+Every video track has an overlay mode, accessible by expanding the
+track.  The overlay mode is a pulldown menu on the left under the
+fader.  When collapsed, it displays an icon representing the current
+overlay mode.
+
 Select the @image{expandpatch_checked} expand track toggle to view all
-the options for a video track.  The overlay mode of the track is
-@emph{normal} by default.  Select other modes by selecting the
-@emph{normal} button.  Overlay modes are processed inside the projector
-stage of compositing.  The different modes are summarized below.
+the options for a video track if you can't see the overlay mode.  The
+overlay mode of video tracks is @emph{normal} by default.  Select other
+modes by clicking the overlay button and selecting an item from the
+popup menu.
+
+Overlay modes are processed inside the projector stage of compositing. 
+The different modes are summarized below.
 
 @itemize
 
 @item
 
-Normal uses a traditional Porter-Diff equation to blend tracks with
-alpha.  When no alpha exists, the new track replaces the output.
+@b{Normal} uses a traditional Porter-Diff equation to blend tracks with
+alpha.  When no alpha exists in the project color model, the new track
+always replaces the output.
 
 @item
 
-In addition, whatever is in the output is added to the current track. 
-The result is blended based on the current track's alpha onto the
-output.
+@b{Addition}  In this mode, whatever is in the output is added to the
+current track.  The result is blended based on the current track's
+alpha onto the output.
 
 @item
 
-In subtraction, the current track is subtracted from the output and the
-result is alpha blended onto the output.
+@b{Subtraction} In this mode, the current track is subtracted from the
+output and the result is alpha blended onto the output.
 
 @item 
 
-Multiply is the most useful operation.  The current track is multiplied
+@b{Multiply} is the most useful operation.  The current track is multiplied
 by the output and the result blended onto the output.  Usually a black
 and white image with no alpha channel or a white title on a black image
 is used as the current track.  With the multiply operation, only the
@@ -3189,12 +3536,12 @@ output portions under the white area show.
 
 @item
 
-Divide divides the current track by the output and the result is
+@b{Divide} divides the current track by the output and the result is
 blended into the output.  It usually results in overloaded levels.
 
 @item
 
-Replace does no blending and overwrites the output with the current
+@b{Replace} does no blending and overwrites the output with the current
 track.
 
 @end itemize
@@ -3712,10 +4059,18 @@ the right order.
 @chapter IMPROVING PERFORMANCE
 
 
+Let's get one thing perfectly clear.  Linux is not a very good
+desktop.  It's a server.  Most of what you'll find on modern Linux
+distributions are faceless, network-only programs strategicly designed
+to counteract one Microsoft server feature or another and not to
+perform very well at user interaction.  There are a number of
+parameters on Linux, which ordinary people can adjust to make it behave
+more like a thoroughbred in desktop usage.
+
+
 @menu
 * DISABLING SWAP SPACE::
 * ENLARGING SOUND BUFFERS::
-* MAKING XFree86 FASTER::
 * FREEING MORE SHARED MEMORY::
 * SPEEDING UP THE HARD DRIVE::
 * DISABLING CRON::
@@ -3763,11 +4118,18 @@ Then recompile the kernel.
 @section ENLARGING SOUND BUFFERS
 
 In order to improve realtime performance, the audio buffers for all the
-Linux sound drivers were limited from 127k to 64k.  For recording audio
+Linux sound drivers were limited from 128k to 64k.  For recording audio
 and video simultaneously and for most audio recording this causes
 dropouts.  Application of low latency and preemtible kernel patches
 make it possible to record more audio recordings but it doesn't improve
 recording video with audio.  This is where you need to hack the kernel.
+
+To see if your sound buffers are suitable, run the included
+@b{soundtest} program with nothing playing or recording.  This
+allocates the largest possible buffers and displays them.  If the
+@b{TOTAL BYTES AVAILABLE} is under 131072, you need to see about
+getting the buffers enlarged in the driver.  While many drivers differ,
+we have a hack for at least one driver.
 
 This only applies to the OSS version of the Soundblaster Live driver. 
 Since every sound card and every sound driver derivative has a
@@ -3824,21 +4186,6 @@ to
 
 Then recompile the kernel modules.
 
-
-
-
-@node MAKING XFree86 FASTER
-@section MAKING XFree86 FASTER
-
-XFree86 by default can't display Cinelerra's advanced pixmap rendering
-very fast.  The X server stalls during list box drawing.  Fix this by
-adding a line to your XF86Config* files.
-
-In the @b{Section "Device"} area, add a line saying:
-
-@b{Option "XaaNoOffscreenPixmaps"}
-
-and restart the X server.
 
 
 
@@ -3981,6 +4328,19 @@ Change the value of @b{DOWNSAMPLE_N} to change the mouse sensitivity.
 @node ASSORTED X TWEEKS
 @section ASSORTED X TWEEKS
 
+
+XFree86 by default can't display Cinelerra's advanced pixmap rendering
+very fast.  The X server stalls during list box drawing.  Fix this by
+adding a line to your XF86Config* files.
+
+In the @b{Section "Device"} area, add a line saying:
+
+@b{Option "XaaNoOffscreenPixmaps"}
+
+and restart the X server.
+
+
+
 Screen blanking is really annoying, unless you're fabulously rich and
 can afford to leave your monitor on 24 hours a day without power saving
 mode.  In @b{/etc/X11/xinit/xinitrc} put 
@@ -4073,7 +4433,7 @@ Video recorded from the ZORAN inputs is normally unaligned or not
 completely encoded on the right.  This can be slightly compensated by
 adjusting parameters in the driver sourcecode.
 
-In @b{/usr/src/linux/drivers/media/video/zr36067.h} the structures
+In @b{/usr/src/linux/drivers/media/video/zr36067.c} the structures
 defined near line 623 affect alignment.  At least for NTSC, the 2.4.20
 version of the driver could be improved by changing 
 
@@ -4120,6 +4480,7 @@ the first frame.
 @menu
 * BUZ DRIVER CRASHES::
 * DRAGGING IN AND OUT POINTS DOESN'T WORK::
+* SYNCHRONIZATION LOST WHILE RECORDING::
 @end menu
 
 @node BUZ DRIVER CRASHES
@@ -4143,6 +4504,17 @@ Sometimes there will be two edits really close together.  The point
 selected for dragging may be next to the indended edit on an edit too
 small to see at the current zoom level.  Zoom in horizontally.
 
+
+
+@node SYNCHRONIZATION LOST WHILE RECORDING
+@section SYNCHRONIZATION LOST WHILE RECORDING
+
+If the framerate of the recording is much lower than the framerate of
+the source, the video will accumulate in the recording buffers over
+time while the audio and video are well out of sync.  Decrease the
+@b{number of frames to buffer in the device} in
+@b{preferences->recording} so the excess frames are dropped instead of
+buffered.
 
 
 
@@ -4292,28 +4664,7 @@ difference between the lines.  It doesn't work.
 @b{Inverse Telecine}
 
 This is the most effective deinterlacing tool when the footage is an
-NTSC TV broadcast of a film.  Here the image was converted from 24fps
-to 30fps by interlacing in a predictable pattern, which the @b{Inverse
-Telecine} effect can detect.  It shifts fields forwards and backwards
-to get progressive frames of the same resolution as the original, most
-of the time.
-
-The timing is going to be jittery because of this but it's progressive.
-
-There is only one useful setting for @b{Inverse Telecine}: 
-
-@example
-Pattern offset:   0
-    Odd field first
-  x Automatic IVTC
-Pattern:
-  x A B BC CD D
-    AB BC CD DE EF
-@end example
-
-The other options are only there because one day there may be some
-progressive scan camera which produces pulldown in the same frame of
-reference throughout entire tapes.
+NTSC TV broadcast of a film.  @xref{INVERSE TELECINE}.
 
 
 @b{Time base correction}
@@ -4345,6 +4696,12 @@ and the occasional odd field gives the illusion of more detail than
 there would be if you just line averaged the original.
 
 
+@b{HDTV exceptions}
+
+1920x1080 HDTV is encoded a special way.  If it's a broadcast of
+original HDTV film, an inverse telecine works fine.  If it's a
+rebroadcast of a 720x480 source, you need to use a time base and line
+doubling algorithm to deinterlace it, @xref{1080 TO 480}.
 
 
 
@@ -4431,8 +4788,9 @@ Outer color: blue 0% alpha
 @end example
 
 It's important to set the 0% alpha color to blue even though it's 0%
-alpha.  This is a generally applicable setting for the gradient.  Some
-scenes may work better with orange or brown for an evening feel.
+alpha.  The color of the outer alpha is still interpolated with the
+inner color.  This is a generally applicable setting for the gradient. 
+Some scenes may work better with orange or brown for an evening feel.
 
 
 
@@ -4442,8 +4800,8 @@ scenes may work better with orange or brown for an evening feel.
 
 
 
-@node EFFECT DESCRIPTIONS
-@chapter EFFECT DESCRIPTIONS
+@node SECRETS OF CINELERRA EFFECTS
+@chapter SECRETS OF CINELERRA EFFECTS
 
 Most effects in Cinelerra can be figured out just by using them and
 tweeking.  Here are brief descriptions of effects which you might not
@@ -4451,12 +4809,60 @@ utilize fully by mere experimentation.
 
 
 @menu
-* CHROMA KEY::
-* HISTOGRAM::
-* TIME AVERAGE::
-* VIDEO SCOPE::
-* DEINTERLACE::
+* 1080 TO 480::       How to convert HDTV into SD
+* CHROMA KEY::        How to make areas transparent based on color.
+* DECIMATE::          How to reduce frame rates by eliminating similar frames.
+* DEINTERLACE::       How to convert interlaced video to progressive video.
+* FREEZE FRAME::      How to stop action in the timeline.
+* HISTOGRAM::         How to change the mapping of different brightness values.
+* INVERSE TELECINE::  How to convert pulled down frames to progressive frames.
+* LOOP::              How to loop regions of the timeline.
+* REVERSE VIDEO/AUDIO:: How to play regions in reverse.
+* TIME AVERAGE::      How to add trail patterns or increase still image quality.
+* TITLER::            How to add text to a track from inside Cinelerra.
+* VIDEO SCOPE::       How to view the dynamic range of intensity and hue.
 @end menu
+
+
+
+
+@node 1080 TO 480
+@section 1080 TO 480
+
+
+Most TV broadcasts are recieved with a 1920x1080 resolution but
+originate from a 720x480 source at the studio.  It's a waste of space
+to compress the entire 1920x1080 if the only resolvable details are
+720x480.  Unfortunately resizing 1920x1080 video to 720x480 isn't as
+simple as shrinking it.
+
+At the TV station the original 720x480 footage was first converted to
+fields of 720x240.  Each field was then scaled up to 1920x540.  The two
+1920x540 fields were finally combined with interlacing to form the
+1920x1080 image.  This technique allows a consumer TV to display the
+resampled image without extra circuitry to handle 720x480 interlacing
+in a 1920x1080 image.
+
+If you merely deinterlaced the 1920x1080 images, you would end up with
+details of 720x240.  The 1080 to 480 effect properly extracts two
+1920x540 size fields from the image, resizes them separately, and
+combines them again to restore the original 720x480.  Tracks to which
+it is applied need to be at 1920x1080 resolution.  The project settings
+in @b{settings->format} should be at 720x480 resolution.
+
+The effect doesn't know if the first row in the 1920x1080 image belongs
+to the first row of the 720x480 original.  You have to specify what the
+first row is in the effect configuration.
+
+The output of this effect is a small image in the middle of the
+original 1920x1080 frame.  Use the projector to center the output image
+in the playback.
+
+Finally, once you have 720x480 interlaced video you can either apply
+@b{frames to fields} of @b{inverse telecine} to further recover original
+progressive frames.
+
+
 
 
 
@@ -4485,6 +4891,83 @@ to blur just the alpha.
 
 
 
+
+
+
+@node DECIMATE
+@section DECIMATE
+
+This effect drops frames from a track which are most similar in order
+to reduce the frame rate.  This is usually applied to a DVD to convert
+the 29.97 fps video to the 23.97 fps film rate but this decimate effect
+can take any input rate and convert it to any lower output rate.
+
+The output rate of @b{decimate} is the project frame rate.  The input
+rate is set in the @b{decimate} user interface.  To convert 29.97fps
+progressive video to 23.97fps film, apply a decimate effect to the
+track.  Set the decimate input rate to 29.97 and the project rate to
+23.97.
+
+Be aware every effect layered before decimate processes video at the
+decimate input rate and every effect layered after decimate processes
+video at the project frame rate.  Computationally intensive effects
+should come below decimate.
+
+Decimate is not to be confused with @b{frames to fields}.  Frames to
+fields does not have a different input rate than output rate.  It
+merely replicates each frame.
+
+
+
+
+
+
+
+@node DEINTERLACE
+@section DEINTERLACE
+
+The deinterlace effect has evolved over the years to deinterlacing and
+a whole lot more.  In fact two of the deinterlacing methods, @b{Inverse
+Telecine} and @b{Frames to Fields}, are separate effects.  The
+deinterlace effect offers several variations of line replication to
+eliminate comb artifacts in interlaced video.  It also has some line
+swapping tools to fix improperly captured video or make the result of a
+reverse effect display fields in the right order.
+
+
+
+
+
+
+@node FREEZE FRAME
+@section FREEZE FRAME
+
+In its simplest form, highlight a region of the track to freeze, drop
+the freeze frame effect on the highlighted region, and the lowest
+numbered frame in the affected area will play throughout the entire
+region.  
+
+Freezeframe has an @b{enabled} option which can be keyframed.  Regions
+of a freeze frame effect which are enabled repeat the lowest numbered
+frame since the last keyframe.  This has unique possibilities.
+
+If a freeze frame effect has a keyframe in the middle of it set to
+@b{enabled}, the frame in the middle is repeated in the entire effect.
+
+If a freeze frame effect has several keyframes, each set to
+@b{enabled}, every time a keyframe is encountered the frame under it
+becomes the frozen one.
+
+If a freeze frame effect alternates between @b{enabled} and
+@b{disabled}, each time an @b{enabled} keyframe is encountered the
+frame under it is replicated until the next @b{disabled} keyframe.  The
+disabled regions play through.
+
+
+
+
+
+
 @node HISTOGRAM
 @section HISTOGRAM
 
@@ -4503,6 +4986,98 @@ boundaries of the histogram the automatic gain should be.
 
 
 
+
+
+
+
+
+@node INVERSE TELECINE
+@section INVERSE TELECINE
+
+This is the most effective deinterlacing tool when the footage is a
+video transfer of a film.  Here the film was converted from 24fps to
+60fps.  Then the 60fps was downsampled to 30fps by extracting odd and
+even lines and interlacing the lines.  The IVTC effect is primarily a
+way to convert interlaced video to progressive video.  It undoes three
+patterns of interlacing.
+
+@example
+  A AB BC CD D
+  AB CD CD DE EF
+  Automatic
+@end example
+
+The first two options are fixed patterns and affected by the @b{pattern
+offset} and @b{odd field first} parameters.  The last option creates
+several combinations of lines for each frame and picks the most
+progressive combination.  It's a brute force algorithm.
+
+This technique doesn't rely on a pattern like other techniques and is
+less destructive but the timing is going to be jittery because of the
+lack of a frame rate reduction.
+
+
+
+
+
+
+
+
+@node LOOP
+@section LOOP
+
+Sections of audio or video can be looped by dropping a @b{loop} effect
+on them.  Contrary to the the @b{settings->loop playback} option, the
+loop effects can be rendered where the @b{settings->loop playback}
+option can not be.  The loop effects are also convenient for short
+regions.
+
+The loop effects have one option: the number of @b{frames} or
+@b{samples} to loop.  This specifies the length of the region to loop
+starting from either the beginning of the effect or the latest
+keyframe.  The region is replicated for the entire effect.
+
+Every time a keyframe is set in a loop effect, the keyframe becomes the
+beginning of the region to loop.  Setting several keyframes in
+succession causes several regions to loop.  Setting a single keyframe
+causes the region after the keyframe to be looped throughout the
+effect, no matter where the keyframe is.  The end of an effect can be
+looped from the beginning by setting the keyframe near the end.
+
+
+
+
+
+
+
+
+@node REVERSE VIDEO/AUDIO
+@section REVERSE VIDEO/AUDIO
+
+Media can be reversed on the timeline in realtime.  This isn't to be
+confused with using the reverse playback on the transport.  The reverse
+effects reverse the region covered by the effect regardless of the
+transport direction.  Apply @b{reverse audio} to an audio track and
+play it backwards.  The sound plays forward.
+
+The region to be reversed is first determined by what part of the track
+the effect is under and second by the locations of keyframes in the
+effect.  The reverse effects have an @b{enabled} option which allows
+you to set keyframes.  This allows may possibilities.
+
+Every @b{enabled} keyframe is treated as the start of a new reversed
+region and the end of a previous reversed region.  Several @b{enabled}
+keyframes in succession yield several regions reversed independant of
+each other.  An @b{enabled} keyframe followed by a @b{disabled}
+keyframe yields one reversed region followed by a forward region.
+
+Finally, be aware when reversing audio that the waveform on the
+timeline doesn't reflect the actual reversed output.
+
+
+
+
+
 @node TIME AVERAGE
 @section TIME AVERAGE
 
@@ -4512,6 +5087,84 @@ still images.  Merely point a video camera at a stationary subject for
 30 frames, capture the frames, and average them using TIME AVERAGE and
 you'll have a super high quality print.  In 16 bit colormodels, time
 average can increase the dynamic range of lousy cameras.
+
+
+@node TITLER
+@section TITLER
+
+While it is possible to add text to movies by importing still images
+from The Gimp and compositing them, the Titler allows you to add text
+from within Cinelerra.  
+
+The titler has standard options for @b{font, size, and style}.  The
+best font is a generic, normal font like Arial in a large size.
+
+The titler also has options you'll only find in moving pictures.  The
+@b{Justify} operation justifies the text relative to the entire frame. 
+Once justified, the @b{X and Y} offset is applied.  This allows text to
+be justified while at the same time letting you push it within the
+title safe region.
+
+The @b{motion type} scrolls the text in any of the four directions. 
+When using this, the text may dissappear.  Move the insertion point
+along the timeline until the text is far enough along the animation to
+reappear.  The text scrolls on and scrolls off.
+
+Setting @b{loop} causes the text to scroll completely off and repeat. 
+Without @b{loop} the text scrolls off and never reappears.
+
+The speed of the animation is determined by @b{speed}  Set it higher to
+speed up the animation.
+
+@b{Drop shadow} draws a black copy of the text to the bottom right of
+the original text.  Useful when drawing text over changing video to
+keep the border always visible.
+
+In addition to the scrolling, @b{Fade in/Fade out} are a second type of
+animation.  If the fade seconds are 0, no fading is done.
+
+@b{Color} picks the color to draw the text in.  Usually white is the
+only practical color.
+
+@b{Stamp timecode} replaces the text with the current position on the
+timeline in seconds and frames.
+
+@menu
+* ADDING FONTS TO THE TITLER:: How to add fonts to the titler
+* THE TITLE-SAFE REGION::      How to keep text visible on output
+@end menu
+
+@node ADDING FONTS TO THE TITLER
+@subsection ADDING FONTS TO THE TITLER
+
+The X Window system originally didn't have a suitable font renderer for
+video.  It also is restricted to the current bit depth.  It doesn't
+have a convenient way to know which fonts work with the suitable font
+renderer in the desired bit depth.  The easiest way we've found to
+support fonts in the titler is to have a directory for them at
+@b{/usr/lib/cinelerra/fonts}.
+
+The titler supports mainly @b{TTF}, true type fonts.  It supports
+others but TTF are the most reliable.  To add true type fonts, copy the
+@b{.TTF} files to the @b{/usr/lib/cinelerra/fonts} directory.  In that
+directory run @b{ttmkfdir > fonts.dir} and restart Cinelerra.  The new
+fonts should appear.
+
+
+@node THE TITLE-SAFE REGION
+@subsection THE TITLE-SAFE REGION
+
+If the video is displayed on a consumer TV, the outer border is going
+to be cropped by 5% on each side.  Moreover, text which is too close to
+the edge looks sloppy.  Make sure when adding titles to have the
+@b{title-safe} @image{titlesafe} tool active in the @b{compositor} window.
+The text shouldn't cross the inner rectangle.
+
+
+
+
+
+
 
 
 
@@ -4538,21 +5191,6 @@ scope for all the different video drivers.
 
 
 
-@node DEINTERLACE
-@section DEINTERLACE
-
-The deinterlace effect has evolved over the years to deinterlacing and
-a whole lot more.  In fact two of the deinterlacing methods, @b{Inverse
-Telecine} and @b{Frames to Fields}, are separate effects.  The
-deinterlace effect offers several variations of line replication to
-eliminate comb artifacts in interlaced video.  It also has some line
-swapping tools to fix improperly captured video or make the result of a
-reverse effect display fields in the right order.
-
-
-
-
-
 @node PLUGIN AUTHORING
 @chapter PLUGIN AUTHORING
 
@@ -4568,38 +5206,96 @@ implementation and specific changes for that particular type.  The
 easiest way to implement a plugin is to take the simplest existing one
 out of the group and rename the symbols.  
 
+
+
 @menu
-* COMMON PROCEDURES::
-* REALTIME PLUGINS::
-* NONREALTIME PLUGINS::
-* AUDIO PLUGINS::
-* VIDEO PLUGINS::
-* TRANSITION PLUGINS::
-* PLUGIN GUI'S WHICH UPDATE DURING PLAYBACK::
-* PLUGIN QUERIES::
+* INTRODUCING THE PULL METHOD:: The current paradigm for plugin writing
+* COMMON PLUGIN FUNCTIONS:: What all effects have to do.
+* REALTIME PLUGINS:: What realtime effects have to do.
+* NONREALTIME PLUGINS:: What rendered effects have to do.
+* AUDIO PLUGINS:: What audio effects have to do.
+* VIDEO PLUGINS:: What video effects have to do.
+* TRANSITION PLUGINS:: What transitions have to do.
+* PLUGIN GUI'S WHICH UPDATE DURING PLAYBACK:: How to use currently playing data to draw the GUI.
+* PLUGIN QUERIES:: How plugins get information about the data to be processed.
 @end menu
 
 
-@node COMMON PROCEDURES
-@section COMMON PROCEDURES
 
-All plugins inherit from a derivative of PluginClient.  This derivative
-implements most of the required methods in PluginClient, but users must
-still define methods for PluginClient.  The most commonly used methods
-are already implemented in macros.
+
+@node INTRODUCING THE PULL METHOD
+@section INTRODUCING THE PULL METHOD
+
+The simplest way to design plugins is with the push method.  The push
+method is intuitive.  A source pushes data to a plugin, the plugin does
+math operations on it, and the plugin pushes it to a destination.  For
+6 years this was the way all realtime plugins were driven internally
+but it didn't allow you to reduce the rate of data in realtime.  While
+plugins can still be written as if they're being pushed data, this is
+not the way they're processed internally anymore.
+
+The latest evolution in Cinelerra's plugin design is the pull method. 
+The rendering pipeline starts at the end and the final steps in the
+rendering pipeline request data from the steps before them.  When the
+rendering pipleline eventually requests data from a plugin chain, each
+plugin requests data from the plugin before it.
+
+This is less intuitive than the push method but is much more powerful. 
+Realtime plugins written using the pull method can change the rate data
+is presented to the viewer and the direction of playback.  The pull
+method allows plugins to take in data at a higher rate than they send
+it out.
+
+To get the power of rate independance, the pull method requires plugins
+to know more about the data than they needed to under the push method. 
+Plugins need to know what rate the project is at and what rate their
+individual requested output is at.  These two data rates have to be
+interchanged for a plugin to configure itself properly.
+
+Keyframes for a plugin are stored relative to the project frame rate. 
+Queries for the current playback position are given relative to the
+project frame rate.  This is useless if the plugin was requested data
+at twice the project frame rate since the keyframes wouldn't match up
+to the right data positions.  Two classes of data rates were created to
+handle this problem.
+
+Rate conversions are done in terms of the @b{project rate} and the
+@b{requested rate}.  The project rate is identical for all plugins.  It
+is determined by the @b{settings->format} window.  The requested rate
+is determined by the downstream plugin requesting data from the current
+plugin.  It is arbitrary.  Exactly how to use these rates is described
+below.
+
+
+
+@node COMMON PLUGIN FUNCTIONS
+@section COMMON PLUGIN FUNCTIONS
+
+All plugins inherit from a derivative of PluginClient.  This
+PluginClient derivative implements most of the required methods in
+PluginClient, but users must still define methods for PluginClient. 
+The most commonly used methods are predefined in macros to reduce the
+typing yet still allow flexibility.
 
 The files they include depend on the plugin type.  Audio plugins
 include @b{pluginaclient.h} and video plugins include
 @b{pluginvclient.h}.  They inherit @b{PluginAClient} and
 @b{PluginVClient} respectively.
 
-Another thing all plugins do is define at least three objects:
+Cinelerra instantiates all plugins at least twice when they are used in
+a movie.  Once instance is the GUI.  The other instance is the signal
+processor.  User input, through a complicated sequence, is propogated
+from the GUI instance to the signal processor instance.  If the signal
+processor wants to alter the GUI, it propogates data back to the GUI
+instance.  There are utility functions for doing all this.
+
+All plugins define at least three objects:
 
 @itemize
 
 @item
 
-Processing object - Contains pointers to all the other objects and
+@b{Processing object} - Contains pointers to all the other objects and
 performs the signal processing.  This object contains a number of
 queries to identify itself and is the object you register to register
 the plugin.
@@ -4607,28 +5303,30 @@ the plugin.
 
 @item
 
-User interface object - This is defined according to the programmer's
+@b{User interface object} - This is defined according to the programmer's
 discretion.  It can either use Cinelerra's toolkit or another toolkit. 
 It shows data on the screen and collects parameters from the user.
 
 Using Cinelerra's toolkit, the only user interface object a developer
 needs to worry about is the Window.  The window has pointers to a
 number of widgets, a few initialization methods, and a back pointer to
-the plugin's processing object.  The documentation refers to usage of
-Cinelerra's toolkit.
+the plugin's processing object.  The documentation refers to the usage
+of Cinelerra's toolkit.
 
 Depending on the user interface toolkit, a user interface thread may be
 created to run the user interface asynchronous of everything else. 
-Synchronizing the user interface to changes in keyframes is the most
-complicated aspect of the plugin, so the user interface thread and
-object are heavily supported by macros if you use Cinelerra's toolkit.
+Synchronizing the user interface to changes in the plugin's
+configuration is the most complicated aspect of the plugin, so the user
+interface thread and object are heavily supported by macros if you use
+Cinelerra's toolkit.
 
 
 @item
 
-Configuration object - This stores the user parameters and always needs
-interpolation, copying, and comparison functions.  The plugin client
-automatically calls configuration methods to interpolate keyframes.
+@b{Configuration object} - This stores the user parameters and always
+needs interpolation, copying, and comparison functions.  Macros for the
+plugin client automatically call configuration methods to interpolate
+keyframes.
 
 @end itemize
 
@@ -4643,6 +5341,7 @@ automatically calls configuration methods to interpolate keyframes.
 @node THE PROCESSING OBJECT
 @subsection THE PROCESSING OBJECT
 
+Load up a simple plugin like gain to see what this object looks like.
 The processing object should inherit from the intended PluginClient
 derivative.  Its constructor should take a PluginServer argument.
 
@@ -4682,28 +5381,28 @@ int is_multichannel();
 @end example
 
 It should return 1 if one instance of the plugin handles multiple
-channels simultaneously or 0 if one instance of the plugin only handles
-one channel.  The default is 0 if it is omitted.  Multichannel plugins
-should refer to the value of @b{PluginClient::total_in_buffers} to
-determine the number of channels.
+tracks simultaneously or 0 if one instance of the plugin only handles
+one track.  The default is 0 if it is omitted.
+
+Multichannel plugins in their processing function should refer to a
+function called @b{PluginClient::get_total_buffers()} to determine the
+number of channels.
 
 
 
 
 To simplify the implementation of realtime plugins, a macro for
-commonly used members should be put in the class header, taking the
+commonly used members has been created for the class header, taking the
 configuration object and user interface thread object as arguments. 
-This is only useful for realtime plugins.  Fortunately, nonrealtime
-plugins are simpler.
+The macro definitions apply mainly to realtime plugins and are not
+useful in nonrealtime plugins.  Fortunately, nonrealtime plugins are
+simpler.
 
 @example
 PLUGIN_CLASS_MEMBERS(config_name, thread_name)
 @end example
 
-Many other members may be defined in the processing object, depending
-on the plugin type.  The commonly used members in PLUGIN_CLASS_MEMBERS
-are described below.  Not all these members are used in nonrealtime
-plugins.
+The commonly used members in PLUGIN_CLASS_MEMBERS are described below.
 
 @itemize
 
@@ -4711,15 +5410,19 @@ plugins.
 int load_configuration();
 
 Loads the configuration based on surrounding keyframes and current
-position.  The class definition should contain 
+position.  The class definition for load_configuration should contain 
 
 @example
 LOAD_CONFIGURATION_MACRO(plugin_class, config_class)
 @end example
 
-to implement load_configuration.  This stores whatever the current
-configuration is inside the plugin's configuration object.  The
-plugin's configuration object is always called @b{config} when using
+to implement the default behavior for load_configuration.  This stores
+whatever the current configuration is inside the plugin's configuration
+object and returns 1 if the new configuration differs from the previous
+configuration.  The return value of load_configuration is used by
+another commonly used function, update_gui to determine if the GUI really needs to be updated.
+
+The plugin's configuration object is always called @b{config} inside
 PLUGIN_CLASS_MEMBERS.
 
 @item
@@ -4749,18 +5452,21 @@ The string has to be unique.
 @item
 void update_gui(); 
 
-Should first load the configuration and then redraw the GUI with the
-new parameters.  All the plugins using GuiCast have a format like
+Should first load the configuration, test for a return of 1, and then
+redraw the GUI with the new parameters.  All the plugins using GuiCast
+have a format like
 
 @example
 void MyPlugin::update_gui()
 @{
 	if(thread)
 	@{
-		load_configuration();
-		thread->window->lock_window();
+		if(load_configuration())
+		@{
+			thread->window->lock_window();
 // update widgets here
-		thread->window->unlock_window();
+			thread->window->unlock_window();
+		@}
 	@}
 @}
 @end example
@@ -4800,7 +5506,44 @@ RAISE_WINDOW_MACRO(plugin_class)
 @end itemize
 
 
+Iimportant functions the processing object must define are the
+functions which load and save configuration data from keyframes.  These
+functions are called by the macros so all you need to worry about is
+accessing the keyframe data.
 
+@example
+void save_data(KeyFrame *keyframe);
+void read_data(KeyFrame *keyframe);
+@end example
+
+The read data functions are only used in realtime plugins.  The read
+data functions translate the plugin configuration between the KeyFrame
+argument and the configuration object for the plugin.  The keyframes
+are stored on the timeline and can change for every project.
+
+Use an object called @b{FileXML} to do the translation and some
+specific commands to get the data out of the KeyFrame argument.  See
+any existing plugin to see the usage of KeyFrame and FileXML.
+
+
+@example
+int load_defaults();
+int save_defaults();
+@end example
+
+The load defaults functions are used in realtime and non-realtime
+plugins.  The load defaults functions translate the plugin
+configuration between a Defaults object and the plugin's
+configuration.  The Defaults object stores configurations in a discrete
+file on disk for each plugin but doesn't isolate different
+configurations for different projects.
+
+The function overriding @b{load_defaults} also needs to create the
+Defaults object.  See any existing plugin to see the usage of
+Defaults.
+
+Other standard members may be defined in the processing object,
+depending on the plugin type.
 
 
 
@@ -4825,7 +5568,7 @@ public:
 @end example
 
 
-Following the name of the configuration class, we put the three
+Following the name of the configuration class, we put in three
 required functions and the configuration variables.
 
 @example
@@ -4848,10 +5591,9 @@ required functions and the configuration variables.
 
 
 Now you must define the three functions.  @b{Equivalent} is called by
-LOAD_CONFIGURATION_MACRO to get the return value.  That is all it's
-used for and if you don't care about load_configuration's return value,
-you can leave this function empty.  It normally returns 1 if the
-argument's variables have the same values as the local variables.
+LOAD_CONFIGURATION_MACRO to get the return value.  If equivalent
+returns 0, the load configuration function causes the GUI to redraw. 
+If equivalent returns 1, the GUI doesn't redraw.
 
 Then there's @b{copy_from} which transfers the configuration values
 from the argument to the local variables.  This is once again used in
@@ -4923,9 +5665,10 @@ fragments of 1 sample.
 
 
 The user interface object at the very least consists of a pointer to a
-window and pointers to a set of widgets.  Using Cinelerra's toolkit, it
-consists of a @b{BCWindow} derivative and a @b{Thread} derivative.  The
-Thread derivative is declared in the plugin header using
+window and pointers to all the widgets in the window.  Using
+Cinelerra's toolkit, it consists of a @b{BCWindow} derivative and a
+@b{Thread} derivative.  The Thread derivative is declared in the plugin
+header using
 
 @example
 PLUGIN_THREAD_HEADER(plugin_class, thread_class, window_class)
@@ -4937,10 +5680,11 @@ Then it is defined using
 PLUGIN_THREAD_OBJECT(plugin_class, thread_class, window_class)
 @end example
 
-This in combination with the SHOW_GUI macro does all the work in
-instantiating the Window class.  This is used in realtime plugins but
-not in nonrealtime plugins.  Nonrealtime plugins create and destroy
-their GUI in @b{get_parameters} and there's no thread.
+This, in combination with the SHOW_GUI macro does all the work in
+instantiating the Window.  This two class system is used in realtime
+plugins but not in nonrealtime plugins.  Nonrealtime plugins create and
+destroy their GUI in their @b{get_parameters} function and there's no
+need for a Thread.
 
 Now the window class must be declared in the plugin header.  It's
 easiest to implement the window by copying an existing plugin and
@@ -4978,11 +5722,11 @@ and a back pointer to the plugin
 The constructor's definition should contain extents and flags causing
 the window to be hidden when first created.  The create_objects member
 puts widgets in the window according to GuiCast's syntax.  A pointer to
-each widget which is to be synchronized to a keyframe is stored in the
-window class.  These are updated in the @b{update_gui} function you
-earlier defined for the plugin.  The widgets are usually derivatives of
-a GuiCast widget and they override functions in GuiCast to handle
-events.  Finally create_objects calls 
+each widget which you want to synchronize to a configuration parameter
+is stored in the window class.  These are updated in the @b{update_gui}
+function you earlier defined for the plugin.  The widgets are usually
+derivatives of a GuiCast widget and they override functions in GuiCast
+to handle events.  Finally create_objects calls 
 
 @example
 	show_window();
@@ -5000,7 +5744,8 @@ WINDOW_CLOSE_EVENT(window_class)
 Every widget in the GUI needs to detect when its value changes.  In
 GuiCast the @b{handle_event} method is called whenever the value
 changes.  In @b{handle_event}, the widget then needs to call
-@b{plugin->send_configure_change()} to propogate the change to rendering.
+@b{plugin->send_configure_change()} to propogate the change to any
+copies of the plugin which are processing data.
 
 
 
@@ -5020,22 +5765,72 @@ set of members in their headers.  All realtime plugins must define an
 int is_realtime()
 @end example
 
-member returning 1.  This causes a number of realtime methods to be
-called during playback and the plugin to be droppable on the timeline.
+member returning 1.  This causes a number of methods to be called
+during live playback and the plugin to be usable on the timeline.
 
-Realtime plugins must define a member called
+Realtime plugins must override a member called
 
 @example
-process_realtime 
+process_buffer 
 @end example
 
-to be called during every audio fragment and video frame.  It has an
-input and an output argument and for audio, a size argument.  The
-process_realtime function should start by calling
-@b{load_configuration}.  The LOAD_CONFIGURATION_MACRO returns 1 if the
-configuration changed.  Then process_realtime should move the data from
-the input to the output with processing.
+This function takes different arguments depending on if the plugin
+handles video or audio.  See an existing plugin to find out which usage
+applies.
 
+The main features of the process_buffer function are a buffer to store
+the output, the starting position of the output, and the requested
+output rate.  For audio, there's also a size argument for the number of
+samples.
+
+The starting position of the output buffer is the lowest numbered
+sample on the timeline if playback is forward and the highest numbered
+sample on the timeline if playback is reverse.  The direction of
+playback is determined by one of the plugin queries described below.
+
+The position and size arguments are all relative to the frame rate and
+sample rate passed to process_buffer.  This is the requested data rate
+and may not be the same as the project data rate.
+
+The process_realtime function should start by calling
+@b{load_configuration}.  The LOAD_CONFIGURATION_MACRO returns 1 if the
+configuration changed.
+
+After determining the plugin's configuration, input media has to be
+loaded for processing.  Call
+
+@example
+read_frame(VFrame *buffer, 
+		int channel, 
+		int64_t start_position,
+		double frame_rate)
+@end example
+
+or
+
+@example
+read_samples(double *buffer,
+		int channel,
+		int sample_rate,
+		int64_t start_position,
+		int64_t len)
+@end example
+
+to request input data from the object which comes before this plugin. 
+The read function needs a buffer to store the input data in.  This can
+either be a temporary you create in the plugin or the output buffer
+supplied to process_buffer if you don't need a temporary.
+
+It also needs a set of position arguments to determine when you want to
+read the data from.  The start position, rate, and len passed to a read
+function need not be the same as the values recieved by the
+process_buffer function.  This way plugins can read data at a different
+rate than they output data.
+
+The channel argument is only meaningful if this is a multichannel
+plugin.  They need to read data for each track in the
+get_total_buffers() value and process all the tracks.  Single channel
+plugins should pass 0 for channel.
 
 
 Additional members are implemented to maintain configuration in
@@ -5052,7 +5847,8 @@ keyframe is an XML string.  It's most easily parsed by creating a
 function is implemented.
 
 Read data loads data out of the XML object and stores values in the
-plugin's configuration object.
+plugin's configuration object.  Since configuration objects vary from
+plugin to plugin, these functions can't be automated.
 
 @item
 void save_data(KeyFrame *keyframe);
@@ -5088,6 +5884,9 @@ Saves the configuration in the defaults object.
 
 @node NONREALTIME PLUGINS
 @section NONREALTIME PLUGINS
+
+Some references for non-realtime plugins are @b{Normalize} for audio
+and @b{Reframe} for video.
 
 Like realtime plugins, @b{load_defaults} and @b{save_defaults} must be
 implemented.  In nonrealtime plugins, these are not just used for
@@ -5171,7 +5970,7 @@ instantiate the progress object with a line like
 @example
 
 progress = start_progress("MyPlugin progress...", 
-	PluginClient::end - PluginClient::start);
+	PluginClient::get_total_len());
 
 @end example
 
@@ -5183,22 +5982,27 @@ the progress bar has already started in another instance of the plugin.
 If @b{PluginClient::interactive} is 1, you need to start the progress
 bar.  If it's 0, the progress bar has already been started.
 
-The PluginClient defines @b{end} and @b{start} for the timeline range
-to be processed.  The units are either samples or frames.
+The PluginClient defines @b{get_total_len()} and @b{get_source_start()}
+to describe the timeline range to be processed.  The units are either
+samples or frames and in the project rate.
 
 @item
 int process_loop
 
 This is called repeatedly until the timeline range is processed.  It
-takes either a samples or frames buffer and a reference to
-write_length.  The arguments are a location and length for the output
-if it's audio.
+has either a samples or frames buffer for output and a reference to
+write_length to store the number of samples processed.  If this is an
+audio plugin, the user needs to call @b{get_buffer_size()} to know how
+many samples the output buffer can hold.
 
 The plugin must use @b{read_samples} or @b{read_frame} to read the
-input.  These functions take a buffer and a position relative to the
-start of the timeline.  Then it must process it and put the output in
-the arguments to process_loop.  write_length should contain the number
-of samples generated if it's audio.
+input.  These functions are a bit different for a non realtime plugin
+than they are for a realtime plugin.
+
+They take a buffer and a position relative to the start of the
+timeline, in the timeline's rate.  Then you must process it and put the
+output in the buffer argument to process_loop.  write_length should
+contain the number of samples generated if it's audio.
 
 Finally, process_loop must test @b{PluginClient::interactive} and
 update the progress bar if it's 1.
@@ -5235,22 +6039,36 @@ include @b{pluginaclient.h} and inherit from @b{PluginAClient}.  Realtime audio 
 define 
 
 @example
-int process_realtime(int64_t size, 
-		double **input_ptr, 
-		double **output_ptr);
+int process_buffer(int64_t size, 
+		double **buffer,
+		int64_t start_position,
+		int sample_rate);
 @end example
 
 if it's multichannel or 
 
 @example
-int process_realtime(int64_t size, 
-		double *input_ptr, 
-		double *output_ptr);
+int process_buffer(int64_t size, 
+		double *buffer,
+		int64_t start_position,
+		int sample_rate);
 @end example
 
-if it's single channel.  These should return the number of samples
-generated.  In the future, the number of samples return value will
-synchronize plugins which delay audio.
+if it's single channel.  These should return 0 on success and 1 on
+failure.  In the future, the return value may abort failed rendering.
+
+The processing function needs to request input samples with 
+
+@example
+int read_samples(double *buffer,
+		int channel,
+		int sample_rate,
+		int64_t start_position,
+		int64_t len);
+@end example
+
+It always returns 0.  The user may specify any desired sample rate and
+start position.
 
 Nonrealtime audio plugins need to define
 
@@ -5264,7 +6082,10 @@ for single channel or
 int process_loop(double **buffers, int64_t &write_length);
 @end example
 
-for multi channel.
+for multi channel.  Non realtime plugins use a different set of
+read_samples functions to request input data.  These are fixed to the
+project sample rate.
+
 
 
 @node VIDEO PLUGINS
@@ -5278,21 +6099,20 @@ include @b{pluginvclient.h} and inherit from @b{PluginVClient}.
 Realtime video plugins need to define 
 
 @example
-int process_realtime(VFrame **input, 
-		VFrame **output);
+int process_buffer(VFrame **frame,
+	int64_t start_position,
+	double frame_rate);
 @end example
 
 if it's multichannel or 
 
 @example
-int process_realtime(VFrame *input, 
-		VFrame *output);
+int process_buffer(VFrame *frame,
+	int64_t start_position,
+	double frame_rate);
 @end example
 
-if it's single channel.  They only get one frame per call but should  
-return the number of frames generated anyway.  In the future, the
-number of frames return value will synchronize plugins which delay
-video.
+if it's single channel.  
 
 The nonrealtime video plugins need to define
 
@@ -5306,9 +6126,13 @@ for single channel or
 int process_loop(VFrame **buffers);
 @end example
 
-for multi channel.  They're always assumed to have a write length of 1
-when they return 0.
+for multi channel.  The amount of frames generated in a single
+process_loop is always assumed to be 1, hence the lack of a
+write_length argument.  Returning 0 causes the rendering to continue. 
+Returning 1 causes the rendering to abort.
 
+A set of read_frame functions exist for requesting input frames in
+non-realtime video plugins.  These are fixed to the project frame rate.
 
 
 @node TRANSITION PLUGINS
@@ -5317,37 +6141,82 @@ when they return 0.
 
 
 
-The simplest video transition is @b{dissolve} and the simplest audio
-transition is @b{crossfade}.   These work identical to the single
-channel, realtime audio and video plugins.  The only difference is the
-addition of an @b{is_transition} method to the processing object. 
-@b{is_transition} should return 1.
+The simplest video transition is @b{wipe} and the simplest audio
+transition is @b{crossfade}.  These use a subset of the default class
+members of realtime plugins, but so far no analogue to
+PLUGIN_CLASS_MEMBERS has been done for transitions.
+
+The processing object for audio transitions still inherits from
+PluginAClient and for video transitions it still inherits from
+PluginVClient.
+
+Transitions may or may not have a GUI.  If they have a GUI, they must
+also manage a thread like realtime plugins.  Do this with the same
+PLUGIN_THREAD_OBJECT and PLUGIN_THREAD_HEADER macros as realtime
+plugins.  Since there is only one keyframe in a transition, you don't
+need to worry about updating the GUI from the processing object like
+you do in a realtime plugin.
+
+If the transition has a GUI, you can use PLUGIN_CONSTRUCTOR_MACRO and 
+PLUGIN_DESTRUCTOR_MACRO to initialize the processing object.  You'll
+also need a Defaults object and a Thread object for these macros.
+
+Since the GUI is optional, overwrite a function called @b{uses_gui()}
+to signifiy whether or not the transition has a GUI.  Return 1 if it
+does and 0 if it doesn't.
+
+Transitions need a @b{load_defaults} and @b{save_defaults} function so
+the first time they're dropped on the timeline they'll have useful
+settings.
+
+A @b{read_data} and @b{save_data} function takes over after insertion
+to access data specific to each instance of the transition.
+
+The most important difference between transitions and realtime plugins
+is the addition of an @b{is_transition} method to the processing
+object.  @b{is_transition} should return 1 to signify the plugin is a
+transition.
+
+Transitions process data in a @b{process_realtime} function.
+
+@example
+int process_realtime(VFrame *input, 
+		VFrame *output);
+@end example
+
+@example
+int process_realtime(int64_t size, 
+		double *input_ptr, 
+		double *output_ptr);
+@end example
+
+The input argument to process_realtime is the data for the next edit. 
+The output argument to process_realtime is the data for the previous
+edit.
 
 Routines exist for determining where you are relative to the
 transition's start and end.
 
 @itemize
 
-@item @b{PluginClient::get_source_position()} - returns an integer
-position since the start of the transition
+@item @b{PluginClient::get_source_position()} - returns the current
+position since the start of the transition of the lowest sample in the
+buffers.
 
 @item @b{PluginClient::get_total_len()} - returns the integer length of
-the transition.  The units are either samples or frames.
+the transition.  The units are either samples or frames, in the data
+rate requested by the first plugin.
 
 @end itemize
 
-
-Users should divide source position by total length to get the fraction
-of the transition the current @b{process_realtime} function starts
+Users should divide the source position by total length to get the
+fraction of the transition the current @b{process_realtime} function is
 at.
 
-Secondly, the meaning of the input and output arguments to
-@b{process_realtime} is different for transitions than for realtime
-plugins.
-
-The first argument to process_realtime is the data for the next edit. 
-The second argument to process_realtime is the data for the previous
-edit.  Eventually the second argument becomes the output.
+Transitions run in the data rate requested by the first plugin in the
+track.  This may be different than the project data rate.  Since
+process_realtime lacks a rate argument, use @b{get_framerate()} or
+@b{get_samplerate} to get the requested rate.
 
 
 
@@ -5359,9 +6228,9 @@ edit.  Eventually the second argument becomes the output.
 Effects like @b{Histogram} and @b{VideoScope} need to update the GUI
 during playback to display information about the signal.  This is
 achieved with the @b{send_render_gui} and @b{render_gui} methods. 
-Normally in process_realtime, when the processing object wants to
-update the GUI it should call @b{send_render_gui}.  This should only be
-called in process_realtime.  Send_render_gui goes through a search and
+Normally in process_buffer, when the processing object wants to update
+the GUI it should call @b{send_render_gui}.  This should only be called
+in process_buffer.  Send_render_gui goes through a search and
 eventually calls @b{render_gui} in the GUI instance of the plugin.
 
 Render_gui should have a sequence like
@@ -5382,40 +6251,55 @@ void MyPlugin::render_gui(void *data)
 @end example
 
 
-The sequence uses one argument, a void pointer to transfer information
-from the renderer to the GUI.  The user should typecast this pointer
-into something useful.
+Send_render_gui and render_gui use one argument, a void pointer to
+transfer information from the processing object to the GUI.  The user
+should typecast this pointer into something useful.
 
 
 
 @node PLUGIN QUERIES
 @section PLUGIN QUERIES
 
+
 There are several useful queries in PluginClient which can be accessed
 from the processing object.  Some of them have different meaning in
 realtime and non-realtime mode.  They all give information about the
-operating system or the project.
+operating system or the project which can be used to improve the
+quality of the processing.
+
+@menu
+* SYSTEM QUERIES:: Utilities for determining the system resources.
+* TIMING QUERIES:: Utilities for performing time-dependant processing.
+@end menu
+
+
+
+
+
+@node SYSTEM QUERIES
+@subsection SYSTEM QUERIES
+
 
 @itemize
 
+@item 
+
+@b{get_interpolation_type()} returns the type of interpolation the user
+wants for all scaling operations.  This is a macro from
+overlayframe.inc.  It can be applied to any call to the
+@b{OverlayFrame} object.
 
 @item
 
-@b{int PluginClient::get_project_smp()} Gives the number of CPU's on
-the system minus 1.  If it's a uniprocessor it's 0.  If it's a dual
-processor, it's 1.  This number should be used to gain any parallelism.
-
-
-@item
-
-@b{double PluginClient::get_project_framerate()} Gives the frames per
-second of the video.
-
+@b{get_project_smp()} Gives the number of CPU's on the system minus 1. 
+If it's a uniprocessor it's 0.  If it's a dual processor, it's 1.  This
+number should be used to gain parallelism.
 
 @item
 
-@b{int PluginClient::get_project_samplerate()} Gives the samples per
-second of the audio.
+@b{get_total_buffers()} Gives the number of tracks a multichannel
+plugin needs to process.
+
 
 @end itemize
 
@@ -5424,160 +6308,278 @@ second of the audio.
 
 
 
+@node TIMING QUERIES
+@subsection TIMING QUERIES
 
-@node RELEASE NOTES
-@chapter RELEASE NOTES
+
+There are two rates for media a realtime plugin has to be aware of: the
+project rate and the requested rate.  Functions are provided for
+getting the project and requested rate.  In addition, doing time
+dependant effects requires using several functions which tell where you
+are in the effect.
 
 @itemize
+@item
 
-@b{1.0.0}
-
-@example
-
-First release since Broadcast 2000 migration.
-
-@end example
+@b{get_project_framerate()} Gives the frames per second of the video as
+defined by the project settings.
 
 
-@b{1.1.0}
+@item
 
+@b{get_project_samplerate()} Gives the samples per second of the audio as
+defined by the project settings.
 
-@example
+@item
 
-Titler fonts installed by rpm.
-XMovie decodes ac3 according to redesigned liba52 channel mappings.
-Quicktime MPEG4 parameters debugged.
-Background rendering over a renderfarm.
-Renderfarm clients automatically reduced to idle priority.
-Better MJPA decoding on single processors.
-Better title functionality in 16 bit colormodels.
-Undo for effect keyframes.
-Effect GUI's cleared during undo for effect attachment.
-Fewer lockups on startup.
-Proper keyframe interpolation in scale effect.
-Stamp timecode in titler.
-Memory leaks in rendering stages removed.
-Removed legacy plugin server code.
-Option to generate sequence header in every GOP for MPEG2.
-LADSPA support.
-Listbox doesn't enter drag_icon state when dragging column division.
-Effect rendering bug fixed.
-64 bit mpeg transport stream seeking beyond 2 gigs.
-More accurate mask drawing when projector is zoomed.
-Clear labels updates CWindow
-More accurate YUV/RGB conversions.
-Import partial tgas
-Copy keyframes doesn't copy default keyframe.
-Track highlighting offset by vertical scroll.
-Multiple video scope, spectrogram, and histogram displays may be opened.
-HutSaturation in YUV colorspaces.
-Undo for masks.
-Shared synthesis effects cause the sharing tracks to 
-play back instead of just the owning track.
-Quicktime recovery utility improved.
-Single frame recording with multiple batches doesn't crash.
-DV encoding.
-New video effects:
-gradient, downsample video, radial blur, linear blur, zoom blur,
-histogram, perspective.
+@b{get_framerate()} Gives the frames per second requested by the plugin
+after this one.  This is the requested frame rate and is the same as
+the frame_rate argument to process_buffer.
 
-New audio effect:
-Sound level
+@item
 
+@b{get_samplerate()} Gives the samples per second requested by the plugin
+after this one.  This is the requested sample rate and is the same as
+the sample_rate argument to process_buffer.
 
+@item
 
-@end example
+@b{get_total_len()} Gives the number of samples or frames in the
+range covered by the effect, relative to the requested data rate.
 
+@item
 
+@b{get_source_start()} For realtime plugins it gives the lowest sample
+or frame in the effect range in the requested data rate.  For
+nonrealtime plugins it's the start of the range of the timeline to
+process.
 
-@b{1.1.5}
+@item
 
+@b{get_source_position()} For realtime plugins it's the lowest numbered
+sample in the requested region to process if playing forward and the
+highest numbered sample in the region if playing backward.  For video
+it's the start of the frame if playing forward and the end of the frame
+if playing in reverse.  The position is relative to the start of the
+EDL and in the requested data rate.
 
+For transitions this is always the lowest numbered sample of the region
+to process relative to the start of the transition.
 
-@example
+@item
 
-More options for the ffmpeg/MPEG-4 codecs.
-Histogram works on SMP.
-Better 16 bit alpha blending.
-BRender path updates from preferences.
-Separate preroll for background rendering and rendering.
-Deinterlace by averaging lines 0 and 2 or 1 and 3 to get intervening lines.
-Adaptive deinterlace.
-Frame per second statistics in renderfarm are more reliable.
-Select and slide in the patchbay.
-Video scope can be resized.
-Effect keyframes pasted in right positions more often.
-Selective denoising of video based on color channel.
-More mouse wheel bindings in MainWindow and ListBox.
-Ctrl-w closes effect windows.
-Perspective doesn't crash when switching from stretch to sheer.
-Better text list searching and keyboard navigation.
-Better Vorbis decoding after a pause.
-Close recording without recording anything doesn't crash.
-Save backup now option.
-OpenGL not required anymore.
-Time format changes update the selection textboxes more often.
-MPEG-4 deblocking option in XMovie and Cinelerra.
-Resize in Record GUI doesn't screw it up.
-Better export of YUVA16161616 to Component Y'CbCr 10-bit 4:4:4.
-Better import of Component Y'CbCr 10-bit 4:4:4 to RGB colorspaces.
+@b{get_direction()} Gives the direction of the current playback
+operation.  This is a macro defined in transportque.inc.  This is
+useful for calling read functions since the read functions position
+themselves at the start or end of the region to read, depending on the
+playback operation.
 
-@end example
+@item
 
+@b{local_to_edl()}
 
+@item
 
-@b{1.1.6}
+@b{edl_to_local()}
 
+These convert between the requested data rate and the project data
+rate.  They are used to convert keyframe positions into numbers which
+can be interpolated at the requested data rate.  The conversion is
+automatically based on frame rate or sample rate depending on the type
+of plugin.
 
-@example
+@item
+@b{get_prev_keyframe(int64_t position, int is_local)}
 
-Create fade keyframe inadverdently drags bezier handle less often.
-Float autos don't draw on right edge of timeline when keyframes are beyond right edge.
-Better float auto creation.
-Add track anywhere in timeline through track popup.
-Shared track references are automatically reconfigured after deleting or adding tracks.
-Libmpeg3: Better decoding of field-based MPEG video.
-Channels can be moved up or down in the Channel picker properly.
-Better handling of the long delay in deleting files without overflowing the recording buffers.
-Deinterlace really swaps fields instead of just saying it.
-Two line swapping combinations in deinterlace.
-Better listbox row sizing.
-Downsample offset.
-Faster window creation.
-Splash screen while you wait for it to start up.
-File deletion occurs before opening the driver instead of
-	after opening the driver for recording.
-Changing sample rate of WAV file in Asset window works.
-JPEG stills get saved with proper dimensions.
-Migrated to RedHat 8.0.
- - e2fsprogs-devel is needed to compile the background render object.
-Fewer crashes due to OpenDivx global variables getting overwritten.
-Paste silence and clipboards also shifts effect keyframes properly.
-More checks for circular references in shared effects and shared tracks.
-Tracking during audio playback without video doesn't run past edge of loop boundaries.
-Better keyframing in Titler.
-Multiple language encodings in Titler.
-Undo of replace project after an effect works.
-Frame -> field conversion does line averaging and pixel shifting.
-Field -> frame conversion uses pixel shifting.
-Negative cursor selection is frame aligned.
-Documentation on video cleaning and deinterlacing tools.
-Buttons repositioned properly when filebox is resized vertically.
-Fade automation is more accurate.
-CWindow and VWindow slider position is less erratic after the window is resized.
-Timebars with regions track the playback position.
-More workarounds for buz driver lockups.
-Dragging the cursor on the timebar off the edges scrolls the timeline.
-IVTC uses luminance only in YUV colorspaces to improve accuracy.
-Quicktime: Tighter audio synchronization when encoding Quicktime with Vorbis audio.
-Start of audio effects is more accurate.
-Better IEEE1394 playback of video only.
-More IEEE1394 playback options.
+@item
+@b{get_next_keyframe(int64_t position, int is_local)}  
 
-@end example
+These give the nearest keyframe before or after the position given. 
+The macro defined version of load_configuration automatically retrieves
+the right keyframes but you may want to do this on your own.
+
+The position argument can be either in the project rate or the
+requested rate.  Set is_local to 1 if it's in the requested rate and 0
+if it's in the project rate.
+
+In each keyframe, another position value tells the keyframe's position
+relative to the start of the timeline and in the project rate.
+
+The only way to get smooth interpolation between keyframes is to
+convert the positions in the keyframe objects to the requested rate. 
+Do this by using edl_to_local on the keyframe positions.
 
 @end itemize
+
+
+
+
+@node KEYBOARD SHORTCUTS
+@chapter KEYBOARD SHORTCUTS
+
+Alex Ferrer started summarizing most of the keyboard shortcuts.  Most
+of the keys work without any modifier like shift or ctrl.  Most windows
+can be closed with a @b{Ctrl-w}.  Most operations can be cancelled with
+@b{ESC} and accepted with @b{Enter}.
+
+@section PROGRAM WINDOW
+
+
+@subsection Editing Media
+
+@example
+z         Undo
+Z         Re-Do
+x         Cut
+c         Copy
+v         Paste
+Del       Clear
+Shift Spc Paste Silence
+m         Mute region
+a         Select all
+@end example
+
+@subsection Editing Labels & In/Out Points
+
+@example
+[             Toggle In point 
+]             Toggle Out point 
+l             Toggle label at current position
+Ctrl <-       Go to Previous Label
+Ctrl ->       Go to Next Label
+f             Fit display to selection
+@end example
+
+
+@subsection Navigation
+
+@example
+Right arrow      Move right*
+Left arrow       Move left*
+Up arrow         Zoom out*
+Down arrow       Zoom in*
+Ctrl Up          Expand waveform amplitude
+Ctrl Dn          Shrink waveform amplitude
+Page Up          Move up*
+Page Dn          Move down*
+Ctrl Page Up     Expand track height
+Ctrl Page Dn     Shrink track height
+Home             Go to beginning of timeline*
+End              Go to end of timeline*
+
+@end example
+
+* You may have to click on the timeline to deactivate any text boxes or
+tumblers before these work.
+
+
+
+
+@subsection File operations
+
+@example
+n         New project
+o         Load Files
+s         Save Project
+r         Record
+R         Render
+q         Quit
+P         Preferences
+@end example
+
+@subsection Key Frame Editing
+
+@example
+
+Shift X    Cut keyframes
+Shift C    Copy keyframes
+Shift V    Paste keyframes
+Shift Del  Clear keyframes
+Alt c      Copy default keyframe
+Alt v      Paste default keyframe
+
+@end example
+
+
+@subsection Track Manipulation
+
+@example
+
+t         Add Audio Track
+u         Insert default Audio Transition
+T         Add Video Track
+U         Insert Default Video Transition
+d         Delete last Track
+Shft L    Loop playback
+
+@end example
+
+@subsection What's drawn on the timeline
+
+@example
+
+1         Show titles
+2         Show transitions
+3         Fade keyframes
+4         Mute keyframes
+5         Mode keyframes
+6         Pan keyframes
+7         Camera keyframes
+8         Projector keyframes
+9         Plugin keyframes
+0         Mask keyframes
+-         Camera Zoom
+=         Projector Zoom
+
+@end example
+
+
+@section VIEWER & COMPOSITOR WINDOWS
+
+@example
+
+x         Cut
+c         Copy
+v         Paste
+v         Splice
+b         Overwrite
+[         Toggle In point 
+]         Toggle Out point 
+l         Toggle label at current position
+Ctrl <-   Go to Previous Label
+Ctrl ->   Go to Next Label
+Home      Go to beginning
+End       Go to end
+z         Undo
+Z         Re-Do
+
+@end example
+
+
+
+@section PLAYBACK TRANSPORT
+
+Transport controls work in any window which has a playback transport.  They are
+accessed through the number pad.
+
+@example
+4 Frame back         5 Reverse Slow     6 Reverse      + Reverse Fast
+1 Frame Forward      2 Forward Slow     3 Play     Enter Fast Forward
+0 Stop
+
+@end example
+
+[ Space bar ] is normal Play, Hitting any key twice is Pause.
+
+
+@section RECORD WINDOW
+
+@example
+
+Space              Start and pause recording of the current batch
+l                  Toggle label at current position.
+
+@end example
 
 @bye
-
 
