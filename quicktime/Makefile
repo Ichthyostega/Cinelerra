@@ -18,6 +18,7 @@ ENCORE_DIR := encore50
 ENCORE_INCLUDE := $(ENCORE_DIR)/encore.h
 #DECORE_INCLUDE := $(DECORE_DIR)/decore.h
 MPEG3_DIR := $(shell expr ../libmpeg3* )
+FAAD_DIR := faad2
 OBJS := 
 
 
@@ -56,7 +57,7 @@ include Makefile.ffmpeg
 include Makefile.lame
 include Makefile.dv
 include Makefile.encore50
-
+include Makefile.faad
 
 
 
@@ -100,6 +101,7 @@ OBJS += \
 	$(OBJDIR)/dv.o \
 	$(OBJDIR)/edts.o \
 	$(OBJDIR)/elst.o \
+	$(OBJDIR)/esds.o \
 	$(OBJDIR)/graphics.o \
 	$(OBJDIR)/hdlr.o \
 	$(OBJDIR)/ima4.o \
@@ -113,6 +115,7 @@ OBJS += \
 	$(OBJDIR)/mdia.o \
 	$(OBJDIR)/minf.o \
 	$(OBJDIR)/moov.o \
+	$(OBJDIR)/mp4a.o \
 	$(OBJDIR)/mpeg4.o \
 	$(OBJDIR)/mvhd.o \
 	$(OBJDIR)/plugin.o \
@@ -140,6 +143,7 @@ OBJS += \
 	$(OBJDIR)/v308.o \
 	$(OBJDIR)/v408.o \
 	$(OBJDIR)/v410.o \
+	$(OBJDIR)/vbraudio.o \
 	$(OBJDIR)/vmhd.o \
 	$(OBJDIR)/vorbis.o \
 	$(OBJDIR)/wma.o \
@@ -230,13 +234,14 @@ $(shell if ! test -d $(OBJDIR) \; then mkdir -p $(DIRS) \; fi )
 $(shell echo  $(CFLAGS) > $(OBJDIR)/c_flags)
 $(shell echo  $(FFMPEG_CFLAGS) > $(OBJDIR)/ffmpeg_flags)
 $(shell echo  $(LAME_CFLAGS) > $(OBJDIR)/lame_flags)
-$(shell echo  $(OBJS) $(DV_OBJS) $(DVMMXOBJS) $(ENCOREMMX_OBJS) $(JPEG_NASM) $(JPEG_FAIL) $(FFMPEG_OBJS) $(FFMPEGIA32_OBJS) $(LAME_OBJS) > $(OBJDIR)/objs)
+$(shell echo  $(FAAD_CFLAGS) > $(OBJDIR)/faad_flags)
+$(shell echo  $(OBJS) $(DV_OBJS) $(DVMMXOBJS) $(ENCOREMMX_OBJS) $(JPEG_NASM) $(JPEG_FAIL) $(FFMPEG_OBJS) $(FFMPEGIA32_OBJS) $(LAME_OBJS) $(FAAD_OBJS) > $(OBJDIR)/objs)
 #$(shell echo  $(OBJS) $(DV_OBJS) $(DVMMXOBJS) $(DECOREMMX_OBJS) $(ENCOREMMX_OBJS) $(JPEG_NASM) $(JPEG_FAIL) $(FFMPEG_OBJS) $(FFMPEGIA32_OBJS) $(LAME_OBJS) > $(OBJDIR)/objs)
 
 all: $(OBJDIR) $(OUTPUT)
 
 #$(OUTPUT): $(DV_OBJS) $(DVMMXOBJ) $(OBJS) $(DVMMXOBJS) $(DECOREMMX_OBJS) $(ENCOREMMX_OBJS) $(JPEG_NASM) $(FFMPEG_OBJS) $(FFMPEGIA32_OBJS) $(LAME_OBJS) $(JPEG_FAIL) 
-$(OUTPUT): $(DV_OBJS) $(DVMMXOBJ) $(OBJS) $(DVMMXOBJS) $(ENCOREMMX_OBJS) $(JPEG_NASM) $(FFMPEG_OBJS) $(FFMPEGIA32_OBJS) $(LAME_OBJS) $(JPEG_FAIL) 
+$(OUTPUT): $(DV_OBJS) $(DVMMXOBJ) $(OBJS) $(DVMMXOBJS) $(ENCOREMMX_OBJS) $(JPEG_NASM) $(FFMPEG_OBJS) $(FFMPEGIA32_OBJS) $(LAME_OBJS) $(FAAD_OBJS) $(JPEG_FAIL) 
 	ar rcs $(OUTPUT) `cat $(OBJDIR)/objs`
 
 
@@ -294,6 +299,9 @@ $(JPEG_FAIL):
 $(DV_OBJS):
 	$(CC) -c `cat $(OBJDIR)/c_flags` $(subst $(OBJDIR)/,, $*.c) -o $*.o
 
+$(FAAD_OBJS):
+	$(CC) -c `cat $(OBJDIR)/faad_flags` $(subst $(OBJDIR)/,, $*.c) -o $*.o
+
 $(DVMMXOBJS):
 	$(CC) -c `cat $(OBJDIR)/c_flags` $(subst $(OBJDIR)/,, $*.S) -o $*.o
 
@@ -349,6 +357,7 @@ $(OBJDIR)/dump.o:			  dump.c
 $(OBJDIR)/dv.o:			  	  dv.c
 $(OBJDIR)/edts.o:			  edts.c
 $(OBJDIR)/elst.o:			  elst.c
+$(OBJDIR)/esds.o:                         esds.c
 $(OBJDIR)/graphics.o:			  graphics.c
 $(OBJDIR)/hdlr.o:			  hdlr.c
 $(OBJDIR)/ima4.o:			  ima4.c
@@ -364,6 +373,7 @@ $(OBJDIR)/mdia.o:			  mdia.c
 $(OBJDIR)/minf.o:			  minf.c
 $(OBJDIR)/moov.o:			  moov.c
 $(OBJDIR)/mpeg4.o:			  mpeg4.c
+$(OBJDIR)/mp4a.o:                         mp4a.c
 $(OBJDIR)/mvhd.o:			  mvhd.c
 $(OBJDIR)/plugin.o:			  plugin.c
 $(OBJDIR)/qtinfo.o:			  qtinfo.c
@@ -394,6 +404,7 @@ $(OBJDIR)/util.o:			  util.c
 $(OBJDIR)/v308.o:                         v308.c
 $(OBJDIR)/v408.o:                         v408.c
 $(OBJDIR)/v410.o:                         v410.c
+$(OBJDIR)/vbraudio.o:                     vbraudio.c
 $(OBJDIR)/vmhd.o:			  vmhd.c
 $(OBJDIR)/vorbis.o:                       vorbis.c
 $(OBJDIR)/wma.o:		          wma.c
@@ -450,4 +461,4 @@ include depend.jpeg
 include depend.lame
 include depend.dv
 include depend.encore50
-
+include depend.faad

@@ -67,7 +67,7 @@ OBJS = \
 	$(OBJDIR)/stringfile.o \
 	$(OBJDIR)/thread.o \
 	$(OBJDIR)/testobject.o \
-	$(OBJDIR)/timer.o \
+	$(OBJDIR)/bctimer.o \
 	$(OBJDIR)/units.o \
 	$(OBJDIR)/vframe.o \
 	$(OBJDIR)/workarounds.o
@@ -152,7 +152,8 @@ install:
 	cp $(OBJDIR)/pngtoh $(OBJDIR)/bootstrap $(DEST)
 
 $(OBJS) $(OBJDIR)/test.o $(OBJDIR)/test2.o $(OBJDIR)/test3.o $(OBJDIR)/replace.o:
-	$(CC) -c `cat $(OBJDIR)/c_flags` $(subst $(OBJDIR)/,, $*.C) -o $*.o
+	@echo C++ $*.o
+	@$(CC) -c `cat $(OBJDIR)/c_flags` $(subst $(OBJDIR)/,, $*.C) -o $*.o
 
 $(OBJDIR)/bootstrap: bootstrap.c
 $(OBJDIR)/pngtoh: pngtoh.c
@@ -208,7 +209,7 @@ $(OBJDIR)/test2.o: 	   				      test2.C
 $(OBJDIR)/test3.o: 	   				      test3.C
 $(OBJDIR)/testobject.o:                                       testobject.C
 $(OBJDIR)/thread.o: 	   				      thread.C
-$(OBJDIR)/timer.o: 	   				      timer.C
+$(OBJDIR)/bctimer.o: 	   				      bctimer.C
 $(OBJDIR)/units.o: 	   				      units.C
 $(OBJDIR)/vframe.o: 	   				      vframe.C
 $(OBJDIR)/workarounds.o:   				      workarounds.C

@@ -8,8 +8,10 @@ $(shell echo $(CFLAGS) > ../$(OBJDIR)/c_flags)
 
 
 $(OUTPUT): $(OBJS)
-	$(LDLINKER) -o $(OUTPUT) $(OBJS)
-	strip $(OUTPUT)
+	@echo LD $(OUTPUT)
+	@$(LDLINKER) -o $(OUTPUT) $(OBJS)
+	@echo STRIP $(OUTPUT)
+	@strip $(OUTPUT)
 
 
 install:
@@ -23,4 +25,5 @@ wc:
 	cat *.C *.h | wc
 
 $(OBJS):
-	$(CC) -c `cat ../$(OBJDIR)/c_flags` $(subst $(OBJDIR)/,, $*.C) -o $*.o
+	@echo C++ $*.o
+	@$(CC) -c `cat ../$(OBJDIR)/c_flags` $(subst $(OBJDIR)/,, $*.C) -o $*.o

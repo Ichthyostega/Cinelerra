@@ -7,7 +7,7 @@
 #include "device1394output.h"
 #include "mutex.h"
 #include "playbackconfig.h"
-#include "timer.h"
+#include "bctimer.h"
 #include "vframe.h"
 #include "videodevice.h"
 
@@ -17,11 +17,12 @@
 #include <sys/ioctl.h>
 #include <sys/mman.h>
 #include <unistd.h>
+#include <sys/utsname.h>
 
 
-#include "avc1394.h"
-#include "avc1394_vcr.h"
-#include "rom1394.h"
+//#include "libavc1394/avc1394.h"
+//#include "libavc1394/avc1394_vcr.h"
+//#include "librom1394/rom1394.h"
 
 
 
@@ -40,6 +41,8 @@ Device1394Output::Device1394Output(AudioDevice *adevice)
 {
 	reset();
 	this->adevice = adevice;
+
+	set_ioctls();
 }
 
 Device1394Output::Device1394Output(VideoDevice *vdevice)
@@ -47,6 +50,8 @@ Device1394Output::Device1394Output(VideoDevice *vdevice)
 {
 	reset();
 	this->vdevice = vdevice;
+
+	set_ioctls();
 }
 
 Device1394Output::~Device1394Output()
@@ -81,22 +86,23 @@ Device1394Output::~Device1394Output()
 
 		if(get_dv1394())
 		{
-  			if(ioctl(output_fd, DV1394_WAIT_FRAMES, output_mmap.nb_buffers - 1) < 0)
+  			if(ioctl(output_fd, dv1394_wait_frames, status.init.n_frames - 1) < 0)
   			{
   				fprintf(stderr,
   					"Device1394Output::close_all: DV1394_WAIT_FRAMES %i: %s",
   					output_mmap.nb_buffers,
   					strerror(errno));
   			}
-  			munmap(output_buffer, status.init.n_frames * DV1394_NTSC_FRAME_SIZE);
-  			if(ioctl(output_fd, DV1394_SHUTDOWN, NULL) < 0)
+  			munmap(output_buffer, status.init.n_frames *
+				(is_pal ? DV1394_PAL_FRAME_SIZE : DV1394_NTSC_FRAME_SIZE));
+  			if(ioctl(output_fd, dv1394_shutdown, NULL) < 0)
   			{
   				perror("Device1394Output::close_all: DV1394_SHUTDOWN");
   			}
 		}
 		else
 		{
-        	if(ioctl(output_fd, VIDEO1394_TALK_WAIT_BUFFER, &output_queue) < 0) 
+        	if(ioctl(output_fd, video1394_talk_wait_buffer, &output_queue) < 0) 
 			{
             	fprintf(stderr, 
 					"Device1394::close_all: VIDEO1394_TALK_WAIT_BUFFER %s: %s",
@@ -105,7 +111,7 @@ Device1394Output::~Device1394Output()
         	}
         	munmap(output_buffer, output_mmap.nb_buffers * output_mmap.buf_size);
 
-        	if(ioctl(output_fd, VIDEO1394_UNTALK_CHANNEL, &output_mmap.channel) < 0)
+        	if(ioctl(output_fd, video1394_untalk_channel, &output_mmap.channel) < 0)
 			{
             	perror("Device1394::close_all: VIDEO1394_UNTALK_CHANNEL");
         	}
@@ -264,12 +270,12 @@ int Device1394Output::open(char *path,
 
 			if(get_dv1394())
 			{
-  				if(ioctl(output_fd, DV1394_INIT, &setup) < 0)
+  				if(ioctl(output_fd, dv1394_init, &setup) < 0)
   				{
   					perror("Device1394Output::open DV1394_INIT:");
   				}
 
-  				if(ioctl(output_fd, DV1394_GET_STATUS, &setup) < 0)
+  				if(ioctl(output_fd, dv1394_get_status, &status) < 0)
   				{
   					perror("Device1394Output::open DV1394_GET_STATUS:");
   				}
@@ -283,7 +289,7 @@ int Device1394Output::open(char *path,
 			}
 			else
 			{
-        		if(ioctl(output_fd, VIDEO1394_TALK_CHANNEL, &output_mmap) < 0)
+        		if(ioctl(output_fd, video1394_talk_channel, &output_mmap) < 0)
 				{
             		perror("Device1394Output::open VIDEO1394_TALK_CHANNEL:");
         		}
@@ -310,7 +316,9 @@ int Device1394Output::open(char *path,
 // Create buffers
 			buffer = new char*[total_buffers];
 			for(int i = 0; i < length; i++)
-				buffer[i] = new char[DV_PAL_SIZE];
+				buffer[i] = new char[get_dv1394() ?
+					(is_pal ? DV1394_PAL_FRAME_SIZE : DV1394_NTSC_FRAME_SIZE) :
+					DV_PAL_SIZE];
 			buffer_size = new int[total_buffers];
 			buffer_valid = new int[total_buffers];
 			bzero(buffer_size, sizeof(int) * total_buffers);
@@ -335,7 +343,6 @@ void Device1394Output::run()
   	char *out_buffer;
   	int out_size;
 
-
 	Thread::enable_cancel();
 	start_lock->lock();
 	Thread::disable_cancel();
@@ -349,16 +356,8 @@ void Device1394Output::run()
 
 		buffer_lock->lock("Device1394Output::run 1");
 
-		if(get_dv1394())
-		{
-  			out_buffer = buffer[status.first_clear_frame];
-  			out_size = buffer_size[status.first_clear_frame];
-		}
-		else
-		{
-			out_buffer = buffer[current_outbuffer];
-			out_size = buffer_size[current_outbuffer];
-		}
+		out_buffer = buffer[current_outbuffer];
+		out_size = buffer_size[current_outbuffer];
 
 
 
@@ -470,19 +469,22 @@ void Device1394Output::run()
 
 			if(get_dv1394())
 			{
-  				if(ioctl(output_fd, DV1394_SUBMIT_FRAMES, 1) < 0)
+  				if(ioctl(output_fd, dv1394_submit_frames, 1) < 0)
   				{
   					perror("Device1394Output::run DV1394_SUBMIT_FRAMES");
   				}
-  
-  				if(ioctl(output_fd, DV1394_GET_STATUS, &status) < 0)
+ 				if(ioctl(output_fd, dv1394_wait_frames, 1) < 0)
+				{
+					perror("Device1394Output::run DV1394_WAIT_FRAMES");
+				}
+  				if(ioctl(output_fd, dv1394_get_status, &status) < 0)
   				{
   					perror("Device1394Output::run DV1394_GET_STATUS");
   				}
 			}
 			else
 			{
-				if(ioctl(output_fd, VIDEO1394_TALK_QUEUE_BUFFER, &output_queue) < 0)
+				if(ioctl(output_fd, video1394_talk_queue_buffer, &output_queue) < 0)
 				{
         			perror("Device1394Output::run VIDEO1394_TALK_QUEUE_BUFFER");
     			}
@@ -494,16 +496,9 @@ void Device1394Output::run()
 
 			if(unused_buffers <= 0)
 			{
-				if(get_dv1394())
+				if(!get_dv1394())
 				{
-  					if(ioctl(output_fd, DV1394_WAIT_FRAMES, 1) < 0)
-  					{
-  						perror("Device1394Output::run DV1394_WAIT_FRAMES");
-  					}
-				}
-				else
-				{
-    				if(ioctl(output_fd, VIDEO1394_TALK_WAIT_BUFFER, &output_queue) < 0) 
+    				if(ioctl(output_fd, video1394_talk_wait_buffer, &output_queue) < 0) 
 					{
         				perror("Device1394::run VIDEO1394_TALK_WAIT_BUFFER");
     				}
@@ -821,7 +816,67 @@ void Device1394Output::decrement_counter(int *counter)
 	if(*counter < 0) *counter = total_buffers - 1;
 }
 
+void Device1394Output::set_ioctls()
+{
+	// It would make sense to simply change the file that is included in
+	// order to change the IOCTLs, but it isn't reasonable to think that
+	// people will rebuild their software every time the update their
+	// kernel, hence this fix.
 
+	struct utsname buf;
+
+	// Get the kernel version so we can set the right ioctls
+	uname(&buf);
+
+	if(buf.release[2] == '6' ||
+		(buf.release[4] == '2' && buf.release[5] >= '3'))
+	{
+		// dv1394
+		dv1394_init = DV1394_IOC_INIT;
+		dv1394_shutdown = DV1394_IOC_SHUTDOWN;
+		dv1394_submit_frames = DV1394_IOC_SUBMIT_FRAMES;
+		dv1394_wait_frames = DV1394_IOC_WAIT_FRAMES;
+		dv1394_receive_frames = DV1394_IOC_RECEIVE_FRAMES;
+		dv1394_start_receive = DV1394_IOC_START_RECEIVE;
+		dv1394_get_status = DV1394_IOC_GET_STATUS;
+
+		// video1394
+		video1394_listen_channel = VIDEO1394_IOC_LISTEN_CHANNEL;
+		video1394_unlisten_channel = VIDEO1394_IOC_UNLISTEN_CHANNEL;
+		video1394_listen_queue_buffer = VIDEO1394_IOC_LISTEN_QUEUE_BUFFER;
+		video1394_listen_wait_buffer = VIDEO1394_IOC_LISTEN_WAIT_BUFFER;
+		video1394_talk_channel = VIDEO1394_IOC_TALK_CHANNEL;
+		video1394_untalk_channel = VIDEO1394_IOC_UNTALK_CHANNEL;
+		video1394_talk_queue_buffer = VIDEO1394_IOC_TALK_QUEUE_BUFFER;
+		video1394_talk_wait_buffer = VIDEO1394_IOC_TALK_WAIT_BUFFER;
+		video1394_listen_poll_buffer = VIDEO1394_IOC_LISTEN_POLL_BUFFER;
+
+		// raw1394
+		// Nothing uses this right now, so I didn't include it.
+	}
+	else	 // we are using an older kernel
+	{
+      // dv1394
+      dv1394_init = DV1394_INIT;
+      dv1394_shutdown = DV1394_SHUTDOWN;
+      dv1394_submit_frames = DV1394_SUBMIT_FRAMES;
+      dv1394_wait_frames = DV1394_WAIT_FRAMES;
+      dv1394_receive_frames = DV1394_RECEIVE_FRAMES;
+      dv1394_start_receive = DV1394_START_RECEIVE;
+      dv1394_get_status = DV1394_GET_STATUS;
+
+      // video1394
+      video1394_listen_channel = VIDEO1394_LISTEN_CHANNEL;
+      video1394_unlisten_channel = VIDEO1394_UNLISTEN_CHANNEL;
+      video1394_listen_queue_buffer = VIDEO1394_LISTEN_QUEUE_BUFFER;
+      video1394_listen_wait_buffer = VIDEO1394_LISTEN_WAIT_BUFFER;
+      video1394_talk_channel = VIDEO1394_TALK_CHANNEL;
+      video1394_untalk_channel = VIDEO1394_UNTALK_CHANNEL;
+      video1394_talk_queue_buffer = VIDEO1394_TALK_QUEUE_BUFFER;
+      video1394_talk_wait_buffer = VIDEO1394_TALK_WAIT_BUFFER;
+      video1394_listen_poll_buffer = VIDEO1394_LISTEN_POLL_BUFFER;
+	}
+}
 
 
 

@@ -220,7 +220,6 @@ int Device1394Input::read_video(VFrame *data)
 		buffer_valid[current_outbuffer] = 0;
 		increment_counter(&current_outbuffer);
 	}
-//printf("Device1394Input::read_video 100\n");
 
 	buffer_lock->unlock();
 	return result;

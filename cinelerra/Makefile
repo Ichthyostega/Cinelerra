@@ -1,14 +1,17 @@
-DV_DIR := ../quicktime/libdv-0.99
-ALSA_DIR := ../alsa-lib-0.9.0rc2
-OGG_DIR := ../quicktime/libogg-1.0
-VORBIS_DIR := ../quicktime/libvorbis-1.0
-LIBRAW_DIR := ../libraw1394-0.9.0
-TIFF_DIR := ../tiff-v3.5.7
-UUID_DIR := ../uuid
-TOOLAME_DIR := ../toolame-02l
-LAME_DIR := ../quicktime/lame-3.93.1/include
-SNDFILE_DIR := $(shell expr ../libsndfile* )
 include ../global_config
+
+ALSA_DIR := ../alsa-lib-1.0.2
+AVC_DIR := ../libavc1394-0.4.1
+DV_DIR := ../quicktime/libdv-0.99
+FFMPEG_DIR := $(shell expr ../quicktime/ffmpeg* )
+LAME_DIR := ../quicktime/lame-3.93.1/include
+LIBRAW_DIR := ../libraw1394-0.9.0
+OGG_DIR := ../quicktime/libogg-1.0
+SNDFILE_DIR := $(shell expr ../libsndfile* )
+TIFF_DIR := ../tiff-v3.5.7
+TOOLAME_DIR := ../toolame-02l
+UUID_DIR := ../uuid
+VORBIS_DIR := ../quicktime/libvorbis-1.0
 
 OBJS = \
 	$(OBJDIR)/aattachmentpoint.o \
@@ -41,6 +44,8 @@ OBJS = \
 	$(OBJDIR)/autos.o \
 	$(OBJDIR)/autoconf.o \
 	$(OBJDIR)/automation.o \
+	$(OBJDIR)/avc1394control.o \
+	$(OBJDIR)/avc1394transport.o \
 	$(OBJDIR)/awindow.o \
 	$(OBJDIR)/awindowgui.o \
 	$(OBJDIR)/awindowmenu.o \
@@ -56,6 +61,7 @@ OBJS = \
 	$(OBJDIR)/canvas.o \
 	$(OBJDIR)/canvastools.o \
 	$(OBJDIR)/channel.o \
+	$(OBJDIR)/channeldb.o \
 	$(OBJDIR)/channeledit.o \
 	$(OBJDIR)/channelpicker.o \
 	$(OBJDIR)/chantables.o \
@@ -85,6 +91,7 @@ OBJS = \
 	$(OBJDIR)/edlsession.o \
 	$(OBJDIR)/fadeengine.o \
 	$(OBJDIR)/file.o \
+	$(OBJDIR)/fileac3.o \
 	$(OBJDIR)/fileavi.o \
 	$(OBJDIR)/filebase.o \
 	$(OBJDIR)/filebaseaudio.o \
@@ -107,12 +114,14 @@ OBJS = \
 	$(OBJDIR)/formatcheck.o \
 	$(OBJDIR)/formatpopup.o \
 	$(OBJDIR)/formattools.o \
+	$(OBJDIR)/framecache.o \
 	$(OBJDIR)/indexfile.o \
 	$(OBJDIR)/indexthread.o \
 	$(OBJDIR)/intauto.o \
 	$(OBJDIR)/intautos.o \
 	$(OBJDIR)/interfaceprefs.o \
 	$(OBJDIR)/keyframe.o \
+	$(OBJDIR)/keyframepopup.o \
 	$(OBJDIR)/keyframes.o \
 	$(OBJDIR)/keyframehandles.o \
 	$(OBJDIR)/labelnavigate.o \
@@ -156,6 +165,7 @@ OBJS = \
 	$(OBJDIR)/patchbay.o \
 	$(OBJDIR)/patchgui.o \
 	$(OBJDIR)/performanceprefs.o \
+	$(OBJDIR)/picture.o \
 	$(OBJDIR)/playabletracks.o \
 	$(OBJDIR)/playbackconfig.o \
 	$(OBJDIR)/playbackengine.o \
@@ -234,6 +244,8 @@ OBJS = \
 	$(OBJDIR)/vdevicebuz.o \
 	$(OBJDIR)/vdeviceprefs.o \
 	$(OBJDIR)/vdevicev4l.o \
+	$(OBJDIR)/vdevicev4l2.o \
+	$(OBJDIR)/vdevicev4l2jpeg.o \
 	$(OBJDIR)/vdevicex11.o \
 	$(OBJDIR)/vedit.o \
 	$(OBJDIR)/vedits.o \
@@ -276,7 +288,7 @@ ALSA_LIBS := $(ALSA_DIR)/$(OBJDIR)/libasound.a
 endif
 
 STATICLIBS = \
-	../libavc/$(OBJDIR)/libavc.a \
+	$(AVC_DIR)/$(OBJDIR)/libavc.a \
 	../quicktime/$(OBJDIR)/libquicktime.a \
         $(ESOUNDLIBS) \
 	$(TIFF_DIR)/$(OBJDIR)/libtiff.a \
@@ -286,6 +298,7 @@ STATICLIBS = \
 	$(UUID_DIR)/$(OBJDIR)/libuuid.a \
 	../mpeg2enc/$(OBJDIR)/mpeg2enc.a \
 	$(TOOLAME_DIR)/$(OBJDIR)/toolame.a
+#	../libavc/$(OBJDIR)/libavc.a \
 
 LIBS := \
 	-L./ \
@@ -326,20 +339,19 @@ CFLAGS += \
 	-I$(DV_DIR) \
 	-I$(OGG_DIR)/include \
 	-I$(VORBIS_DIR)/include \
-	-I$(LIBRAW_DIR)/src \
+	-I$(LIBRAW_DIR)/ \
 	-I$(TIFF_DIR)/libtiff \
 	-I$(UUID_DIR) \
 	-I$(DV_DIR) \
 	-I$(TOOLAME_DIR) \
 	-I$(LAME_DIR) \
+	-I$(AVC_DIR) \
 	-I../audiofile \
 	-I../libmpeg3 \
 	-I$(SNDFILE_DIR)/src \
-	-I../libavc/common \
-	-I../libavc/libavc1394 \
-	-I../libavc/librom1394 \
 	$(ESOUNDCFLAGS) \
-	$(ALSA_CFLAGS)
+	$(ALSA_CFLAGS) \
+	-I$(FFMPEG_DIR)/libavcodec
 
 
 # Speed up linking with this linking sequence
@@ -407,9 +419,12 @@ $(shell echo $(LDFLAGS1) $(OBJS) $(AVIOBJS) $(CXXREPOSITORY) $(STATICLIBS) $(LIB
 
 # Static linking is not possible because of the way the plugins are loaded
 $(OUTPUT): $(OBJS) $(BOOTSTRAP)
-	$(LINKER) `cat $(OBJDIR)/objs`
-	strip $(OUTPUT)
-	../guicast/$(OBJDIR)/bootstrap $(OUTPUT) data/mode_*.png
+	@echo LD $(OUTPUT)
+	@$(LINKER) `cat $(OBJDIR)/objs`
+	@echo STRIP $(OUTPUT)
+	@strip $(OUTPUT)
+	@echo BOOTSTRAP $(OUTPUT)
+	@../guicast/$(OBJDIR)/bootstrap $(OUTPUT) data/mode_*.png
 
 $(OBJDIR)/test: 
 	$(CC) -shared -o $(OBJDIR)/test.so \
@@ -437,7 +452,10 @@ install:
 
 
 $(LIBOBJS) $(OBJS):
-	$(CC) -c `cat $(OBJDIR)/c_flags` $(subst $(OBJDIR)/,, $*.C) -o $*.o
+	@echo C++ $*.o
+	@$(CC) -c `cat $(OBJDIR)/c_flags` $(subst $(OBJDIR)/,, $*.C) -o $*.o
+
+
 
 $(OBJDIR)/aattachmentpoint.o: 			  aattachmentpoint.C
 $(OBJDIR)/aautomation.o: 			  aautomation.C
@@ -474,6 +492,8 @@ $(OBJDIR)/auto.o: 				  auto.C
 $(OBJDIR)/autos.o: 				  autos.C
 $(OBJDIR)/autoconf.o: 				  autoconf.C
 $(OBJDIR)/automation.o: 			  automation.C
+$(OBJDIR)/avc1394control.o:		          avc1394control.C
+$(OBJDIR)/avc1394transport.o:                     avc1394transport.C
 $(OBJDIR)/awindow.o: 				  awindow.C
 $(OBJDIR)/awindowgui.o: 			  awindowgui.C
 $(OBJDIR)/awindowmenu.o: 			  awindowmenu.C
@@ -489,6 +509,7 @@ $(OBJDIR)/cache.o: 				  cache.C
 $(OBJDIR)/canvas.o: 				  canvas.C
 $(OBJDIR)/canvastools.o: 			  canvastools.C
 $(OBJDIR)/channel.o: 				  channel.C
+$(OBJDIR)/channeldb.o: 				  channeldb.C
 $(OBJDIR)/channeledit.o: 			  channeledit.C
 $(OBJDIR)/channelpicker.o: 			  channelpicker.C
 $(OBJDIR)/chantables.o: 			  chantables.C
@@ -521,6 +542,7 @@ $(OBJDIR)/edl.o: 				  edl.C
 $(OBJDIR)/edlsession.o: 			  edlsession.C
 $(OBJDIR)/fadeengine.o: 			  fadeengine.C
 $(OBJDIR)/file.o: 				  file.C
+$(OBJDIR)/fileac3.o:                              fileac3.C
 $(OBJDIR)/fileavi.o: 				  fileavi.C
 $(OBJDIR)/filebase.o: 				  filebase.C
 $(OBJDIR)/filebaseaudio.o: 			  filebaseaudio.C
@@ -544,12 +566,14 @@ $(OBJDIR)/floatautos.o: 			  floatautos.C
 $(OBJDIR)/formatcheck.o: 			  formatcheck.C
 $(OBJDIR)/formatpopup.o: 			  formatpopup.C
 $(OBJDIR)/formattools.o: 			  formattools.C
+$(OBJDIR)/framecache.o:                           framecache.C
 $(OBJDIR)/indexfile.o:  			  indexfile.C
 $(OBJDIR)/indexthread.o: 			  indexthread.C
 $(OBJDIR)/intauto.o:                              intauto.C
 $(OBJDIR)/intautos.o:                             intautos.C
 $(OBJDIR)/interfaceprefs.o: 			  interfaceprefs.C
 $(OBJDIR)/keyframe.o: 				  keyframe.C
+$(OBJDIR)/keyframepopup.o:                        keyframepopup.C
 $(OBJDIR)/keyframes.o:  			  keyframes.C
 $(OBJDIR)/keyframehandles.o: 			  keyframehandles.C
 $(OBJDIR)/labelnavigate.o: 			  labelnavigate.C
@@ -594,6 +618,7 @@ $(OBJDIR)/patch.o: 				  patch.C
 $(OBJDIR)/patchbay.o: 				  patchbay.C
 $(OBJDIR)/patchgui.o: 				  patchgui.C
 $(OBJDIR)/performanceprefs.o: 			  performanceprefs.C
+$(OBJDIR)/picture.o:                              picture.C
 $(OBJDIR)/playabletracks.o: 			  playabletracks.C
 $(OBJDIR)/playbackconfig.o: 			  playbackconfig.C
 $(OBJDIR)/playbackengine.o: 			  playbackengine.C
@@ -679,6 +704,8 @@ $(OBJDIR)/vdevicebase.o: 			  vdevicebase.C
 $(OBJDIR)/vdevicebuz.o: 			  vdevicebuz.C
 $(OBJDIR)/vdeviceprefs.o: 			  vdeviceprefs.C
 $(OBJDIR)/vdevicev4l.o: 			  vdevicev4l.C
+$(OBJDIR)/vdevicev4l2.o:                          vdevicev4l2.C
+$(OBJDIR)/vdevicev4l2jpeg.o:                      vdevicev4l2jpeg.C
 $(OBJDIR)/vdevicex11.o: 			  vdevicex11.C
 $(OBJDIR)/vedit.o: 				  vedit.C
 $(OBJDIR)/vedits.o: 				  vedits.C

@@ -43,7 +43,8 @@ DIRS = \
 	histogram \
 	holo \
 	huesaturation \
-	interpolateall \
+	interpolateaudio \
+	interpolatevideo \
 	invertaudio \
 	invertvideo \
 	irissquare \

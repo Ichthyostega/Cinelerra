@@ -156,8 +156,9 @@ Up:<a rel="up" accesskey="u" href="#dir">(dir)</a>
 <li><a href="#MAKING%20VIDEO%20LOOK%20LIKE%20FILM">MAKING VIDEO LOOK LIKE FILM</a>
 <li><a href="#CLEARING%20OUT%20HAZE">CLEARING OUT HAZE</a>
 </li></ul>
-<li><a name="toc_EFFECT%20DESCRIPTIONS" href="#EFFECT%20DESCRIPTIONS">EFFECT DESCRIPTIONS</a>
+<li><a name="toc_SECRETS%20OF%20CINELERRA%20EFFECTS" href="#SECRETS%20OF%20CINELERRA%20EFFECTS">SECRETS OF CINELERRA EFFECTS</a>
 <ul>
+<li><a href="#1080%20TO%20480">1080 TO 480</a>
 <li><a href="#CHROMA%20KEY">CHROMA KEY</a>
 <li><a href="#DECIMATE">DECIMATE</a>
 <li><a href="#DEINTERLACE">DEINTERLACE</a>
@@ -230,7 +231,7 @@ Up:<a rel="up" accesskey="u" href="#dir">(dir)</a>
 <li><a href="#IMPROVING%20PERFORMANCE">IMPROVING PERFORMANCE</a>:     Making Cinelerra run better on Linux. 
 <li><a href="#TROUBLESHOOTING">TROUBLESHOOTING</a>:           Problems with Cinelerra. 
 <li><a href="#SECRETS%20OF%20CINELERRA">SECRETS OF CINELERRA</a>:      Unusual applications of Cinelerra to common problems. 
-<li><a href="#EFFECT%20DESCRIPTIONS">EFFECT DESCRIPTIONS</a>:       How to use the more complicated effects. 
+<li><a href="#SECRETS%20OF%20CINELERRA%20EFFECTS">SECRETS OF CINELERRA EFFECTS</a>:       How to use the more complicated effects. 
 <li><a href="#PLUGIN%20AUTHORING">PLUGIN AUTHORING</a>:          How to write new effects. 
 <li><a href="#KEYBOARD%20SHORTCUTS">KEYBOARD SHORTCUTS</a>:        How to accelerate most commands with the keyboard. 
 </ul>
@@ -4667,7 +4668,7 @@ buffered.
 <div class="node">
 <p><hr>
 Node:<a name="SECRETS%20OF%20CINELERRA">SECRETS OF CINELERRA</a>,
-Next:<a rel="next" accesskey="n" href="#EFFECT%20DESCRIPTIONS">EFFECT DESCRIPTIONS</a>,
+Next:<a rel="next" accesskey="n" href="#SECRETS%20OF%20CINELERRA%20EFFECTS">SECRETS OF CINELERRA EFFECTS</a>,
 Previous:<a rel="previous" accesskey="p" href="#TROUBLESHOOTING">TROUBLESHOOTING</a>,
 Up:<a rel="up" accesskey="u" href="#Top">Top</a>
 <br>
@@ -4856,6 +4857,13 @@ resulting 59.94fps footage to 23.97fps.  This produces no timing jitter
 and the occasional odd field gives the illusion of more detail than
 there would be if you just line averaged the original.
 
+   <p><b>HDTV exceptions</b>
+
+   <p>1920x1080 HDTV is encoded a special way.  If it's a broadcast of
+original HDTV film, an inverse telecine works fine.  If it's a
+rebroadcast of a 720x480 source, you need to use a time base and line
+doubling algorithm to deinterlace it, See <a href="#1080%20TO%20480">1080 TO 480</a>.
+
 <div class="node">
 <p><hr>
 Node:<a name="MAKING%20VIDEO%20LOOK%20LIKE%20FILM">MAKING VIDEO LOOK LIKE FILM</a>,
@@ -4935,43 +4943,88 @@ horizon shots usually can stand for more depth.  This is what the
      </pre>
 
    <p>It's important to set the 0% alpha color to blue even though it's 0%
-alpha.  This is a generally applicable setting for the gradient.  Some
-scenes may work better with orange or brown for an evening feel.
+alpha.  The color of the outer alpha is still interpolated with the
+inner color.  This is a generally applicable setting for the gradient. 
+Some scenes may work better with orange or brown for an evening feel.
 
 <div class="node">
 <p><hr>
-Node:<a name="EFFECT%20DESCRIPTIONS">EFFECT DESCRIPTIONS</a>,
+Node:<a name="SECRETS%20OF%20CINELERRA%20EFFECTS">SECRETS OF CINELERRA EFFECTS</a>,
 Next:<a rel="next" accesskey="n" href="#PLUGIN%20AUTHORING">PLUGIN AUTHORING</a>,
 Previous:<a rel="previous" accesskey="p" href="#SECRETS%20OF%20CINELERRA">SECRETS OF CINELERRA</a>,
 Up:<a rel="up" accesskey="u" href="#Top">Top</a>
 <br>
 </div>
 
-<h2 class="chapter">EFFECT DESCRIPTIONS</h2>
+<h2 class="chapter">SECRETS OF CINELERRA EFFECTS</h2>
 
    <p>Most effects in Cinelerra can be figured out just by using them and
 tweeking.  Here are brief descriptions of effects which you might not
 utilize fully by mere experimentation.
 
 <ul class="menu">
-<li><a accesskey="1" href="#CHROMA%20KEY">CHROMA KEY</a>:         How to make areas transparent based on color. 
-<li><a accesskey="2" href="#DECIMATE">DECIMATE</a>:           How to reduce frame rates by eliminating similar frames. 
-<li><a accesskey="3" href="#DEINTERLACE">DEINTERLACE</a>:        How to convert interlaced video to progressive video. 
-<li><a accesskey="4" href="#FREEZE%20FRAME">FREEZE FRAME</a>:       How to stop action in the timeline. 
-<li><a accesskey="5" href="#HISTOGRAM">HISTOGRAM</a>:          How to change the mapping of different brightness values. 
-<li><a accesskey="6" href="#INVERSE%20TELECINE">INVERSE TELECINE</a>:   How to convert pulled down frames to progressive frames. 
-<li><a accesskey="7" href="#LOOP">LOOP</a>:               How to loop regions of the timeline. 
-<li><a accesskey="8" href="#REVERSE%20VIDEO%2fAUDIO">REVERSE VIDEO/AUDIO</a>:  How to play regions in reverse. 
-<li><a accesskey="9" href="#TIME%20AVERAGE">TIME AVERAGE</a>:       How to add trail patterns or increase still image quality. 
+<li><a accesskey="1" href="#1080%20TO%20480">1080 TO 480</a>:        How to convert HDTV into SD
+<li><a accesskey="2" href="#CHROMA%20KEY">CHROMA KEY</a>:         How to make areas transparent based on color. 
+<li><a accesskey="3" href="#DECIMATE">DECIMATE</a>:           How to reduce frame rates by eliminating similar frames. 
+<li><a accesskey="4" href="#DEINTERLACE">DEINTERLACE</a>:        How to convert interlaced video to progressive video. 
+<li><a accesskey="5" href="#FREEZE%20FRAME">FREEZE FRAME</a>:       How to stop action in the timeline. 
+<li><a accesskey="6" href="#HISTOGRAM">HISTOGRAM</a>:          How to change the mapping of different brightness values. 
+<li><a accesskey="7" href="#INVERSE%20TELECINE">INVERSE TELECINE</a>:   How to convert pulled down frames to progressive frames. 
+<li><a accesskey="8" href="#LOOP">LOOP</a>:               How to loop regions of the timeline. 
+<li><a accesskey="9" href="#REVERSE%20VIDEO%2fAUDIO">REVERSE VIDEO/AUDIO</a>:  How to play regions in reverse. 
+<li><a href="#TIME%20AVERAGE">TIME AVERAGE</a>:       How to add trail patterns or increase still image quality. 
 <li><a href="#TITLER">TITLER</a>:             How to add text to a track from inside Cinelerra. 
 <li><a href="#VIDEO%20SCOPE">VIDEO SCOPE</a>:        How to view the dynamic range of intensity and hue. 
 </ul>
 
 <div class="node">
 <p><hr>
+Node:<a name="1080%20TO%20480">1080 TO 480</a>,
+Next:<a rel="next" accesskey="n" href="#CHROMA%20KEY">CHROMA KEY</a>,
+Up:<a rel="up" accesskey="u" href="#SECRETS%20OF%20CINELERRA%20EFFECTS">SECRETS OF CINELERRA EFFECTS</a>
+<br>
+</div>
+
+<h3 class="section">1080 TO 480</h3>
+
+   <p>Most TV broadcasts are recieved with a 1920x1080 resolution but
+originate from a 720x480 source at the studio.  It's a waste of space
+to compress the entire 1920x1080 if the only resolvable details are
+720x480.  Unfortunately resizing 1920x1080 video to 720x480 isn't as
+simple as shrinking it.
+
+   <p>At the TV station the original 720x480 footage was first converted to
+fields of 720x240.  Each field was then scaled up to 1920x540.  The two
+1920x540 fields were finally combined with interlacing to form the
+1920x1080 image.  This technique allows a consumer TV to display the
+resampled image without extra circuitry to handle 720x480 interlacing
+in a 1920x1080 image.
+
+   <p>If you merely deinterlaced the 1920x1080 images, you would end up with
+details of 720x240.  The 1080 to 480 effect properly extracts two
+1920x540 size fields from the image, resizes them separately, and
+combines them again to restore the original 720x480.  Tracks to which
+it is applied need to be at 1920x1080 resolution.  The project settings
+in <b>settings-&gt;format</b> should be at 720x480 resolution.
+
+   <p>The effect doesn't know if the first row in the 1920x1080 image belongs
+to the first row of the 720x480 original.  You have to specify what the
+first row is in the effect configuration.
+
+   <p>The output of this effect is a small image in the middle of the
+original 1920x1080 frame.  Use the projector to center the output image
+in the playback.
+
+   <p>Finally, once you have 720x480 interlaced video you can either apply
+<b>frames to fields</b> of <b>inverse telecine</b> to further recover original
+progressive frames.
+
+<div class="node">
+<p><hr>
 Node:<a name="CHROMA%20KEY">CHROMA KEY</a>,
 Next:<a rel="next" accesskey="n" href="#DECIMATE">DECIMATE</a>,
-Up:<a rel="up" accesskey="u" href="#EFFECT%20DESCRIPTIONS">EFFECT DESCRIPTIONS</a>
+Previous:<a rel="previous" accesskey="p" href="#1080%20TO%20480">1080 TO 480</a>,
+Up:<a rel="up" accesskey="u" href="#SECRETS%20OF%20CINELERRA%20EFFECTS">SECRETS OF CINELERRA EFFECTS</a>
 <br>
 </div>
 
@@ -4997,7 +5050,7 @@ to blur just the alpha.
 Node:<a name="DECIMATE">DECIMATE</a>,
 Next:<a rel="next" accesskey="n" href="#DEINTERLACE">DEINTERLACE</a>,
 Previous:<a rel="previous" accesskey="p" href="#CHROMA%20KEY">CHROMA KEY</a>,
-Up:<a rel="up" accesskey="u" href="#EFFECT%20DESCRIPTIONS">EFFECT DESCRIPTIONS</a>
+Up:<a rel="up" accesskey="u" href="#SECRETS%20OF%20CINELERRA%20EFFECTS">SECRETS OF CINELERRA EFFECTS</a>
 <br>
 </div>
 
@@ -5028,7 +5081,7 @@ merely replicates each frame.
 Node:<a name="DEINTERLACE">DEINTERLACE</a>,
 Next:<a rel="next" accesskey="n" href="#FREEZE%20FRAME">FREEZE FRAME</a>,
 Previous:<a rel="previous" accesskey="p" href="#DECIMATE">DECIMATE</a>,
-Up:<a rel="up" accesskey="u" href="#EFFECT%20DESCRIPTIONS">EFFECT DESCRIPTIONS</a>
+Up:<a rel="up" accesskey="u" href="#SECRETS%20OF%20CINELERRA%20EFFECTS">SECRETS OF CINELERRA EFFECTS</a>
 <br>
 </div>
 
@@ -5047,7 +5100,7 @@ reverse effect display fields in the right order.
 Node:<a name="FREEZE%20FRAME">FREEZE FRAME</a>,
 Next:<a rel="next" accesskey="n" href="#HISTOGRAM">HISTOGRAM</a>,
 Previous:<a rel="previous" accesskey="p" href="#DEINTERLACE">DEINTERLACE</a>,
-Up:<a rel="up" accesskey="u" href="#EFFECT%20DESCRIPTIONS">EFFECT DESCRIPTIONS</a>
+Up:<a rel="up" accesskey="u" href="#SECRETS%20OF%20CINELERRA%20EFFECTS">SECRETS OF CINELERRA EFFECTS</a>
 <br>
 </div>
 
@@ -5079,7 +5132,7 @@ disabled regions play through.
 Node:<a name="HISTOGRAM">HISTOGRAM</a>,
 Next:<a rel="next" accesskey="n" href="#INVERSE%20TELECINE">INVERSE TELECINE</a>,
 Previous:<a rel="previous" accesskey="p" href="#FREEZE%20FRAME">FREEZE FRAME</a>,
-Up:<a rel="up" accesskey="u" href="#EFFECT%20DESCRIPTIONS">EFFECT DESCRIPTIONS</a>
+Up:<a rel="up" accesskey="u" href="#SECRETS%20OF%20CINELERRA%20EFFECTS">SECRETS OF CINELERRA EFFECTS</a>
 <br>
 </div>
 
@@ -5100,7 +5153,7 @@ boundaries of the histogram the automatic gain should be.
 Node:<a name="INVERSE%20TELECINE">INVERSE TELECINE</a>,
 Next:<a rel="next" accesskey="n" href="#LOOP">LOOP</a>,
 Previous:<a rel="previous" accesskey="p" href="#HISTOGRAM">HISTOGRAM</a>,
-Up:<a rel="up" accesskey="u" href="#EFFECT%20DESCRIPTIONS">EFFECT DESCRIPTIONS</a>
+Up:<a rel="up" accesskey="u" href="#SECRETS%20OF%20CINELERRA%20EFFECTS">SECRETS OF CINELERRA EFFECTS</a>
 <br>
 </div>
 
@@ -5132,7 +5185,7 @@ lack of a frame rate reduction.
 Node:<a name="LOOP">LOOP</a>,
 Next:<a rel="next" accesskey="n" href="#REVERSE%20VIDEO%2fAUDIO">REVERSE VIDEO/AUDIO</a>,
 Previous:<a rel="previous" accesskey="p" href="#INVERSE%20TELECINE">INVERSE TELECINE</a>,
-Up:<a rel="up" accesskey="u" href="#EFFECT%20DESCRIPTIONS">EFFECT DESCRIPTIONS</a>
+Up:<a rel="up" accesskey="u" href="#SECRETS%20OF%20CINELERRA%20EFFECTS">SECRETS OF CINELERRA EFFECTS</a>
 <br>
 </div>
 
@@ -5161,7 +5214,7 @@ looped from the beginning by setting the keyframe near the end.
 Node:<a name="REVERSE%20VIDEO%2fAUDIO">REVERSE VIDEO/AUDIO</a>,
 Next:<a rel="next" accesskey="n" href="#TIME%20AVERAGE">TIME AVERAGE</a>,
 Previous:<a rel="previous" accesskey="p" href="#LOOP">LOOP</a>,
-Up:<a rel="up" accesskey="u" href="#EFFECT%20DESCRIPTIONS">EFFECT DESCRIPTIONS</a>
+Up:<a rel="up" accesskey="u" href="#SECRETS%20OF%20CINELERRA%20EFFECTS">SECRETS OF CINELERRA EFFECTS</a>
 <br>
 </div>
 
@@ -5192,7 +5245,7 @@ timeline doesn't reflect the actual reversed output.
 Node:<a name="TIME%20AVERAGE">TIME AVERAGE</a>,
 Next:<a rel="next" accesskey="n" href="#TITLER">TITLER</a>,
 Previous:<a rel="previous" accesskey="p" href="#REVERSE%20VIDEO%2fAUDIO">REVERSE VIDEO/AUDIO</a>,
-Up:<a rel="up" accesskey="u" href="#EFFECT%20DESCRIPTIONS">EFFECT DESCRIPTIONS</a>
+Up:<a rel="up" accesskey="u" href="#SECRETS%20OF%20CINELERRA%20EFFECTS">SECRETS OF CINELERRA EFFECTS</a>
 <br>
 </div>
 
@@ -5210,7 +5263,7 @@ average can increase the dynamic range of lousy cameras.
 Node:<a name="TITLER">TITLER</a>,
 Next:<a rel="next" accesskey="n" href="#VIDEO%20SCOPE">VIDEO SCOPE</a>,
 Previous:<a rel="previous" accesskey="p" href="#TIME%20AVERAGE">TIME AVERAGE</a>,
-Up:<a rel="up" accesskey="u" href="#EFFECT%20DESCRIPTIONS">EFFECT DESCRIPTIONS</a>
+Up:<a rel="up" accesskey="u" href="#SECRETS%20OF%20CINELERRA%20EFFECTS">SECRETS OF CINELERRA EFFECTS</a>
 <br>
 </div>
 
@@ -5301,7 +5354,7 @@ The text shouldn't cross the inner rectangle.
 <p><hr>
 Node:<a name="VIDEO%20SCOPE">VIDEO SCOPE</a>,
 Previous:<a rel="previous" accesskey="p" href="#TITLER">TITLER</a>,
-Up:<a rel="up" accesskey="u" href="#EFFECT%20DESCRIPTIONS">EFFECT DESCRIPTIONS</a>
+Up:<a rel="up" accesskey="u" href="#SECRETS%20OF%20CINELERRA%20EFFECTS">SECRETS OF CINELERRA EFFECTS</a>
 <br>
 </div>
 
@@ -5327,7 +5380,7 @@ scope for all the different video drivers.
 <p><hr>
 Node:<a name="PLUGIN%20AUTHORING">PLUGIN AUTHORING</a>,
 Next:<a rel="next" accesskey="n" href="#KEYBOARD%20SHORTCUTS">KEYBOARD SHORTCUTS</a>,
-Previous:<a rel="previous" accesskey="p" href="#EFFECT%20DESCRIPTIONS">EFFECT DESCRIPTIONS</a>,
+Previous:<a rel="previous" accesskey="p" href="#SECRETS%20OF%20CINELERRA%20EFFECTS">SECRETS OF CINELERRA EFFECTS</a>,
 Up:<a rel="up" accesskey="u" href="#Top">Top</a>
 <br>
 </div>
@@ -6511,7 +6564,7 @@ can be closed with a <b>Ctrl-w</b>.  Most operations can be cancelled with
 <h4 class="subsection">Editing Media</h4>
 
 <pre class="example">     z         Undo
-     Z         Re-Do
+     Shift Z   Re-Do
      x         Cut
      c         Copy
      v         Paste
@@ -6557,9 +6610,11 @@ tumblers before these work.
      o         Load Files
      s         Save Project
      r         Record
-     R         Render
+     Shift R   Render
      q         Quit
-     P         Preferences
+     Shift P   Preferences
+     Shift B   Batch Render
+     Shift F   Set Format
      </pre>
 
 <h4 class="subsection">Key Frame Editing</h4>
@@ -6579,10 +6634,10 @@ tumblers before these work.
 <pre class="example">     
      t         Add Audio Track
      u         Insert default Audio Transition
-     T         Add Video Track
-     U         Insert Default Video Transition
+     Shift T   Add Video Track
+     Shift U   Insert Default Video Transition
      d         Delete last Track
-     Shft L    Loop playback
+     Shift L   Loop playback
      
      </pre>
 
@@ -6620,14 +6675,14 @@ tumblers before these work.
      Home      Go to beginning
      End       Go to end
      z         Undo
-     Z         Re-Do
+     Shift Z   Re-Do
      
      </pre>
 
 <h3 class="section">PLAYBACK TRANSPORT</h3>
 
    <p>Transport controls work in any window which has a playback transport.  They are
-accessed through the number pad.
+accessed through the number pad with num lock disabled.
 
 <pre class="example">     4 Frame back         5 Reverse Slow     6 Reverse      + Reverse Fast
      1 Frame Forward      2 Forward Slow     3 Play     Enter Fast Forward

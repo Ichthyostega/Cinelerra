@@ -2,7 +2,9 @@ include ../../global_config
 
 OBJS = $(OBJDIR)/defaulttheme.o
 
-OUTPUT_THEME = ../$(OBJDIR)/defaulttheme.plugin
+OUTPUT_THEME := ../$(OBJDIR)/defaulttheme.plugin
+
+CFLAGS += -I../../$(AVC_DIR) -I../../$(LIBRAW_DIR)
 
 $(OUTPUT_THEME): $(OBJS)
 	$(LDLINKER) -o $(OUTPUT_THEME) $(OBJS)

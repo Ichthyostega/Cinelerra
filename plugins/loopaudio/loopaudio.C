@@ -140,6 +140,7 @@ LoopAudioSamples::LoopAudioSamples(LoopAudio *plugin,
 int LoopAudioSamples::handle_event()
 {
 	plugin->config.samples = atol(get_text());
+	plugin->config.samples = MAX(1, plugin->config.samples);
 	plugin->send_configure_change();
 	return 1;
 }
@@ -164,20 +165,10 @@ LoopAudio::~LoopAudio()
 	PLUGIN_DESTRUCTOR_MACRO
 }
 
-char* LoopAudio::plugin_title()
-{
-	return _("Loop audio");
-}
+char* LoopAudio::plugin_title() { return N_("Loop audio"); }
+int LoopAudio::is_realtime() { return 1; } 
+int LoopAudio::is_synthesis() { return 1; }
 
-int LoopAudio::is_realtime()
-{
-	return 1;
-}
-
-int LoopAudio::is_synthesis()
-{
-	return 1;
-}
 
 #include "picon_png.h"
 NEW_PICON_MACRO(LoopAudio)

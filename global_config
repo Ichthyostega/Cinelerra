@@ -1,11 +1,13 @@
-HAVE_ALSA := n
+AVC_DIR := libavc1394-0.4.1
+LIBRAW_DIR := libraw1394-0.9.0
+HAVE_ALSA := y
 HAVE_XFT := n
 HAVE_ESOUND := y
 HAVE_AVIFILE := n
 HAVE_FIREWIRE := y
 HAVE_OSS := y
 HAVE_GL := n
-
+HAVE_V4L2 := n
 
 
 
