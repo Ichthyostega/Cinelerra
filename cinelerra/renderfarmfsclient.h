@@ -75,11 +75,17 @@ public:
 	void lock();
 	void unlock();
 	int is_open(FILE *ptr);
-	void set_open(FILE *ptr);
-	void unset_open(FILE *ptr);
+// The 64 bit argument is ignored in 64 bit architectures
+	void set_open(FILE *ptr, int64_t pointer);
+	void unset_open(FILE *ptr, int64_t pointer);
+// Used in place of Units::ptr_to_int64 in case the pointer is only 32 bits.
+	int64_t get_64(FILE *ptr);
 
 	Mutex *mutex_lock;
 	ArrayList<FILE*> files;
+// In 32 bit mode, this stores the 64 bit equivalents of the file handles.
+// The 64 bit values are ignored in 64 bit architectures
+	ArrayList<int64_t> pointers;
 	RenderFarmClientThread *client;
 };
 

@@ -1,5 +1,6 @@
 #include "bcdisplayinfo.h"
 #include "colorpicker.h"
+#include "language.h"
 #include "mwindow.inc"
 #include "plugincolors.h"
 #include "vframe.h"
@@ -7,13 +8,11 @@
 #include <string.h>
 #include <unistd.h>
 
-#include <libintl.h>
-#define _(String) gettext(String)
-#define gettext_noop(String) String
-#define N_(String) gettext_noop (String)
 
 ColorThread::ColorThread(int do_alpha, char *title)
- : Thread()
+ : Thread(), 
+	 completion(1, "ColorThread::completion"),
+	 mutex("ColorThread::mutex")
 {
 	window = 0;
 	this->title = title;
@@ -33,8 +32,10 @@ ColorThread::~ColorThread()
 
 void ColorThread::start_window(int output, int alpha)
 {
+	mutex.lock("ColorThread::start_window 1");
 	this->output = output;
 	this->alpha = alpha;
+	mutex.unlock();
 	if(!running())
 	{
 		completion.lock();
@@ -60,20 +61,42 @@ void ColorThread::run()
 		strcat(window_title, _("Color Picker"));
 
 
-
+	mutex.lock("ColorThread::run 1");
 	window = new ColorWindow(this, 
 		info.get_abs_cursor_x() - 200, 
 		info.get_abs_cursor_y() - 200,
 		window_title);
-//printf("ColorThread::run 1 %p\n", window);
 	window->create_objects();
-//printf("ColorThread::run 1 %p\n", window);
+	mutex.unlock();
 	window->run_window();
+	mutex.lock("lorThread::run 2");
 	delete window;
 	window = 0;
 	completion.unlock();
-//printf("ColorThread::run 2\n");
 }
+
+void ColorThread::update_gui(int output, int alpha)
+{
+	mutex.lock("ColorThread::update_gui");
+	if (window)
+	{
+		this->output = output;
+		this->alpha = alpha;
+		window->change_values();
+		window->lock_window();
+		window->update_display();
+		window->unlock_window();
+	}
+	mutex.unlock();
+}
+
+int ColorThread::handle_new_color(int output, int alpha)
+{
+	printf("ColorThread::handle_new_color undefined.\n");
+	return 0;
+}
+
+
 
 
 
@@ -95,11 +118,7 @@ ColorWindow::ColorWindow(ColorThread *thread, int x, int y, char *title)
 void ColorWindow::create_objects()
 {
 	int x = 10, init_x = 10, y = 10, init_y = 10;
-	r = (float)((thread->output & 0xff0000) >> 16) / 255;
-	g = (float)((thread->output & 0xff00) >> 8) / 255;
-	b = (float)((thread->output & 0xff)) / 255;
-	HSV::rgb_to_hsv(r, g, b, h, s, v);
-	a = (float)thread->alpha / 255;
+	change_values();
 	
 	
 	
@@ -172,6 +191,17 @@ void ColorWindow::create_objects()
 	return;
 }
 
+
+void ColorWindow::change_values()
+ {
+ 	r = (float)((thread->output & 0xff0000) >> 16) / 255;
+ 	g = (float)((thread->output & 0xff00) >> 8) / 255;
+ 	b = (float)((thread->output & 0xff)) / 255;
+ 	HSV::rgb_to_hsv(r, g, b, h, s, v);
+ 	a = (float)thread->alpha / 255;
+}
+
+
 int ColorWindow::close_event()
 {
 	set_done(0);
@@ -231,8 +261,7 @@ int ColorWindow::handle_event()
 	float r, g, b;
 	HSV::hsv_to_rgb(r, g, b, h, s, v);
 	int result = (((int)(r * 255)) << 16) | (((int)(g * 255)) << 8) | ((int)(b * 255));
-	thread->alpha = (int)(a * 255);
-	thread->handle_event(result);
+	thread->handle_new_color(result, (int)(a * 255));
 	return 1;
 }
 
@@ -434,33 +463,9 @@ int PaletteWheel::draw(float hue, float saturation)
 
 int PaletteWheel::get_angle(float x1, float y1, float x2, float y2)
 {
-	float result;
-	
-	if(x2 > x1 && y2 < y1)
-// Top right
-		result = 90 - atan((y1 - y2) / (x2 - x1)) / M_PI / 2 * 360;
-	else
-	if(x2 < x1 && y2 < y1)
-// Top left
-		result = 270 + atan((y1 - y2) / (x1 - x2)) / M_PI / 2 * 360;
-	else
-	if(x2 > x1 && y2 > y1)
-// Bottom right
-		result = 90 + atan((y2 - y1) / (x2 - x1)) / M_PI / 2 * 360;
-	else
-	if(x2 < x1 && y2 > y1)
-// Bottom left
-		result = 270 - atan((y2 - y1) / (x1 - x2)) / M_PI / 2 * 360;
-	else
-		if(x2 == x1 && y2 < y1) result = 0;
-	else
-		if(x2 == x1 && y2 > y1) result = 180;
-	else
-		if(x2 > x1 && y2 == y1) result = 90;
-	else
-		if(x2 < x1 && y2 == y1) result = 270;
-	else 
-		result = 0;
+	float result = atan2(x2 - x1, y1 - y2) * (360 / M_PI / 2);
+	if (result < 0)
+		result += 360;
 	return (int)result;
 }
 

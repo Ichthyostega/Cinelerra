@@ -171,13 +171,17 @@ Up:&nbsp;<a rel="up" accesskey="u" href="#dir">(dir)</a>
 <ul>
 <li><a href="#1080%20TO%20480">1080 TO 480</a>
 <li><a href="#CHROMA%20KEY">CHROMA KEY</a>
+<li><a href="#COMPRESSOR">COMPRESSOR</a>
 <li><a href="#DECIMATE">DECIMATE</a>
 <li><a href="#DEINTERLACE">DEINTERLACE</a>
 <li><a href="#FREEZE%20FRAME">FREEZE FRAME</a>
 <li><a href="#HISTOGRAM">HISTOGRAM</a>
 <li><a href="#INVERSE%20TELECINE">INVERSE TELECINE</a>
+<li><a href="#INTERPOLATE%20VIDEO">INTERPOLATE VIDEO</a>
 <li><a href="#LOOP">LOOP</a>
+<li><a href="#MOTION">MOTION</a>
 <li><a href="#REVERSE%20VIDEO%2fAUDIO">REVERSE VIDEO/AUDIO</a>
+<li><a href="#THRESHOLD">THRESHOLD</a>
 <li><a href="#TIME%20AVERAGE">TIME AVERAGE</a>
 <li><a href="#TITLER">TITLER</a>
 <ul>
@@ -1277,11 +1281,12 @@ Everything below the noise threshold is meaningless.  This option sets
 the meters to clip below a certain level.  Consumer soundcards usually
 bottom out at -65.  Professional soundcards bottom out at -90.
 
-     </p><li>FORMAT FOR METER
+     </p><li>MAX DB FOR METER
 
-     <p>This option allows you to select the format for all the VU meters. If
-you're a CS major select percentage and if you're a EE major select DB. 
-With that, be aware all levels in Cinelerra are input as DB.
+     <p>This sets the maximum sound level represented by the sound meters.  No
+matter what this value is, no soundcard can play sound over 0 db.  This
+value is presented merely to show how far over the limit a sound wave
+is.
 
      </p><li>THEME
 
@@ -3094,6 +3099,12 @@ from the Resource Window you can insert the effect in the portion of
 the row unoccupied by the trimming operation.  Realtime effects are
 organized into rows under the track.  Each row can have multiple
 effects.
+
+   <p>In some cases you'll want a trimming operation to change only one row
+of effects.  This can be achieved by first positioning the insertion
+point on the start or end of the effect.  Then press <b>shift</b> while
+beginning the trimming operation.  This causes the operation to change
+only one row of effects.
 
    <p>In addition to trimming, you can move effects up or down.  Every track
 can have a stack of effects under it.  By moving an effect up or down
@@ -5007,13 +5018,17 @@ utilize fully by mere experimentation.
 <ul class="menu">
 <li><a accesskey="1" href="#1080%20TO%20480">1080 TO 480</a>:        How to convert HDTV into SD
 <li><a accesskey="2" href="#CHROMA%20KEY">CHROMA KEY</a>:         How to make areas transparent based on color. 
-<li><a accesskey="3" href="#DECIMATE">DECIMATE</a>:           How to reduce frame rates by eliminating similar frames. 
-<li><a accesskey="4" href="#DEINTERLACE">DEINTERLACE</a>:        How to convert interlaced video to progressive video. 
-<li><a accesskey="5" href="#FREEZE%20FRAME">FREEZE FRAME</a>:       How to stop action in the timeline. 
-<li><a accesskey="6" href="#HISTOGRAM">HISTOGRAM</a>:          How to change the mapping of different brightness values. 
-<li><a accesskey="7" href="#INVERSE%20TELECINE">INVERSE TELECINE</a>:   How to convert pulled down frames to progressive frames. 
-<li><a accesskey="8" href="#LOOP">LOOP</a>:               How to loop regions of the timeline. 
-<li><a accesskey="9" href="#REVERSE%20VIDEO%2fAUDIO">REVERSE VIDEO/AUDIO</a>:  How to play regions in reverse. 
+<li><a accesskey="3" href="#COMPRESSOR">COMPRESSOR</a>:         How to reduce the dynamic range of audio. 
+<li><a accesskey="4" href="#DECIMATE">DECIMATE</a>:           How to reduce frame rates by eliminating similar frames. 
+<li><a accesskey="5" href="#DEINTERLACE">DEINTERLACE</a>:        How to convert interlaced video to progressive video. 
+<li><a accesskey="6" href="#FREEZE%20FRAME">FREEZE FRAME</a>:       How to stop action in the timeline. 
+<li><a accesskey="7" href="#HISTOGRAM">HISTOGRAM</a>:          How to change the mapping of different brightness values. 
+<li><a accesskey="8" href="#INVERSE%20TELECINE">INVERSE TELECINE</a>:   How to convert pulled down frames to progressive frames. 
+<li><a accesskey="9" href="#INTERPOLATE%20VIDEO">INTERPOLATE VIDEO</a>:  How to create the illusion of higher framerates. 
+<li><a href="#LOOP">LOOP</a>:               How to loop regions of the timeline. 
+<li><a href="#MOTION">MOTION</a>:             The art of motion tracking. 
+<li><a href="#REVERSE%20VIDEO%2fAUDIO">REVERSE VIDEO/AUDIO</a>:  How to play regions in reverse. 
+<li><a href="#THRESHOLD">THRESHOLD</a>:          How to get monochrome out of a region of the image. 
 <li><a href="#TIME%20AVERAGE">TIME AVERAGE</a>:       How to add trail patterns or increase still image quality. 
 <li><a href="#TITLER">TITLER</a>:             How to add text to a track from inside Cinelerra. 
 <li><a href="#VIDEO%20SCOPE">VIDEO SCOPE</a>:        How to view the dynamic range of intensity and hue. 
@@ -5064,7 +5079,7 @@ progressive frames.
 <div class="node">
 <p><hr>
 Node:&nbsp;<a name="CHROMA%20KEY">CHROMA KEY</a>,
-Next:&nbsp;<a rel="next" accesskey="n" href="#DECIMATE">DECIMATE</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#COMPRESSOR">COMPRESSOR</a>,
 Previous:&nbsp;<a rel="previous" accesskey="p" href="#1080%20TO%20480">1080 TO 480</a>,
 Up:&nbsp;<a rel="up" accesskey="u" href="#SECRETS%20OF%20CINELERRA%20EFFECTS">SECRETS OF CINELERRA EFFECTS</a>
 <br>
@@ -5089,9 +5104,86 @@ to blur just the alpha.
 
 <div class="node">
 <p><hr>
+Node:&nbsp;<a name="COMPRESSOR">COMPRESSOR</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#DECIMATE">DECIMATE</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#CHROMA%20KEY">CHROMA KEY</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#SECRETS%20OF%20CINELERRA%20EFFECTS">SECRETS OF CINELERRA EFFECTS</a>
+<br>
+</div>
+
+<h3 class="section">COMPRESSOR</h3>
+
+<p>Contrary to computer science experience, the audio compressor does not
+reduce the amount of data required to store the audio.  The audio
+compressor reduces the dynamic range of the audio.  In Cinelerra the
+compressor actually performs the function of an expander and
+compressor.
+
+   <p>The compressor works by calculating the maximum sound level within a
+certain time period of the current position.  The maximum sound level
+is taken as the input sound level.  For every input sound level there
+is an output sound level specified by the user.  The gain at the
+current position is adjusted so the maximum sound level in the time
+range is the user specified value.
+
+   <p>The compressor has a graph which correlates every input sound level to
+an output level.  The horizontal direction is the input sound level in
+dB.  The vertical direction is the ouptut sound level in dB.  The user
+specifies output sound levels by creating points on the graph.  Click
+in the graph to create a point.  If 2 points exist, drag one point
+across another point to delete it.  The most recent point selected has
+its vales displayed in textboxes for more precise adjustment.
+
+   <p>To make the compressor reduce the dynamic range of the audio, make all
+the output values greater than the input values except 0 db.  To make
+the compressor expand the dynamic range of the audio, make all the
+output values except 0 db less than the input values.  The algorithm
+currently limits all sound levels above 0 db to 0 db so to get an
+overloaded effect put a gain effect before the compressor to reduce all
+the levels and follow it with another gain effect to amplify all the
+levels back over 0 db.
+
+   <p><b>Reaction secs:</b> This determines where in relation to the current
+position the maximum sound level is taken and how fast the gain is
+adjusted to reach that peak.  It's notated in seconds.  If it's
+negative the compressor reads ahead of the current position to get the
+future peak.  The gain is ramped to that peak over one reaction time. 
+This allows it to hit the desired output level exactly when the input
+peak occurs at the current position.
+
+   <p>If the reaction time is positive the compressor scans only the current
+position for the gain and ramps gain over one reaction time to hit the
+desired output level.  It hits the output level exactly one reaction
+time after detecting the input peak.
+
+   <p><b>Decay secs:</b> If the peak is higher than the current level, the
+compressor ramps the gain up to the peak value.  Then if a future peak
+is less than the current peak it ramps the gain down.  The time taken
+to ramp the gain down can be greater than the time taken to ramp the
+gain up.  This ramping down time is the decay seconds.
+
+   <p><b>Trigger:</b> The compressor is a multichannel effect.  Several tracks
+can share one compressor.  Normally only one track is scanned for the
+input peak.  This track is specified by the <b>Trigger</b>.  By sharing
+several tracks and playing with the trigger value, you can make a sine
+wave on one track follow the amplitude of a drum on another track for
+example.
+
+   <p><b>No trigger:</b> The compressor can use one track as the trigger or it
+can take the highest value in any track as the peak to assign to all
+the tracks.  Enabling <b>No trigger</b> causes it to assign the highest
+value in any track as the peak for all tracks.
+
+   <p><b>Smooth only:</b> For visualizing what the compressor is doing to the
+soundlevel, this option causes it to replace the soundwave with just
+the current peak value.  It makes it very easy to see how <b>reaction
+secs</b> affects the detected peak values.
+
+<div class="node">
+<p><hr>
 Node:&nbsp;<a name="DECIMATE">DECIMATE</a>,
 Next:&nbsp;<a rel="next" accesskey="n" href="#DEINTERLACE">DEINTERLACE</a>,
-Previous:&nbsp;<a rel="previous" accesskey="p" href="#CHROMA%20KEY">CHROMA KEY</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#COMPRESSOR">COMPRESSOR</a>,
 Up:&nbsp;<a rel="up" accesskey="u" href="#SECRETS%20OF%20CINELERRA%20EFFECTS">SECRETS OF CINELERRA EFFECTS</a>
 <br>
 </div>
@@ -5193,7 +5285,7 @@ boundaries of the histogram the automatic gain should be.
 <div class="node">
 <p><hr>
 Node:&nbsp;<a name="INVERSE%20TELECINE">INVERSE TELECINE</a>,
-Next:&nbsp;<a rel="next" accesskey="n" href="#LOOP">LOOP</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#INTERPOLATE%20VIDEO">INTERPOLATE VIDEO</a>,
 Previous:&nbsp;<a rel="previous" accesskey="p" href="#HISTOGRAM">HISTOGRAM</a>,
 Up:&nbsp;<a rel="up" accesskey="u" href="#SECRETS%20OF%20CINELERRA%20EFFECTS">SECRETS OF CINELERRA EFFECTS</a>
 <br>
@@ -5220,13 +5312,39 @@ progressive combination.  It's a brute force algorithm.
 
    <p>This technique doesn't rely on a pattern like other techniques and is
 less destructive but the timing is going to be jittery because of the
-lack of a frame rate reduction.
+lack of a frame rate reduction.  In order to smooth out the timing, you
+need to follow inverse telecine with a decimate effect.
+
+<div class="node">
+<p><hr>
+Node:&nbsp;<a name="INTERPOLATE%20VIDEO">INTERPOLATE VIDEO</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#LOOP">LOOP</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#INVERSE%20TELECINE">INVERSE TELECINE</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#SECRETS%20OF%20CINELERRA%20EFFECTS">SECRETS OF CINELERRA EFFECTS</a>
+<br>
+</div>
+
+<h3 class="section">INTERPOLATE VIDEO</h3>
+
+<p>The interpolate video effect tries to create the illusion of a higher
+frame rate from source footage of very low framerates by averaging
+frames over time.  It averages two input frames for each output frame. 
+The input frames are at different times, resulting in a dissolve for
+all output frames between the input frames.  There are two ways of
+specifying the input frames.  You can specify an input frame rate which
+is lower than the project frame rate.  This causes input frames to be
+taken at even intervals,
+
+   <p>You can also specify keyframe locations as the positions of the input
+frames.  In this mode the output frame rate is used as the input frame
+rate and you just create keyframes wherever you want to specify an
+input frame.
 
 <div class="node">
 <p><hr>
 Node:&nbsp;<a name="LOOP">LOOP</a>,
-Next:&nbsp;<a rel="next" accesskey="n" href="#REVERSE%20VIDEO%2fAUDIO">REVERSE VIDEO/AUDIO</a>,
-Previous:&nbsp;<a rel="previous" accesskey="p" href="#INVERSE%20TELECINE">INVERSE TELECINE</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#MOTION">MOTION</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#INTERPOLATE%20VIDEO">INTERPOLATE VIDEO</a>,
 Up:&nbsp;<a rel="up" accesskey="u" href="#SECRETS%20OF%20CINELERRA%20EFFECTS">SECRETS OF CINELERRA EFFECTS</a>
 <br>
 </div>
@@ -5253,9 +5371,222 @@ looped from the beginning by setting the keyframe near the end.
 
 <div class="node">
 <p><hr>
-Node:&nbsp;<a name="REVERSE%20VIDEO%2fAUDIO">REVERSE VIDEO/AUDIO</a>,
-Next:&nbsp;<a rel="next" accesskey="n" href="#TIME%20AVERAGE">TIME AVERAGE</a>,
+Node:&nbsp;<a name="MOTION">MOTION</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#REVERSE%20VIDEO%2fAUDIO">REVERSE VIDEO/AUDIO</a>,
 Previous:&nbsp;<a rel="previous" accesskey="p" href="#LOOP">LOOP</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#SECRETS%20OF%20CINELERRA%20EFFECTS">SECRETS OF CINELERRA EFFECTS</a>
+<br>
+</div>
+
+<h3 class="section">MOTION</h3>
+
+<p>The motion tracker is almost a complete application in itself.  The
+motion tracker tracks two types of motion: translation and rotation. 
+It can track both simultaneously or one only.  It can do 1/4 pixel
+tracking or single pixel tracking.  It can stabilize motion or cause
+one track to follow the motion of another track.
+
+   <p>Although the motion tracker is applied as a realtime effect, it usually
+must be rendered to see useful results.  The effect takes a long time
+to precisely detect motion.
+
+   <p>The motion tracker works by using one region of the frame as the region
+to track.  It compares this region between 2 frames to calculate the
+motion.  This region can be defined anywhere on the screen.  Once the
+motion between 2 frames has been calculated, a number of things can be
+done with that motion vector.  It can be scaled by a user value and
+clamped to a maximum range.  It can be thrown away or accumulated with
+all the motion vectors leading up to the current position.
+
+   <p>To save time the motion result can be saved for later reuse, recalled
+from a previous calculation, or discarded.
+
+   <p>The motion tracker has a notion of 2 tracks, the master layer and the
+target layer.  The master layer is where the comparison between 2
+frames takes place.  The target layer is where motion is applied either
+to track or compensate for the motion in the master layer.
+
+   <p>The intricacies of motion tracking are enough to sustain entire
+companies and build careers around.  The motion tracker in Cinelerra
+isn't as sophisticated as some world class motion trackers but it's
+enough to sweeten some camcorder footage.
+
+   <p>Here is a brief description of the motion tracking parameters:
+
+     <ul>
+<li><b>Track translation:</b> Enables translation operations. 
+The motion tracker tracks X and Y motion in the master layer and
+adjusts X and Y motion in the target layer.
+
+     <li>
+<b>Translation block size:</b> For the translation operations, a block is
+compared to a number of neighboring blocks to find the one with the
+least difference.  The size of the block to search for is given by this
+parameter.
+
+     <li>
+<b>Translation search radius:</b> The size of the area to scan for the
+translation block.
+
+     <li>
+<b>Translation search steps:</b> Ideally the search operation would
+compare the  translation block with every other pixel in the
+translation search radius.  To  speed this operation up, a subset of
+the total positions is searched.   Then the search area is narrowed and
+rescanned by the same number of search steps until the motion is known
+to 1/4 pixel accuracy.
+
+     <li>
+<b>Block X, Y:</b> These coordinates determine the center of the
+translation  block based on percentages of the width and height of the
+image.  The center of the block should be part of the image which is
+visible at all times.
+
+     <li>
+<b>Maximum absolute offset:</b> The amount of motion detected by the
+motion  tracker is unlimited if this is 100.  If it's under 100 the
+amount of motion is limited by that percentage of the image size.
+
+     <li>
+<b>Settling speed:</b> The motion detected between every frame can be
+accumulated to form an absolute motion vector.  If the settling speed
+is 100 the absolute vector is added to the next frame.  If the settling
+speed is less than 100 the absolute vector is downscaled by the
+settling amount before being added to the next frame.
+
+     <li>
+<b>Track rotation:</b> Enables rotation operations.  The motion tracker
+tracks rotation in the master layer and adjusts rotation in the target
+layer.
+
+     <li>
+<b>Rotation block size:</b> For rotation operations a single block is
+compared to equally sized blocks, each rotated by a different amount. 
+This is the size of the rotation block.
+
+     <li>
+<b>Rotation search radius:</b> This is the maximum angle of rotation from
+the starting frame the rotation scanner can detect.  The rotation scan
+is from this angle counterclockwise to this angle clockwise.  Thus the
+rotation search radius is half the total range scanned.
+
+     <li>
+<b>Rotation search steps:</b> Ideally every possible angle would be tested
+to get the rotation.  To speed up the rotation search, the rotation
+search radius is divided into a finite number of angles and only those
+angles compared to the starting frame.  Then the search radius is
+narrowed and an equal number of angles is compared in the smaller
+radius until the highest possible accuracy is achieved.
+
+     <p>Normally you need one search step for every degree scanned.  Since the
+rotation scanner scans the rotation search radius in two directions,
+you need two steps for every degree in the search radius to search the
+complete range.
+
+     </p><li>
+<b>Draw vectors:</b> When translation is enabled, 2 boxes are drawn on the
+frame.  One box represents the translation block.  Another box outside
+the translation block represents the extent of the translation search
+radius.  In the center of these boxes is an arrow showing the
+translation between the 2 master frames.
+
+     <p>When rotation is enabled a single box the size of the rotation block is
+drawn rotated by the amount of rotation detected.
+
+     </p><li>
+<b>Track single frame:</b> When this option is used the motion between a
+single starting frame and the frame currently under the insertion point
+is calculated.  The starting frame is specified in the <b>Frame number</b>
+blank.  The motion calculated this way is taken as the absolute motion
+vector.  The absolute motion vector for each frame replaces the
+absolute motion vector for the previous frame.  Settling speed has no
+effect on it since it doesn't contain any previous motion vectors. 
+Playback can start anywhere on the timeline since there is no
+dependance on previous results.
+
+     <li>
+<b>Track previous frame:</b> Causes only the motion between the previous
+frame and the current frame to be calculated.  This is added to an
+absolute motion vector to get the new motion from the start of the
+sequence to the current position.  After every frame processed this
+way, the block position is shifted to always cover the same region of
+the image.  Playback must be started from the start of the motion
+effect in order to accumulate all the necessary motion vectors.
+
+     <li>
+<b>Previous frame same block:</b> This is useful for stabilizing jerky
+camcorder footage.  In this mode the motion between the previous frame
+and the current frame is calculated.  Instead of adjusting the block
+position to reflect the new location of the image, like Track Previous
+Frame does, the block position is unchanged between each frame.  Thus a
+new region is compared for each frame.
+
+     <li>
+<b>Master later:</b> This determines the track which supplies the starting
+frame and ending frame for the motion calculation.  If it's <b>Bottom</b>
+the bottom track of all the tracks sharing this effect is the master
+layer.  The top track of all the tracks is the target layer.
+
+     <li>
+<b>Calculation:</b> This determines whether to calculate the motion at all
+and whether to save it to disk.  If it's <b>Don't Calculate</b> the motion
+calculation is skipped.  If it's <b>Recalculate</b> the motion calculation
+is performed every time each frame is rendered.  If it's <b>Save</b> the
+motion calculation is always performed but a copy is also saved.  If
+it's <b>Load</b>, the motion calculation is loaded from a previous save
+calculation.  If there is no previous save calculation on disk, a new
+motion calculation is performed.
+
+     <li>
+<b>Action:</b> Once the motion vector is known this determines whether to
+move the target layer opposing the motion vector or following the
+motion vector.  If it's <b>Do Nothing</b> the target layer is untouched. 
+If it's <b>Track...</b> the target layer is moved by the same amount as
+the master layer.  This is useful for matching titles to objects in the
+frame.  If it's <b>Stabilize...</b> the target layer is moved opposite to
+the motion vector.  This is useful for stabilizing an object in the
+frame.  The motion operations can be accurate to single pixels or
+subpixels by changing the action setting.
+
+   </ul>
+
+   <p>Since it is a very slow effect, there is a method to applying the
+motion tracker to get the most out of it.  Drop the effect on a region
+of video with some motion to track.  Then rewind the insertion point to
+the start of the region.  Set <b>Action</b> to <b>Do Nothing</b>.  Set
+<b>Calculation</b> to <b>Don't calculate</b>.  Enable <b>Draw vectors</b>.
+
+   <p>Enable which of <b>translation motion</b> or <b>rotation motion</b> you want
+to track.  By watching the compositor window and adjusting the <b>Block
+x,y</b> settings, center the block on the part of the image you want to
+track.  Then set search radius, block size, and block coordinates.
+
+   <p>Once this is configured, set the calculation to <b>Save coords</b> and do
+test runs through the sequence to see if the motion tracker works. 
+Once this is done set the action to perform the desired effect on the
+target layer and change the calculation to <b>Load coords</b>.
+
+   <p>When using a single starting frame to calculate the motion of a
+sequence, the starting frame should be a single frame with the least
+motion to any of the other frames.  This is rarely frame 0.  Usually
+it's a frame near the middle of the sequence.  This way the search
+radius need only reach halfway to the full extent of the motion in the
+sequence.
+
+   <p>If the motion tracker is used on a render farm, <b>Save coords</b> and
+<b>previous frame</b> mode won't work.  The results of the save coords
+operation are saved to the hard drives on the render nodes, not the
+master node.  Future rendering operations on these nodes will process
+different frames and read the wrong coordinates from the node
+filesystems.  The fact that render nodes only visualize a portion of
+the timeline also prevents <b>previous frame</b> from working since it
+depends on calculating an absolute motion vector starting on frame 0.
+
+<div class="node">
+<p><hr>
+Node:&nbsp;<a name="REVERSE%20VIDEO%2fAUDIO">REVERSE VIDEO/AUDIO</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#THRESHOLD">THRESHOLD</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#MOTION">MOTION</a>,
 Up:&nbsp;<a rel="up" accesskey="u" href="#SECRETS%20OF%20CINELERRA%20EFFECTS">SECRETS OF CINELERRA EFFECTS</a>
 <br>
 </div>
@@ -5284,9 +5615,33 @@ timeline doesn't reflect the actual reversed output.
 
 <div class="node">
 <p><hr>
+Node:&nbsp;<a name="THRESHOLD">THRESHOLD</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#TIME%20AVERAGE">TIME AVERAGE</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#REVERSE%20VIDEO%2fAUDIO">REVERSE VIDEO/AUDIO</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#SECRETS%20OF%20CINELERRA%20EFFECTS">SECRETS OF CINELERRA EFFECTS</a>
+<br>
+</div>
+
+<h3 class="section">THRESHOLD</h3>
+
+<p>Threshold converts the image to pure luminance.  Then luminance values
+below and above the threshold range are converted to black and
+luminance values inside the threshold range are converted to white. 
+The threshold window shows a histogram of luminance values for the
+current frame.  Click dragging inside the histogram creates a range to
+convert to white.  Shift-clicking extends one border of this range. 
+Values for the threshold range can also be specified in the text boxes.
+
+   <p>This effect is basically a primitive luminance key.  A second track
+above the track with the threshold effect can be multiplied, resulting
+in only the parts of the second track within the threshold being
+displayed.
+
+<div class="node">
+<p><hr>
 Node:&nbsp;<a name="TIME%20AVERAGE">TIME AVERAGE</a>,
 Next:&nbsp;<a rel="next" accesskey="n" href="#TITLER">TITLER</a>,
-Previous:&nbsp;<a rel="previous" accesskey="p" href="#REVERSE%20VIDEO%2fAUDIO">REVERSE VIDEO/AUDIO</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#THRESHOLD">THRESHOLD</a>,
 Up:&nbsp;<a rel="up" accesskey="u" href="#SECRETS%20OF%20CINELERRA%20EFFECTS">SECRETS OF CINELERRA EFFECTS</a>
 <br>
 </div>
@@ -5299,6 +5654,36 @@ still images.  Merely point a video camera at a stationary subject for
 30 frames, capture the frames, and average them using TIME AVERAGE and
 you'll have a super high quality print.  In 16 bit colormodels, time
 average can increase the dynamic range of lousy cameras.
+
+   <p>Inside the time average effect is an accumulation buffer and a
+divisor.  A number of frames are accumulated in the accumulation buffer
+and divided by the divisor to get the average.
+
+   <p><b>Frames to average:</b> This determines the number of frames to be
+accumulated in the accumulation buffer.  For extremely large
+integrations it's easier to edit the EDL in a text editor and put in
+the number of frames.
+
+   <p><b>Accumulate:</b> This outputs the accumulation buffer without dividing it.
+
+   <p><b>Average:</b> This causes the accumulation buffer to be divided before
+being output.  This results in the average of all the frames.
+
+   <p><b>Inclusive Or:</b> This causes the accumulation buffer to be replaced by
+any pixels which aren't transparent.  In combination with motion
+tracking it allows entire sequences to be combined to form panoramas.
+
+   <p><b>Reprocess frame again:</b> If an effect before the time average is
+adjusted the time average normally doesn't reread the accumulation
+buffer to get the change.  This forces it to reread the accumulation
+buffer when other effects change.
+
+   <p><b>Disable subtraction:</b> In order to represent the accumulation of only
+the specified number of frames, the time average retains all the
+previous frames in memory and subtracts them out as it plays forward. 
+It would run out of memory if it had to accumulate thousands of
+frames.  By disabling subtraction the previous frames are not stored in
+memory and only the average function is affected by the frame count.
 
 <div class="node">
 <p><hr>
@@ -6614,6 +6999,8 @@ can be closed with a <b>Ctrl-w</b>.  Most operations can be cancelled with
      Shift Spc Paste Silence
      m         Mute region
      a         Select all
+     shift + click   When done over an edit causes the highlighted selection to extend to the cursor position.
+                     When done over the boundary of an effect causes the trim operation to apply to one effect.
      </pre>
 
 <h3 class="subsection">Editing Labels &amp; In/Out Points</h4>

@@ -1,6 +1,8 @@
 include ../../global_config
 
-OBJS = $(OBJDIR)/rotate.o
+OBJS = \
+	../motion/$(OBJDIR)/affine.o \
+	$(OBJDIR)/rotate.o
 
 OUTPUT = ../$(OBJDIR)/rotate.plugin
 

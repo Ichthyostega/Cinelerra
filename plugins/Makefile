@@ -3,6 +3,7 @@ include ../global_config
 # burn must come before any other effecttv plugin
 # colors must come before any plugin
 # parametric must come before fourier plugins
+# motion must come before perspective
 
 DIRS = \
 	1080to480 \
@@ -53,6 +54,7 @@ DIRS = \
 	linearblur \
 	loopaudio \
 	loopvideo \
+	motion \
 	normalize \
 	oilpainting \
 	overlay \
@@ -74,10 +76,12 @@ DIRS = \
 	spectrogram \
 	swapchannels \
 	synthesizer \
+	threshold \
 	timeavg \
 	timestretch \
 	titler \
 	translate \
+	unsharp \
 	videoscope \
 	wave \
 	whirl \

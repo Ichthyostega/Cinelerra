@@ -33,7 +33,7 @@ public:
 	~RenderFarmFSServer();
 
 	void initialize();
-	int handle_request(int request_id, int request_size, char *buffer);
+	int handle_request(int request_id, int request_size, unsigned char *buffer);
 
 	RenderFarmServerThread *server;
 };

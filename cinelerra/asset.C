@@ -250,6 +250,39 @@ int64_t Asset::get_index_offset(int channel)
 		return 0;
 }
 
+
+char* Asset::get_compression_text(int audio, int video)
+{
+	if(audio)
+	{
+		switch(format)
+		{
+			case FILE_MOV:
+			case FILE_AVI:
+				if(acodec[0])
+					return quicktime_acodec_title(acodec);
+				else
+					return 0;
+				break;
+		}
+	}
+	else
+	if(video)
+	{
+		switch(format)
+		{
+			case FILE_MOV:
+			case FILE_AVI:
+				if(vcodec[0])
+					return quicktime_vcodec_title(vcodec);
+				else
+					return 0;
+				break;
+		}
+	}
+	return 0;
+}
+
 Asset& Asset::operator=(Asset &asset)
 {
 	copy_location(&asset);
@@ -436,6 +469,7 @@ int Asset::read_audio(FileXML *file)
 	vorbis_max_bitrate = file->tag.get_property("VORBIS_MAX_BITRATE", vorbis_max_bitrate);
 
 	mp3_bitrate = file->tag.get_property("MP3_BITRATE", mp3_bitrate);
+
 
 
 	return 0;

@@ -1147,11 +1147,12 @@ the meters to clip below a certain level.  Consumer soundcards usually
 bottom out at -65.  Professional soundcards bottom out at -90.
 
 @item
-FORMAT FOR METER
+MAX DB FOR METER
 
-This option allows you to select the format for all the VU meters. If
-you're a CS major select percentage and if you're a EE major select DB.
-With that, be aware all levels in Cinelerra are input as DB.
+This sets the maximum sound level represented by the sound meters.  No
+matter what this value is, no soundcard can play sound over 0 db.  This
+value is presented merely to show how far over the limit a sound wave
+is.
 
 @item
 THEME
@@ -2964,6 +2965,12 @@ from the Resource Window you can insert the effect in the portion of
 the row unoccupied by the trimming operation.  Realtime effects are
 organized into rows under the track.  Each row can have multiple
 effects.
+
+In some cases you'll want a trimming operation to change only one row
+of effects.  This can be achieved by first positioning the insertion
+point on the start or end of the effect.  Then press @b{shift} while
+beginning the trimming operation.  This causes the operation to change
+only one row of effects.
 
 In addition to trimming, you can move effects up or down.  Every track
 can have a stack of effects under it.  By moving an effect up or down
@@ -4843,13 +4850,17 @@ utilize fully by mere experimentation.
 @menu
 * 1080 TO 480::       How to convert HDTV into SD
 * CHROMA KEY::        How to make areas transparent based on color.
+* COMPRESSOR::        How to reduce the dynamic range of audio.
 * DECIMATE::          How to reduce frame rates by eliminating similar frames.
 * DEINTERLACE::       How to convert interlaced video to progressive video.
 * FREEZE FRAME::      How to stop action in the timeline.
 * HISTOGRAM::         How to change the mapping of different brightness values.
 * INVERSE TELECINE::  How to convert pulled down frames to progressive frames.
+* INTERPOLATE VIDEO:: How to create the illusion of higher framerates.
 * LOOP::              How to loop regions of the timeline.
+* MOTION::            The art of motion tracking.
 * REVERSE VIDEO/AUDIO:: How to play regions in reverse.
+* THRESHOLD::         How to get monochrome out of a region of the image.
 * TIME AVERAGE::      How to add trail patterns or increase still image quality.
 * TITLER::            How to add text to a track from inside Cinelerra.
 * VIDEO SCOPE::       How to view the dynamic range of intensity and hue.
@@ -4919,6 +4930,82 @@ work well for compressed sources.  A popular softening technique is to
 use a maximum slope and chain a blur effect below the chroma key effect
 to blur just the alpha.
 
+
+
+
+
+
+
+
+
+@node COMPRESSOR
+@section COMPRESSOR
+
+Contrary to computer science experience, the audio compressor does not
+reduce the amount of data required to store the audio.  The audio
+compressor reduces the dynamic range of the audio.  In Cinelerra the
+compressor actually performs the function of an expander and
+compressor.
+
+The compressor works by calculating the maximum sound level within a
+certain time period of the current position.  The maximum sound level
+is taken as the input sound level.  For every input sound level there
+is an output sound level specified by the user.  The gain at the
+current position is adjusted so the maximum sound level in the time
+range is the user specified value.
+
+The compressor has a graph which correlates every input sound level to
+an output level.  The horizontal direction is the input sound level in
+dB.  The vertical direction is the ouptut sound level in dB.  The user
+specifies output sound levels by creating points on the graph.  Click
+in the graph to create a point.  If 2 points exist, drag one point
+across another point to delete it.  The most recent point selected has
+its vales displayed in textboxes for more precise adjustment.
+
+To make the compressor reduce the dynamic range of the audio, make all
+the output values greater than the input values except 0 db.  To make
+the compressor expand the dynamic range of the audio, make all the
+output values except 0 db less than the input values.  The algorithm
+currently limits all sound levels above 0 db to 0 db so to get an
+overloaded effect put a gain effect before the compressor to reduce all
+the levels and follow it with another gain effect to amplify all the
+levels back over 0 db.
+
+@b{Reaction secs:} This determines where in relation to the current
+position the maximum sound level is taken and how fast the gain is
+adjusted to reach that peak.  It's notated in seconds.  If it's
+negative the compressor reads ahead of the current position to get the
+future peak.  The gain is ramped to that peak over one reaction time. 
+This allows it to hit the desired output level exactly when the input
+peak occurs at the current position.
+
+If the reaction time is positive the compressor scans only the current
+position for the gain and ramps gain over one reaction time to hit the
+desired output level.  It hits the output level exactly one reaction
+time after detecting the input peak.
+
+@b{Decay secs:} If the peak is higher than the current level, the
+compressor ramps the gain up to the peak value.  Then if a future peak
+is less than the current peak it ramps the gain down.  The time taken
+to ramp the gain down can be greater than the time taken to ramp the
+gain up.  This ramping down time is the decay seconds.
+
+@b{Trigger:} The compressor is a multichannel effect.  Several tracks
+can share one compressor.  Normally only one track is scanned for the
+input peak.  This track is specified by the @b{Trigger}.  By sharing
+several tracks and playing with the trigger value, you can make a sine
+wave on one track follow the amplitude of a drum on another track for
+example.
+
+@b{No trigger:} The compressor can use one track as the trigger or it
+can take the highest value in any track as the peak to assign to all
+the tracks.  Enabling @b{No trigger} causes it to assign the highest
+value in any track as the peak for all tracks.
+
+@b{Smooth only:} For visualizing what the compressor is doing to the
+soundlevel, this option causes it to replace the soundwave with just
+the current peak value.  It makes it very easy to see how @b{reaction
+secs} affects the detected peak values.
 
 
 
@@ -5046,8 +5133,30 @@ progressive combination.  It's a brute force algorithm.
 
 This technique doesn't rely on a pattern like other techniques and is
 less destructive but the timing is going to be jittery because of the
-lack of a frame rate reduction.
+lack of a frame rate reduction.  In order to smooth out the timing, you
+need to follow inverse telecine with a decimate effect.
 
+
+
+
+
+@node INTERPOLATE VIDEO
+@section INTERPOLATE VIDEO
+
+
+The interpolate video effect tries to create the illusion of a higher
+frame rate from source footage of very low framerates by averaging
+frames over time.  It averages two input frames for each output frame. 
+The input frames are at different times, resulting in a dissolve for
+all output frames between the input frames.  There are two ways of
+specifying the input frames.  You can specify an input frame rate which
+is lower than the project frame rate.  This causes input frames to be
+taken at even intervals,
+
+You can also specify keyframe locations as the positions of the input
+frames.  In this mode the output frame rate is used as the input frame
+rate and you just create keyframes wherever you want to specify an
+input frame.
 
 
 
@@ -5083,6 +5192,248 @@ looped from the beginning by setting the keyframe near the end.
 
 
 
+
+
+@node MOTION
+@section MOTION
+
+The motion tracker is almost a complete application in itself.  The
+motion tracker tracks two types of motion: translation and rotation. 
+It can track both simultaneously or one only.  It can do 1/4 pixel
+tracking or single pixel tracking.  It can stabilize motion or cause
+one track to follow the motion of another track.
+
+Although the motion tracker is applied as a realtime effect, it usually
+must be rendered to see useful results.  The effect takes a long time
+to precisely detect motion.
+
+The motion tracker works by using one region of the frame as the region
+to track.  It compares this region between 2 frames to calculate the
+motion.  This region can be defined anywhere on the screen.  Once the
+motion between 2 frames has been calculated, a number of things can be
+done with that motion vector.  It can be scaled by a user value and
+clamped to a maximum range.  It can be thrown away or accumulated with
+all the motion vectors leading up to the current position.
+
+To save time the motion result can be saved for later reuse, recalled
+from a previous calculation, or discarded.
+
+The motion tracker has a notion of 2 tracks, the master layer and the
+target layer.  The master layer is where the comparison between 2
+frames takes place.  The target layer is where motion is applied either
+to track or compensate for the motion in the master layer.
+
+The intricacies of motion tracking are enough to sustain entire
+companies and build careers around.  The motion tracker in Cinelerra
+isn't as sophisticated as some world class motion trackers but it's
+enough to sweeten some camcorder footage.
+
+Here is a brief description of the motion tracking parameters:
+
+@itemize
+@item
+@b{Track translation:} Enables translation operations.  
+The motion tracker tracks X and Y motion in the master layer and 
+adjusts X and Y motion in the target layer.
+
+@item
+
+@b{Translation block size:} For the translation operations, a block is
+compared to a number of neighboring blocks to find the one with the
+least difference.  The size of the block to search for is given by this
+parameter.
+
+@item
+
+@b{Translation search radius:} The size of the area to scan for the
+translation block.
+
+@item
+
+@b{Translation search steps:} Ideally the search operation would
+compare the  translation block with every other pixel in the
+translation search radius.  To  speed this operation up, a subset of
+the total positions is searched.   Then the search area is narrowed and
+rescanned by the same number of search steps until the motion is known
+to 1/4 pixel accuracy.
+
+@item
+
+@b{Block X, Y:} These coordinates determine the center of the
+translation  block based on percentages of the width and height of the
+image.  The center of the block should be part of the image which is
+visible at all times.
+
+@item 
+
+@b{Maximum absolute offset:} The amount of motion detected by the
+motion  tracker is unlimited if this is 100.  If it's under 100 the
+amount of motion is limited by that percentage of the image size.
+
+@item
+
+@b{Settling speed:} The motion detected between every frame can be
+accumulated to form an absolute motion vector.  If the settling speed
+is 100 the absolute vector is added to the next frame.  If the settling
+speed is less than 100 the absolute vector is downscaled by the
+settling amount before being added to the next frame.
+
+@item
+
+@b{Track rotation:} Enables rotation operations.  The motion tracker
+tracks rotation in the master layer and adjusts rotation in the target
+layer.
+
+@item
+
+@b{Rotation block size:} For rotation operations a single block is
+compared to equally sized blocks, each rotated by a different amount. 
+This is the size of the rotation block.
+
+@item
+
+@b{Rotation search radius:} This is the maximum angle of rotation from
+the starting frame the rotation scanner can detect.  The rotation scan
+is from this angle counterclockwise to this angle clockwise.  Thus the
+rotation search radius is half the total range scanned.
+
+@item
+
+@b{Rotation search steps:} Ideally every possible angle would be tested
+to get the rotation.  To speed up the rotation search, the rotation
+search radius is divided into a finite number of angles and only those
+angles compared to the starting frame.  Then the search radius is
+narrowed and an equal number of angles is compared in the smaller
+radius until the highest possible accuracy is achieved.
+
+Normally you need one search step for every degree scanned.  Since the
+rotation scanner scans the rotation search radius in two directions,
+you need two steps for every degree in the search radius to search the
+complete range.
+
+@item
+
+@b{Draw vectors:} When translation is enabled, 2 boxes are drawn on the
+frame.  One box represents the translation block.  Another box outside
+the translation block represents the extent of the translation search
+radius.  In the center of these boxes is an arrow showing the
+translation between the 2 master frames.
+
+When rotation is enabled a single box the size of the rotation block is
+drawn rotated by the amount of rotation detected.
+
+@item
+
+@b{Track single frame:} When this option is used the motion between a
+single starting frame and the frame currently under the insertion point
+is calculated.  The starting frame is specified in the @b{Frame number}
+blank.  The motion calculated this way is taken as the absolute motion
+vector.  The absolute motion vector for each frame replaces the
+absolute motion vector for the previous frame.  Settling speed has no
+effect on it since it doesn't contain any previous motion vectors. 
+Playback can start anywhere on the timeline since there is no
+dependance on previous results.
+
+@item
+
+@b{Track previous frame:} Causes only the motion between the previous
+frame and the current frame to be calculated.  This is added to an
+absolute motion vector to get the new motion from the start of the
+sequence to the current position.  After every frame processed this
+way, the block position is shifted to always cover the same region of
+the image.  Playback must be started from the start of the motion
+effect in order to accumulate all the necessary motion vectors.
+
+@item
+
+@b{Previous frame same block:} This is useful for stabilizing jerky
+camcorder footage.  In this mode the motion between the previous frame
+and the current frame is calculated.  Instead of adjusting the block
+position to reflect the new location of the image, like Track Previous
+Frame does, the block position is unchanged between each frame.  Thus a
+new region is compared for each frame.
+
+@item
+
+@b{Master later:} This determines the track which supplies the starting
+frame and ending frame for the motion calculation.  If it's @b{Bottom}
+the bottom track of all the tracks sharing this effect is the master
+layer.  The top track of all the tracks is the target layer.
+
+@item
+
+@b{Calculation:} This determines whether to calculate the motion at all
+and whether to save it to disk.  If it's @b{Don't Calculate} the motion
+calculation is skipped.  If it's @b{Recalculate} the motion calculation
+is performed every time each frame is rendered.  If it's @b{Save} the
+motion calculation is always performed but a copy is also saved.  If
+it's @b{Load}, the motion calculation is loaded from a previous save
+calculation.  If there is no previous save calculation on disk, a new
+motion calculation is performed.
+
+@item
+
+@b{Action:} Once the motion vector is known this determines whether to
+move the target layer opposing the motion vector or following the
+motion vector.  If it's @b{Do Nothing} the target layer is untouched. 
+If it's @b{Track...} the target layer is moved by the same amount as
+the master layer.  This is useful for matching titles to objects in the
+frame.  If it's @b{Stabilize...} the target layer is moved opposite to
+the motion vector.  This is useful for stabilizing an object in the
+frame.  The motion operations can be accurate to single pixels or
+subpixels by changing the action setting.
+
+
+
+
+
+@end itemize
+
+Since it is a very slow effect, there is a method to applying the
+motion tracker to get the most out of it.  Drop the effect on a region
+of video with some motion to track.  Then rewind the insertion point to
+the start of the region.  Set @b{Action} to @b{Do Nothing}.  Set
+@b{Calculation} to @b{Don't calculate}.  Enable @b{Draw vectors}.
+
+Enable which of @b{translation motion} or @b{rotation motion} you want
+to track.  By watching the compositor window and adjusting the @b{Block
+x,y} settings, center the block on the part of the image you want to
+track.  Then set search radius, block size, and block coordinates.
+
+Once this is configured, set the calculation to @b{Save coords} and do
+test runs through the sequence to see if the motion tracker works. 
+Once this is done set the action to perform the desired effect on the
+target layer and change the calculation to @b{Load coords}.
+
+When using a single starting frame to calculate the motion of a
+sequence, the starting frame should be a single frame with the least
+motion to any of the other frames.  This is rarely frame 0.  Usually
+it's a frame near the middle of the sequence.  This way the search
+radius need only reach halfway to the full extent of the motion in the
+sequence.
+
+If the motion tracker is used on a render farm, @b{Save coords} and
+@b{previous frame} mode won't work.  The results of the save coords
+operation are saved to the hard drives on the render nodes, not the
+master node.  Future rendering operations on these nodes will process
+different frames and read the wrong coordinates from the node
+filesystems.  The fact that render nodes only visualize a portion of
+the timeline also prevents @b{previous frame} from working since it
+depends on calculating an absolute motion vector starting on frame 0.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 @node REVERSE VIDEO/AUDIO
 @section REVERSE VIDEO/AUDIO
 
@@ -5110,6 +5461,30 @@ timeline doesn't reflect the actual reversed output.
 
 
 
+
+
+@node THRESHOLD
+@section THRESHOLD
+
+Threshold converts the image to pure luminance.  Then luminance values
+below and above the threshold range are converted to black and
+luminance values inside the threshold range are converted to white. 
+The threshold window shows a histogram of luminance values for the
+current frame.  Click dragging inside the histogram creates a range to
+convert to white.  Shift-clicking extends one border of this range. 
+Values for the threshold range can also be specified in the text boxes.
+
+This effect is basically a primitive luminance key.  A second track
+above the track with the threshold effect can be multiplied, resulting
+in only the parts of the second track within the threshold being
+displayed.
+
+
+
+
+
+
+
 @node TIME AVERAGE
 @section TIME AVERAGE
 
@@ -5119,6 +5494,42 @@ still images.  Merely point a video camera at a stationary subject for
 30 frames, capture the frames, and average them using TIME AVERAGE and
 you'll have a super high quality print.  In 16 bit colormodels, time
 average can increase the dynamic range of lousy cameras.
+
+Inside the time average effect is an accumulation buffer and a
+divisor.  A number of frames are accumulated in the accumulation buffer
+and divided by the divisor to get the average.
+
+@b{Frames to average:} This determines the number of frames to be
+accumulated in the accumulation buffer.  For extremely large
+integrations it's easier to edit the EDL in a text editor and put in
+the number of frames.
+
+@b{Accumulate:} This outputs the accumulation buffer without dividing it.
+
+@b{Average:} This causes the accumulation buffer to be divided before
+being output.  This results in the average of all the frames.
+
+@b{Inclusive Or:} This causes the accumulation buffer to be replaced by
+any pixels which aren't transparent.  In combination with motion
+tracking it allows entire sequences to be combined to form panoramas.
+
+@b{Reprocess frame again:} If an effect before the time average is
+adjusted the time average normally doesn't reread the accumulation
+buffer to get the change.  This forces it to reread the accumulation
+buffer when other effects change.
+
+@b{Disable subtraction:} In order to represent the accumulation of only
+the specified number of frames, the time average retains all the
+previous frames in memory and subtracts them out as it plays forward. 
+It would run out of memory if it had to accumulate thousands of
+frames.  By disabling subtraction the previous frames are not stored in
+memory and only the average function is affected by the frame count.
+
+
+
+
+
+
 
 
 @node TITLER
@@ -6469,6 +6880,8 @@ Del       Clear
 Shift Spc Paste Silence
 m         Mute region
 a         Select all
+shift + click   When done over an edit causes the highlighted selection to extend to the cursor position.
+                When done over the boundary of an effect causes the trim operation to apply to one effect.
 @end example
 
 @subsection Editing Labels & In/Out Points

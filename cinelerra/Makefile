@@ -187,7 +187,6 @@ OBJS = \
 	$(OBJDIR)/pluginvclient.o \
 	$(OBJDIR)/preferences.o \
 	$(OBJDIR)/preferencesthread.o \
-	$(OBJDIR)/presentations.o \
 	$(OBJDIR)/question.o \
 	$(OBJDIR)/quit.o \
 	$(OBJDIR)/recconfirmdelete.o \
@@ -652,7 +651,6 @@ $(OBJDIR)/plugintclient.o: 			  plugintclient.C
 $(OBJDIR)/pluginvclient.o: 			  pluginvclient.C
 $(OBJDIR)/preferences.o: 			  preferences.C
 $(OBJDIR)/preferencesthread.o:  		  preferencesthread.C
-$(OBJDIR)/presentations.o: 			  presentations.C
 $(OBJDIR)/previewaudio.o: 			  previewaudio.C
 $(OBJDIR)/previewvideo.o: 			  previewvideo.C
 $(OBJDIR)/question.o: 				  question.C
