@@ -4,6 +4,7 @@
 #include "filexml.h"
 #include "diffkey.h"
 #include "diffkeywindow.h"
+#include "language.h"
 #include "picon_png.h"
 #include "plugincolors.h"
 
@@ -34,9 +35,9 @@ int add_key_frame = 0;
 
 DiffKeyConfig::DiffKeyConfig()
 {
-	#ifdef DEBUG
+#ifdef DEBUG
 	printf("\nDiffKeyConfig::DiffKeyConfig");
-	#endif
+#endif
 
 	hue_imp = 25;
 	sat_imp = 25;
@@ -335,7 +336,6 @@ int DiffKeyMain::is_realtime() { return 1; }
 
 int DiffKeyMain::process_realtime(VFrame *input_ptr, VFrame *output_ptr)
 {
-return 0;
 #ifndef NO_PROCESS
 	load_configuration();
 	ftype in_hue, in_sat, in_val, in_r, in_g, in_b;

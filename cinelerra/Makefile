@@ -12,6 +12,7 @@ TIFF_DIR := ../tiff-v3.5.7
 TOOLAME_DIR := ../toolame-02l
 UUID_DIR := ../uuid
 VORBIS_DIR := ../quicktime/libvorbis-1.0
+EXR_DIR := ../OpenEXR-1.2.1/
 
 OBJS = \
 	$(OBJDIR)/aattachmentpoint.o \
@@ -112,6 +113,7 @@ OBJS = \
 	$(OBJDIR)/floatauto.o \
 	$(OBJDIR)/floatautos.o \
 	$(OBJDIR)/formatcheck.o \
+	$(OBJDIR)/formatpresets.o \
 	$(OBJDIR)/formatpopup.o \
 	$(OBJDIR)/formattools.o \
 	$(OBJDIR)/framecache.o \
@@ -273,6 +275,10 @@ OBJS = \
 	$(OBJDIR)/zoombar.o \
 	$(OBJDIR)/zoompanel.o
 
+FILEEXR := $(OBJDIR)/fileexr.o
+
+
+THEME_DATA := $(OBJDIR)/theme_data.o
 
 
 OUTPUT = $(OBJDIR)/cinelerra
@@ -291,14 +297,15 @@ STATICLIBS = \
 	$(AVC_DIR)/$(OBJDIR)/libavc.a \
 	../quicktime/$(OBJDIR)/libquicktime.a \
         $(ESOUNDLIBS) \
+	$(EXR_DIR)/$(OBJDIR)/libexr.a \
 	$(TIFF_DIR)/$(OBJDIR)/libtiff.a \
 	../guicast/$(OBJDIR)/libguicast.a \
 	../libmpeg3/$(OBJDIR)/libmpeg3.a \
 	$(SNDFILE_DIR)/$(OBJDIR)/libsndfile.a \
 	$(UUID_DIR)/$(OBJDIR)/libuuid.a \
 	../mpeg2enc/$(OBJDIR)/mpeg2enc.a \
-	$(TOOLAME_DIR)/$(OBJDIR)/toolame.a
-#	../libavc/$(OBJDIR)/libavc.a \
+	$(TOOLAME_DIR)/$(OBJDIR)/toolame.a \
+	$(THEME_DATA)
 
 LIBS := \
 	-L./ \
@@ -408,23 +415,22 @@ endif
 
 
 
-
 $(shell echo "\#define BUILDDATE \"`date`\"" > builddate.h )
 $(shell echo $(CFLAGS) > $(OBJDIR)/c_flags)
-$(shell echo $(LDFLAGS1) $(OBJS) $(AVIOBJS) $(CXXREPOSITORY) $(STATICLIBS) $(LIBS) $(LDFLAGS2) > $(OBJDIR)/objs)
+$(shell echo $(LDFLAGS1) $(OBJS) $(FILEEXR) $(AVIOBJS) $(CXXREPOSITORY) $(STATICLIBS) $(LIBS) $(LDFLAGS2) > $(OBJDIR)/objs)
 
 
 
 
 
-# Static linking is not possible because of the way the plugins are loaded
-$(OUTPUT): $(OBJS) $(BOOTSTRAP)
+# Static linking is not possible because the plugins depend on symbols
+# in the main executable.
+# Also VFS only overrides the C library when dynamic linking is used.
+$(OUTPUT): $(OBJS) $(FILEEXR) $(THEME_DATA)
 	@echo LD $(OUTPUT)
 	@$(LINKER) `cat $(OBJDIR)/objs`
 	@echo STRIP $(OUTPUT)
 	@strip $(OUTPUT)
-	@echo BOOTSTRAP $(OUTPUT)
-	@../guicast/$(OBJDIR)/bootstrap $(OUTPUT) data/mode_*.png
 
 $(OBJDIR)/test: 
 	$(CC) -shared -o $(OBJDIR)/test.so \
@@ -455,7 +461,13 @@ $(LIBOBJS) $(OBJS):
 	@echo C++ $*.o
 	@$(CC) -c `cat $(OBJDIR)/c_flags` $(subst $(OBJDIR)/,, $*.C) -o $*.o
 
+$(FILEEXR): fileexr.C
+	@echo C++ $*.o
+	@$(CC) -c `cat $(OBJDIR)/c_flags` -I$(EXR_DIR)IlmImf -I$(EXR_DIR)Imath -I$(EXR_DIR)Iex -I$(EXR_DIR)Half $(subst $(OBJDIR)/,, $*.C) -o $*.o
 
+$(THEME_DATA):
+	cd $(OBJDIR) && \
+	../../guicast/$(OBJDIR)/bootstrap theme_data.o ../data/mode_*.png
 
 $(OBJDIR)/aattachmentpoint.o: 			  aattachmentpoint.C
 $(OBJDIR)/aautomation.o: 			  aautomation.C
@@ -565,6 +577,7 @@ $(OBJDIR)/floatauto.o:  			  floatauto.C
 $(OBJDIR)/floatautos.o: 			  floatautos.C
 $(OBJDIR)/formatcheck.o: 			  formatcheck.C
 $(OBJDIR)/formatpopup.o: 			  formatpopup.C
+$(OBJDIR)/formatpresets.o:                        formatpresets.C
 $(OBJDIR)/formattools.o: 			  formattools.C
 $(OBJDIR)/framecache.o:                           framecache.C
 $(OBJDIR)/indexfile.o:  			  indexfile.C

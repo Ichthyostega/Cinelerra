@@ -3,7 +3,8 @@ include ../../global_config
 
 OBJS = $(OBJDIR)/aging.o  \
 	$(OBJDIR)/agingwindow.o \
-	../burn/$(OBJDIR)/effecttv.o
+	../burn/$(OBJDIR)/effecttv.o \
+	../colors/$(OBJDIR)/plugincolors.o
 
 OUTPUT = ../$(OBJDIR)/aging.plugin
 CFLAGS += -I../burn

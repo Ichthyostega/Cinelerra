@@ -2,7 +2,8 @@ include ../../global_config
 
 OBJS = $(OBJDIR)/holo.o  \
 	$(OBJDIR)/holowindow.o \
-	../burn/$(OBJDIR)/effecttv.o
+	../burn/$(OBJDIR)/effecttv.o \
+	../colors/$(OBJDIR)/plugincolors.o
 
 OUTPUT = ../$(OBJDIR)/holo.plugin
 

@@ -19,6 +19,7 @@ ENCORE_INCLUDE := $(ENCORE_DIR)/encore.h
 #DECORE_INCLUDE := $(DECORE_DIR)/decore.h
 MPEG3_DIR := $(shell expr ../libmpeg3* )
 FAAD_DIR := faad2
+FAAC_DIR := faac
 OBJS := 
 
 
@@ -58,6 +59,7 @@ include Makefile.lame
 include Makefile.dv
 include Makefile.encore50
 include Makefile.faad
+include Makefile.faac
 
 
 
@@ -91,6 +93,7 @@ OBJS += \
 	$(OBJDIR)/avi_riff.o \
 	$(OBJDIR)/avi_strl.o \
 	$(OBJDIR)/cmodel_default.o \
+	$(OBJDIR)/cmodel_float.o \
 	$(OBJDIR)/cmodel_yuv420p.o \
 	$(OBJDIR)/cmodel_yuv422.o \
 	$(OBJDIR)/codecs.o \
@@ -233,15 +236,16 @@ LIBS := $(OUTPUT) $(MPEG3_DIR)/$(OBJDIR)/libmpeg3.a -lpng -lz -lpthread -ldl -lm
 $(shell if ! test -d $(OBJDIR) \; then mkdir -p $(DIRS) \; fi )
 $(shell echo  $(CFLAGS) > $(OBJDIR)/c_flags)
 $(shell echo  $(FFMPEG_CFLAGS) > $(OBJDIR)/ffmpeg_flags)
+$(shell echo $(FAAD_CFLAGS) > $(OBJDIR)/faad_flags)
+$(shell echo $(FAAC_CFLAGS) > $(OBJDIR)/faac_flags)
 $(shell echo  $(LAME_CFLAGS) > $(OBJDIR)/lame_flags)
-$(shell echo  $(FAAD_CFLAGS) > $(OBJDIR)/faad_flags)
-$(shell echo  $(OBJS) $(DV_OBJS) $(DVMMXOBJS) $(ENCOREMMX_OBJS) $(JPEG_NASM) $(JPEG_FAIL) $(FFMPEG_OBJS) $(FFMPEGIA32_OBJS) $(LAME_OBJS) $(FAAD_OBJS) > $(OBJDIR)/objs)
+$(shell echo  $(OBJS) $(DV_OBJS) $(DVMMXOBJS) $(ENCOREMMX_OBJS) $(JPEG_NASM) $(JPEG_FAIL) $(FFMPEG_OBJS) $(FFMPEGIA32_OBJS) $(LAME_OBJS) $(FAAD_OBJS) $(FAAC_OBJS) > $(OBJDIR)/objs)
 #$(shell echo  $(OBJS) $(DV_OBJS) $(DVMMXOBJS) $(DECOREMMX_OBJS) $(ENCOREMMX_OBJS) $(JPEG_NASM) $(JPEG_FAIL) $(FFMPEG_OBJS) $(FFMPEGIA32_OBJS) $(LAME_OBJS) > $(OBJDIR)/objs)
 
 all: $(OBJDIR) $(OUTPUT)
 
 #$(OUTPUT): $(DV_OBJS) $(DVMMXOBJ) $(OBJS) $(DVMMXOBJS) $(DECOREMMX_OBJS) $(ENCOREMMX_OBJS) $(JPEG_NASM) $(FFMPEG_OBJS) $(FFMPEGIA32_OBJS) $(LAME_OBJS) $(JPEG_FAIL) 
-$(OUTPUT): $(DV_OBJS) $(DVMMXOBJ) $(OBJS) $(DVMMXOBJS) $(ENCOREMMX_OBJS) $(JPEG_NASM) $(FFMPEG_OBJS) $(FFMPEGIA32_OBJS) $(LAME_OBJS) $(FAAD_OBJS) $(JPEG_FAIL) 
+$(OUTPUT): $(DV_OBJS) $(DVMMXOBJ) $(OBJS) $(DVMMXOBJS) $(ENCOREMMX_OBJS) $(JPEG_NASM) $(FFMPEG_OBJS) $(FFMPEGIA32_OBJS) $(LAME_OBJS) $(FAAD_OBJS) $(FAAC_OBJS) $(JPEG_FAIL) 
 	ar rcs $(OUTPUT) `cat $(OBJDIR)/objs`
 
 
@@ -302,6 +306,9 @@ $(DV_OBJS):
 $(FAAD_OBJS):
 	$(CC) -c `cat $(OBJDIR)/faad_flags` $(subst $(OBJDIR)/,, $*.c) -o $*.o
 
+$(FAAC_OBJS):
+	$(CC) -c `cat $(OBJDIR)/faac_flags` $(subst $(OBJDIR)/,, $*.c) -o $*.o
+
 $(DVMMXOBJS):
 	$(CC) -c `cat $(OBJDIR)/c_flags` $(subst $(OBJDIR)/,, $*.S) -o $*.o
 
@@ -345,6 +352,7 @@ $(OBJDIR)/avi_odml.o:                     avi_odml.c
 $(OBJDIR)/avi_riff.o:                     avi_riff.c
 $(OBJDIR)/avi_strl.o:                     avi_strl.c
 $(OBJDIR)/cmodel_default.o:		  cmodel_default.c cmodel_permutation.h
+$(OBJDIR)/cmodel_float.o:		  cmodel_float.c cmodel_permutation.h
 $(OBJDIR)/cmodel_yuv420p.o:		  cmodel_yuv420p.c cmodel_permutation.h
 $(OBJDIR)/cmodel_yuv422.o:		  cmodel_yuv422.c cmodel_permutation.h
 $(OBJDIR)/codecs.o:			  codecs.c
@@ -462,3 +470,4 @@ include depend.lame
 include depend.dv
 include depend.encore50
 include depend.faad
+include depend.faac

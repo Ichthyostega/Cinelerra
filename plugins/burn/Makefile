@@ -4,7 +4,8 @@ include ../../global_config
 
 OBJS = $(OBJDIR)/burn.o  \
 	$(OBJDIR)/burnwindow.o \
-	$(OBJDIR)/effecttv.o
+	$(OBJDIR)/effecttv.o \
+	../colors/$(OBJDIR)/plugincolors.o
 
 OUTPUT = ../$(OBJDIR)/burn.plugin
 

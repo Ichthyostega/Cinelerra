@@ -15,6 +15,7 @@ $(OUTPUT): $(OBJS)
 
 
 install:
+	rm -f $(subst ../$(OBJDIR)/,, $(PLUGINDIR)/$(OUTPUT))
 	cp $(OUTPUT) $(PLUGINDIR)
 
 clean:

@@ -11,6 +11,7 @@ HAVE_V4L2 := n
 
 
 
+
 OBJDIR := $(shell uname --machine)
 
 ifeq ($(origin CFLAGS), environment)
@@ -27,6 +28,7 @@ endif
 
 PREFIX = /usr/
 LIBPREFIX = $(PREFIX)/lib
+
 
 ########################## THE COMPILER
 

@@ -85,6 +85,12 @@ DIRS = \
 	yuv \
 	zoomblur
 
+# Make static table of all plugins
+ifeq ($(DO_STATIC), y)
+
+endif
+
+
 all: $(DIRS) $(OBJS)
 	@ for i in $(DIRS) ; \
 	do \

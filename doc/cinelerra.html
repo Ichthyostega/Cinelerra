@@ -3,16 +3,24 @@
 <title>Secrets of Cinelerra</title>
 <meta http-equiv="Content-Type" content="text/html">
 <meta name="description" content="Secrets of Cinelerra">
-<meta name="generator" content="makeinfo 4.3">
-<link href="http://www.gnu.org/software/texinfo/" rel="generator-home">
+<meta name="generator" content="makeinfo 4.6">
+<meta http-equiv="Content-Style-Type" content="text/css">
+<style type="text/css"><!--
+  pre.display { font-family:inherit }
+  pre.format  { font-family:inherit }
+  pre.smalldisplay { font-family:inherit; font-size:smaller }
+  pre.smallformat  { font-family:inherit; font-size:smaller }
+  pre.smallexample { font-size:smaller }
+  pre.smalllisp    { font-size:smaller }
+--></style>
 </head>
 <body>
 <h1 class="settitle">Secrets of Cinelerra</h1>
 <div class="node">
 <p><hr>
-Node:<a name="Top">Top</a>,
-Next:<a rel="next" accesskey="n" href="#ABOUT%20CINELERRA">ABOUT CINELERRA</a>,
-Up:<a rel="up" accesskey="u" href="#dir">(dir)</a>
+Node:&nbsp;<a name="Top">Top</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#ABOUT%20CINELERRA">ABOUT CINELERRA</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#dir">(dir)</a>
 <br>
 </div>
 
@@ -141,6 +149,9 @@ Up:<a rel="up" accesskey="u" href="#dir">(dir)</a>
 <li><a href="#ASSORTED%20X%20TWEEKS">ASSORTED X TWEEKS</a>
 <li><a href="#SPEEDING%20UP%20THE%20FILE%20SYSTEM">SPEEDING UP THE FILE SYSTEM</a>
 <li><a href="#IMPROVING%20ZORAN%20VIDEO">IMPROVING ZORAN VIDEO</a>
+<ul>
+<li><a href="#IMPROVING%20ZORAN%20VIDEO">NEW IN 2.6.5</a>
+</li></ul>
 </li></ul>
 <li><a name="toc_TROUBLESHOOTING" href="#TROUBLESHOOTING">TROUBLESHOOTING</a>
 <ul>
@@ -238,16 +249,16 @@ Up:<a rel="up" accesskey="u" href="#dir">(dir)</a>
 
 <div class="node">
 <p><hr>
-Node:<a name="ABOUT%20CINELERRA">ABOUT CINELERRA</a>,
-Next:<a rel="next" accesskey="n" href="#INSTALLATION">INSTALLATION</a>,
-Previous:<a rel="previous" accesskey="p" href="#Top">Top</a>,
-Up:<a rel="up" accesskey="u" href="#Top">Top</a>
+Node:&nbsp;<a name="ABOUT%20CINELERRA">ABOUT CINELERRA</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#INSTALLATION">INSTALLATION</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#Top">Top</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
 <br>
 </div>
 
 <h2 class="chapter">ABOUT CINELERRA</h2>
 
-   <p>For years some people have wanted a way to edit their audio and video
+<p>For years some people have wanted a way to edit their audio and video
 in one place as fluidly as writing text.  Cinelerra tries to be a
 single location for all audio and video editing needs.  All the
 recording, editing, and playback are handled here.  It can be used as
@@ -316,14 +327,14 @@ interface.  As always, quality improvements would happen.
 
 <div class="node">
 <p><hr>
-Node:<a name="ABOUT%20THIS%20MANUAL">ABOUT THIS MANUAL</a>,
-Up:<a rel="up" accesskey="u" href="#ABOUT%20CINELERRA">ABOUT CINELERRA</a>
+Node:&nbsp;<a name="ABOUT%20THIS%20MANUAL">ABOUT THIS MANUAL</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#ABOUT%20CINELERRA">ABOUT CINELERRA</a>
 <br>
 </div>
 
 <h3 class="section">ABOUT THIS MANUAL</h3>
 
-   <p>In a way we feel sorry for users who are trying to figure out how to
+<p>In a way we feel sorry for users who are trying to figure out how to
 use Cinelerra from this document.  Organizing information in the
 easiest manner for users to find out what they need to know is sort of
 like cataloging the internet.  They've been trying to get it right for
@@ -361,16 +372,16 @@ that you wouldn't think of on your own.
 
 <div class="node">
 <p><hr>
-Node:<a name="INSTALLATION">INSTALLATION</a>,
-Next:<a rel="next" accesskey="n" href="#CONFIGURATION">CONFIGURATION</a>,
-Previous:<a rel="previous" accesskey="p" href="#ABOUT%20CINELERRA">ABOUT CINELERRA</a>,
-Up:<a rel="up" accesskey="u" href="#Top">Top</a>
+Node:&nbsp;<a name="INSTALLATION">INSTALLATION</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#CONFIGURATION">CONFIGURATION</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#ABOUT%20CINELERRA">ABOUT CINELERRA</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
 <br>
 </div>
 
 <h2 class="chapter">INSTALLATION</h2>
 
-   <p>The Cinelerra package contains Cinelerra and most of the libraries
+<p>The Cinelerra package contains Cinelerra and most of the libraries
 needed to run it.  We try to include all the dependancies because of
 the difficulty in tracking down the right versions.  Also included are
 some utilities for handling files.  The following are the general
@@ -410,15 +421,15 @@ conformance but more efficiently.
 
 <div class="node">
 <p><hr>
-Node:<a name="INSTALLING%20AN%20RPM">INSTALLING AN RPM</a>,
-Next:<a rel="next" accesskey="n" href="#COMPILING%20FROM%20SCRATCH">COMPILING FROM SCRATCH</a>,
-Up:<a rel="up" accesskey="u" href="#INSTALLATION">INSTALLATION</a>
+Node:&nbsp;<a name="INSTALLING%20AN%20RPM">INSTALLING AN RPM</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#COMPILING%20FROM%20SCRATCH">COMPILING FROM SCRATCH</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#INSTALLATION">INSTALLATION</a>
 <br>
 </div>
 
 <h3 class="section">INSTALLING AN RPM</h3>
 
-   <p>Cinelerra is best installed by downloading an RPM and running
+<p>Cinelerra is best installed by downloading an RPM and running
 
 <pre class="example">     rpm -U --force --nodeps hvirtual*.rpm
      </pre>
@@ -434,16 +445,16 @@ directory run
 
 <div class="node">
 <p><hr>
-Node:<a name="COMPILING%20FROM%20SCRATCH">COMPILING FROM SCRATCH</a>,
-Next:<a rel="next" accesskey="n" href="#RUNNING%20CINELERRA">RUNNING CINELERRA</a>,
-Previous:<a rel="previous" accesskey="p" href="#INSTALLING%20AN%20RPM">INSTALLING AN RPM</a>,
-Up:<a rel="up" accesskey="u" href="#INSTALLATION">INSTALLATION</a>
+Node:&nbsp;<a name="COMPILING%20FROM%20SCRATCH">COMPILING FROM SCRATCH</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#RUNNING%20CINELERRA">RUNNING CINELERRA</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#INSTALLING%20AN%20RPM">INSTALLING AN RPM</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#INSTALLATION">INSTALLATION</a>
 <br>
 </div>
 
 <h3 class="section">COMPILING FROM SCRATCH</h3>
 
-   <p>It should be noted that the compiler used in building Cinelerra
+<p>It should be noted that the compiler used in building Cinelerra
 binaries is the free GNU compiler and very conservative optimization
 flags.  You can try different compilers and optimization flags by
 compiling the source but this is hard.
@@ -515,15 +526,15 @@ reading MPEG transport streams.
 
 <div class="node">
 <p><hr>
-Node:<a name="RUNNING%20CINELERRA">RUNNING CINELERRA</a>,
-Previous:<a rel="previous" accesskey="p" href="#COMPILING%20FROM%20SCRATCH">COMPILING FROM SCRATCH</a>,
-Up:<a rel="up" accesskey="u" href="#INSTALLATION">INSTALLATION</a>
+Node:&nbsp;<a name="RUNNING%20CINELERRA">RUNNING CINELERRA</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#COMPILING%20FROM%20SCRATCH">COMPILING FROM SCRATCH</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#INSTALLATION">INSTALLATION</a>
 <br>
 </div>
 
 <h3 class="section">RUNNING CINELERRA</h3>
 
-   <p>The simplest way to run Cinelerra is by running
+<p>The simplest way to run Cinelerra is by running
 
 <pre class="example">     /usr/bin/cinelerra
      </pre>
@@ -536,16 +547,16 @@ these options is described in several sections.
 
 <div class="node">
 <p><hr>
-Node:<a name="CONFIGURATION">CONFIGURATION</a>,
-Next:<a rel="next" accesskey="n" href="#THE%20MAIN%20WINDOWS">THE MAIN WINDOWS</a>,
-Previous:<a rel="previous" accesskey="p" href="#INSTALLATION">INSTALLATION</a>,
-Up:<a rel="up" accesskey="u" href="#Top">Top</a>
+Node:&nbsp;<a name="CONFIGURATION">CONFIGURATION</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#THE%20MAIN%20WINDOWS">THE MAIN WINDOWS</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#INSTALLATION">INSTALLATION</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
 <br>
 </div>
 
 <h2 class="chapter">CONFIGURATION</h2>
 
-   <p>Because of the variety of uses, Cinelerra cannot be run optimally
+<p>Because of the variety of uses, Cinelerra cannot be run optimally
 without some intimate configuration for your specific needs. Very few
 parameters are adjustible at compile time.  Runtime configuration is
 the only option for most configuration because of the multitude of
@@ -564,15 +575,15 @@ parameters.
 
 <div class="node">
 <p><hr>
-Node:<a name="ENVIRONMENT%20VARIABLES">ENVIRONMENT VARIABLES</a>,
-Next:<a rel="next" accesskey="n" href="#PLAYBACK">PLAYBACK</a>,
-Up:<a rel="up" accesskey="u" href="#CONFIGURATION">CONFIGURATION</a>
+Node:&nbsp;<a name="ENVIRONMENT%20VARIABLES">ENVIRONMENT VARIABLES</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#PLAYBACK">PLAYBACK</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#CONFIGURATION">CONFIGURATION</a>
 <br>
 </div>
 
 <h3 class="section">ENVIRONMENT VARIABLES</h3>
 
-   <p>In UNIX derivatives, environment variables are global variables in the
+<p>In UNIX derivatives, environment variables are global variables in the
 shell which all applications can read.  They are set with a command
 like <b>set VARIABLE=value</b>.  All the environment variables can be
 viewed with a command like <b>env</b>.  Cinelerra recognizes the following
@@ -594,10 +605,10 @@ to be in different directories.
 
 <div class="node">
 <p><hr>
-Node:<a name="PLAYBACK">PLAYBACK</a>,
-Next:<a rel="next" accesskey="n" href="#RECORDING">RECORDING</a>,
-Previous:<a rel="previous" accesskey="p" href="#ENVIRONMENT%20VARIABLES">ENVIRONMENT VARIABLES</a>,
-Up:<a rel="up" accesskey="u" href="#CONFIGURATION">CONFIGURATION</a>
+Node:&nbsp;<a name="PLAYBACK">PLAYBACK</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#RECORDING">RECORDING</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#ENVIRONMENT%20VARIABLES">ENVIRONMENT VARIABLES</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#CONFIGURATION">CONFIGURATION</a>
 <br>
 </div>
 
@@ -610,15 +621,15 @@ Up:<a rel="up" accesskey="u" href="#CONFIGURATION">CONFIGURATION</a>
 
 <div class="node">
 <p><hr>
-Node:<a name="AUDIO%20OUT">AUDIO OUT</a>,
-Next:<a rel="next" accesskey="n" href="#VIDEO%20OUT">VIDEO OUT</a>,
-Up:<a rel="up" accesskey="u" href="#PLAYBACK">PLAYBACK</a>
+Node:&nbsp;<a name="AUDIO%20OUT">AUDIO OUT</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#VIDEO%20OUT">VIDEO OUT</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#PLAYBACK">PLAYBACK</a>
 <br>
 </div>
 
-<h4 class="subsection">AUDIO OUT</h4>
+<h3 class="subsection">AUDIO OUT</h4>
 
-   <p>These determine what happens when you play sound from the timeline.
+<p>These determine what happens when you play sound from the timeline.
 
      <ul>
 
@@ -695,15 +706,15 @@ and not 2 channels mixed together.
 
 <div class="node">
 <p><hr>
-Node:<a name="VIDEO%20OUT">VIDEO OUT</a>,
-Previous:<a rel="previous" accesskey="p" href="#AUDIO%20OUT">AUDIO OUT</a>,
-Up:<a rel="up" accesskey="u" href="#PLAYBACK">PLAYBACK</a>
+Node:&nbsp;<a name="VIDEO%20OUT">VIDEO OUT</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#AUDIO%20OUT">AUDIO OUT</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#PLAYBACK">PLAYBACK</a>
 <br>
 </div>
 
-<h4 class="subsection">VIDEO OUT</h4>
+<h3 class="subsection">VIDEO OUT</h4>
 
-   <p>These determine what happens when you play video from the timeline.
+<p>These determine what happens when you play video from the timeline.
 
      <ul>
 
@@ -819,10 +830,10 @@ CHANNEL
 
 <div class="node">
 <p><hr>
-Node:<a name="RECORDING">RECORDING</a>,
-Next:<a rel="next" accesskey="n" href="#PERFORMANCE">PERFORMANCE</a>,
-Previous:<a rel="previous" accesskey="p" href="#PLAYBACK">PLAYBACK</a>,
-Up:<a rel="up" accesskey="u" href="#CONFIGURATION">CONFIGURATION</a>
+Node:&nbsp;<a name="RECORDING">RECORDING</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#PERFORMANCE">PERFORMANCE</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#PLAYBACK">PLAYBACK</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#CONFIGURATION">CONFIGURATION</a>
 <br>
 </div>
 
@@ -835,15 +846,15 @@ Up:<a rel="up" accesskey="u" href="#CONFIGURATION">CONFIGURATION</a>
 
 <div class="node">
 <p><hr>
-Node:<a name="AUDIO%20IN">AUDIO IN</a>,
-Next:<a rel="next" accesskey="n" href="#VIDEO%20IN">VIDEO IN</a>,
-Up:<a rel="up" accesskey="u" href="#RECORDING">RECORDING</a>
+Node:&nbsp;<a name="AUDIO%20IN">AUDIO IN</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#VIDEO%20IN">VIDEO IN</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#RECORDING">RECORDING</a>
 <br>
 </div>
 
-<h4 class="subsection">AUDIO IN</h4>
+<h3 class="subsection">AUDIO IN</h4>
 
-   <p>These determine what happens when you record audio.
+<p>These determine what happens when you record audio.
 
      <ul>
 <li>
@@ -904,15 +915,15 @@ supports.
 
 <div class="node">
 <p><hr>
-Node:<a name="VIDEO%20IN">VIDEO IN</a>,
-Previous:<a rel="previous" accesskey="p" href="#AUDIO%20IN">AUDIO IN</a>,
-Up:<a rel="up" accesskey="u" href="#RECORDING">RECORDING</a>
+Node:&nbsp;<a name="VIDEO%20IN">VIDEO IN</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#AUDIO%20IN">AUDIO IN</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#RECORDING">RECORDING</a>
 <br>
 </div>
 
-<h4 class="subsection">VIDEO IN</h4>
+<h3 class="subsection">VIDEO IN</h4>
 
-   <p>These determine what happens when you record video.
+<p>These determine what happens when you record video.
 
      <ul>
 <li>
@@ -974,16 +985,16 @@ sets the recorded frame rate.
 
 <div class="node">
 <p><hr>
-Node:<a name="PERFORMANCE">PERFORMANCE</a>,
-Next:<a rel="next" accesskey="n" href="#INTERFACE">INTERFACE</a>,
-Previous:<a rel="previous" accesskey="p" href="#RECORDING">RECORDING</a>,
-Up:<a rel="up" accesskey="u" href="#CONFIGURATION">CONFIGURATION</a>
+Node:&nbsp;<a name="PERFORMANCE">PERFORMANCE</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#INTERFACE">INTERFACE</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#RECORDING">RECORDING</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#CONFIGURATION">CONFIGURATION</a>
 <br>
 </div>
 
 <h3 class="section">PERFORMANCE</h3>
 
-   <p>You'll spend most of your time configuring this section.  The main
+<p>You'll spend most of your time configuring this section.  The main
 focus of performance is rendering parameters not available in the
 rendering dialog.
 
@@ -1026,15 +1037,15 @@ this parameter is used in renderfarm clients.
 
 <div class="node">
 <p><hr>
-Node:<a name="BACKGROUND%20RENDERING">BACKGROUND RENDERING</a>,
-Next:<a rel="next" accesskey="n" href="#RENDERFARM">RENDERFARM</a>,
-Up:<a rel="up" accesskey="u" href="#PERFORMANCE">PERFORMANCE</a>
+Node:&nbsp;<a name="BACKGROUND%20RENDERING">BACKGROUND RENDERING</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#RENDERFARM">RENDERFARM</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#PERFORMANCE">PERFORMANCE</a>
 <br>
 </div>
 
-<h4 class="subsection">BACKGROUND RENDERING</h4>
+<h3 class="subsection">BACKGROUND RENDERING</h4>
 
-   <p>Background rendering was originally concieved to allow HDTV effects to
+<p>Background rendering was originally concieved to allow HDTV effects to
 be displayed in realtime.  Background rendering causes temporary output
 to constantly be rendered while the timeline is being modified.  The
 temporary output is played during playack whenever possible.  It's very
@@ -1081,15 +1092,15 @@ speed of playback.  JPEG is good most of the time.
 
 <div class="node">
 <p><hr>
-Node:<a name="RENDERFARM">RENDERFARM</a>,
-Previous:<a rel="previous" accesskey="p" href="#BACKGROUND%20RENDERING">BACKGROUND RENDERING</a>,
-Up:<a rel="up" accesskey="u" href="#PERFORMANCE">PERFORMANCE</a>
+Node:&nbsp;<a name="RENDERFARM">RENDERFARM</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#BACKGROUND%20RENDERING">BACKGROUND RENDERING</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#PERFORMANCE">PERFORMANCE</a>
 <br>
 </div>
 
-<h4 class="subsection">RENDERFARM</h4>
+<h3 class="subsection">RENDERFARM</h4>
 
-   <p>To use the renderfarm set these options.  Ignore them for a standalone
+<p>To use the renderfarm set these options.  Ignore them for a standalone
 system
 
      <ul>
@@ -1200,16 +1211,16 @@ node, specify 33 to have a well balanced renderfarm.
 
 <div class="node">
 <p><hr>
-Node:<a name="INTERFACE">INTERFACE</a>,
-Next:<a rel="next" accesskey="n" href="#ABOUT">ABOUT</a>,
-Previous:<a rel="previous" accesskey="p" href="#PERFORMANCE">PERFORMANCE</a>,
-Up:<a rel="up" accesskey="u" href="#CONFIGURATION">CONFIGURATION</a>
+Node:&nbsp;<a name="INTERFACE">INTERFACE</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#ABOUT">ABOUT</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#PERFORMANCE">PERFORMANCE</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#CONFIGURATION">CONFIGURATION</a>
 <br>
 </div>
 
 <h3 class="section">INTERFACE</h3>
 
-   <p>These parameters affect purely how the user interface works.
+<p>These parameters affect purely how the user interface works.
 
      <ul>
 
@@ -1281,30 +1292,30 @@ Cinelerra to see it.
 
 <div class="node">
 <p><hr>
-Node:<a name="ABOUT">ABOUT</a>,
-Previous:<a rel="previous" accesskey="p" href="#INTERFACE">INTERFACE</a>,
-Up:<a rel="up" accesskey="u" href="#CONFIGURATION">CONFIGURATION</a>
+Node:&nbsp;<a name="ABOUT">ABOUT</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#INTERFACE">INTERFACE</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#CONFIGURATION">CONFIGURATION</a>
 <br>
 </div>
 
 <h3 class="section">ABOUT</h3>
 
-   <p>This section gives you information about the copyright, the time of the
+<p>This section gives you information about the copyright, the time of the
 current build, the lack of a warranty, and the versions of some of the
 libraries.  Be sure to agree to the terms of the lack of the warranty.
 
 <div class="node">
 <p><hr>
-Node:<a name="THE%20MAIN%20WINDOWS">THE MAIN WINDOWS</a>,
-Next:<a rel="next" accesskey="n" href="#LOADING%20AND%20SAVING%20FILES">LOADING AND SAVING FILES</a>,
-Previous:<a rel="previous" accesskey="p" href="#CONFIGURATION">CONFIGURATION</a>,
-Up:<a rel="up" accesskey="u" href="#Top">Top</a>
+Node:&nbsp;<a name="THE%20MAIN%20WINDOWS">THE MAIN WINDOWS</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#LOADING%20AND%20SAVING%20FILES">LOADING AND SAVING FILES</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#CONFIGURATION">CONFIGURATION</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
 <br>
 </div>
 
 <h2 class="chapter">THE MAIN WINDOWS</h2>
 
-   <p>When Cinelerra first starts, you'll get four main windows.  Hitting
+<p>When Cinelerra first starts, you'll get four main windows.  Hitting
 <em>CTRL-w</em> in any window closes it.
 
      <ul>
@@ -1349,10 +1360,10 @@ audio levels after all mixing is done.
 
 <div class="node">
 <p><hr>
-Node:<a name="LOADING%20AND%20SAVING%20FILES">LOADING AND SAVING FILES</a>,
-Next:<a rel="next" accesskey="n" href="#NAVIGATING%20THE%20PROJECT">NAVIGATING THE PROJECT</a>,
-Previous:<a rel="previous" accesskey="p" href="#THE%20MAIN%20WINDOWS">THE MAIN WINDOWS</a>,
-Up:<a rel="up" accesskey="u" href="#Top">Top</a>
+Node:&nbsp;<a name="LOADING%20AND%20SAVING%20FILES">LOADING AND SAVING FILES</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#NAVIGATING%20THE%20PROJECT">NAVIGATING THE PROJECT</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#THE%20MAIN%20WINDOWS">THE MAIN WINDOWS</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
 <br>
 </div>
 
@@ -1367,15 +1378,15 @@ Up:<a rel="up" accesskey="u" href="#Top">Top</a>
 
 <div class="node">
 <p><hr>
-Node:<a name="LOADING%20FILES">LOADING FILES</a>,
-Next:<a rel="next" accesskey="n" href="#LOADING%20THE%20BACKUP">LOADING THE BACKUP</a>,
-Up:<a rel="up" accesskey="u" href="#LOADING%20AND%20SAVING%20FILES">LOADING AND SAVING FILES</a>
+Node:&nbsp;<a name="LOADING%20FILES">LOADING FILES</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#LOADING%20THE%20BACKUP">LOADING THE BACKUP</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#LOADING%20AND%20SAVING%20FILES">LOADING AND SAVING FILES</a>
 <br>
 </div>
 
 <h3 class="section">LOADING FILES</h3>
 
-   <p>All data that you work with in Cinelerra is acquired either by
+<p>All data that you work with in Cinelerra is acquired either by
 <em>recording from a device</em> or by <em>loading from disk</em>.  This
 section describes loading.
 
@@ -1401,15 +1412,15 @@ You can edit and play the file while the index file is being built.
 
 <div class="node">
 <p><hr>
-Node:<a name="SUPPORTED%20FILE%20FORMATS">SUPPORTED FILE FORMATS</a>,
-Next:<a rel="next" accesskey="n" href="#INSERTION%20STRATEGY">INSERTION STRATEGY</a>,
-Up:<a rel="up" accesskey="u" href="#LOADING%20FILES">LOADING FILES</a>
+Node:&nbsp;<a name="SUPPORTED%20FILE%20FORMATS">SUPPORTED FILE FORMATS</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#INSERTION%20STRATEGY">INSERTION STRATEGY</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#LOADING%20FILES">LOADING FILES</a>
 <br>
 </div>
 
-<h4 class="subsection">SUPPORTED FILE FORMATS</h4>
+<h3 class="subsection">SUPPORTED FILE FORMATS</h4>
 
-   <p>The format of the file affects what Cinelerra does with it.  Some
+<p>The format of the file affects what Cinelerra does with it.  Some
 formats replace all the project settings.  Some just insert data with
 existing project settings.  If your project sample rate is 48khz and
 you load a sound file with 96khz, you'll still be playing it at
@@ -1483,16 +1494,16 @@ project attributes when loaded.
 
 <div class="node">
 <p><hr>
-Node:<a name="INSERTION%20STRATEGY">INSERTION STRATEGY</a>,
-Next:<a rel="next" accesskey="n" href="#LOADING%20MULTIPLE%20FILES">LOADING MULTIPLE FILES</a>,
-Previous:<a rel="previous" accesskey="p" href="#SUPPORTED%20FILE%20FORMATS">SUPPORTED FILE FORMATS</a>,
-Up:<a rel="up" accesskey="u" href="#LOADING%20FILES">LOADING FILES</a>
+Node:&nbsp;<a name="INSERTION%20STRATEGY">INSERTION STRATEGY</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#LOADING%20MULTIPLE%20FILES">LOADING MULTIPLE FILES</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#SUPPORTED%20FILE%20FORMATS">SUPPORTED FILE FORMATS</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#LOADING%20FILES">LOADING FILES</a>
 <br>
 </div>
 
-<h4 class="subsection">INSERTION STRATEGY</h4>
+<h3 class="subsection">INSERTION STRATEGY</h4>
 
-   <p>Usually three things happen when you load a file.  First the existing
+<p>Usually three things happen when you load a file.  First the existing
 project is cleared from the screen, second the project's attributes are
 changed to match the file's, and finally the new file's tracks are
 created in the timeline.
@@ -1546,15 +1557,15 @@ files are loaded with <em>Replace current project</em> rules.
 
 <div class="node">
 <p><hr>
-Node:<a name="LOADING%20MULTIPLE%20FILES">LOADING MULTIPLE FILES</a>,
-Previous:<a rel="previous" accesskey="p" href="#INSERTION%20STRATEGY">INSERTION STRATEGY</a>,
-Up:<a rel="up" accesskey="u" href="#LOADING%20FILES">LOADING FILES</a>
+Node:&nbsp;<a name="LOADING%20MULTIPLE%20FILES">LOADING MULTIPLE FILES</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#INSERTION%20STRATEGY">INSERTION STRATEGY</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#LOADING%20FILES">LOADING FILES</a>
 <br>
 </div>
 
-<h4 class="subsection">LOADING MULTIPLE FILES</h4>
+<h3 class="subsection">LOADING MULTIPLE FILES</h4>
 
-   <p>In the file selection box go to the list of files.  Select a file.  Go
+<p>In the file selection box go to the list of files.  Select a file.  Go
 to another file and select it while holding down <em>CTRL</em>.  This
 selects one additional file.  Go to another file and select it while
 holding down <em>SHIFT</em>.  This selects every intervening file.  This
@@ -1566,16 +1577,16 @@ playlist.
 
 <div class="node">
 <p><hr>
-Node:<a name="LOADING%20THE%20BACKUP">LOADING THE BACKUP</a>,
-Next:<a rel="next" accesskey="n" href="#SAVING%20FILES">SAVING FILES</a>,
-Previous:<a rel="previous" accesskey="p" href="#LOADING%20FILES">LOADING FILES</a>,
-Up:<a rel="up" accesskey="u" href="#LOADING%20AND%20SAVING%20FILES">LOADING AND SAVING FILES</a>
+Node:&nbsp;<a name="LOADING%20THE%20BACKUP">LOADING THE BACKUP</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#SAVING%20FILES">SAVING FILES</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#LOADING%20FILES">LOADING FILES</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#LOADING%20AND%20SAVING%20FILES">LOADING AND SAVING FILES</a>
 <br>
 </div>
 
 <h3 class="section">LOADING THE BACKUP</h3>
 
-   <p>There is one special XML file on disk at all times.  After every
+<p>There is one special XML file on disk at all times.  After every
 editing operation Cinelerra saves the current project to a backup in
 <em>$HOME/.bcast/backup.xml</em>.  In the event of a crash go to
 <em>file-&gt;load backup</em> to load the backup.  It is important after a
@@ -1585,16 +1596,16 @@ the backup.
 
 <div class="node">
 <p><hr>
-Node:<a name="SAVING%20FILES">SAVING FILES</a>,
-Next:<a rel="next" accesskey="n" href="#RENDERING%20FILES">RENDERING FILES</a>,
-Previous:<a rel="previous" accesskey="p" href="#LOADING%20THE%20BACKUP">LOADING THE BACKUP</a>,
-Up:<a rel="up" accesskey="u" href="#LOADING%20AND%20SAVING%20FILES">LOADING AND SAVING FILES</a>
+Node:&nbsp;<a name="SAVING%20FILES">SAVING FILES</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#RENDERING%20FILES">RENDERING FILES</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#LOADING%20THE%20BACKUP">LOADING THE BACKUP</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#LOADING%20AND%20SAVING%20FILES">LOADING AND SAVING FILES</a>
 <br>
 </div>
 
 <h3 class="section">SAVING FILES</h3>
 
-   <p>When Cinelerra saves a file it saves an edit decision list of the
+<p>When Cinelerra saves a file it saves an edit decision list of the
 current project but doesn't save any media.  Go to <em>File-&gt;save
 as...</em>.  Select a file to overwrite or enter a new file.  Cinelerra
 automatically concatenates <em>.xml</em> to the filename if no
@@ -1629,15 +1640,15 @@ output there's rendering.
 
 <div class="node">
 <p><hr>
-Node:<a name="RENDERING%20FILES">RENDERING FILES</a>,
-Previous:<a rel="previous" accesskey="p" href="#SAVING%20FILES">SAVING FILES</a>,
-Up:<a rel="up" accesskey="u" href="#LOADING%20AND%20SAVING%20FILES">LOADING AND SAVING FILES</a>
+Node:&nbsp;<a name="RENDERING%20FILES">RENDERING FILES</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#SAVING%20FILES">SAVING FILES</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#LOADING%20AND%20SAVING%20FILES">LOADING AND SAVING FILES</a>
 <br>
 </div>
 
 <h3 class="section">RENDERING FILES</h3>
 
-   <p>Rendering takes a section of the timeline, performs all the editing,
+<p>Rendering takes a section of the timeline, performs all the editing,
 effects and compositing, and stores it in a pure movie file.  You can
 then delete all the source assets, play the rendered file in a movie
 player, or bring it back into Cinelerra for more editing.  It's very
@@ -1664,15 +1675,15 @@ unsetting all in/out points, the entire track is rendered.
 
 <div class="node">
 <p><hr>
-Node:<a name="SINGLE%20FILE%20RENDERING">SINGLE FILE RENDERING</a>,
-Next:<a rel="next" accesskey="n" href="#BATCH%20RENDERING">BATCH RENDERING</a>,
-Up:<a rel="up" accesskey="u" href="#RENDERING%20FILES">RENDERING FILES</a>
+Node:&nbsp;<a name="SINGLE%20FILE%20RENDERING">SINGLE FILE RENDERING</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#BATCH%20RENDERING">BATCH RENDERING</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#RENDERING%20FILES">RENDERING FILES</a>
 <br>
 </div>
 
-<h4 class="subsection">SINGLE FILE RENDERING</h4>
+<h3 class="subsection">SINGLE FILE RENDERING</h4>
 
-   <p>The fastest way to get media to disk is to use the single file
+<p>The fastest way to get media to disk is to use the single file
 rendering function.
 
    <p>Go to <b>File-&gt;render</b> to bring up the render dialog.  Select the
@@ -1729,16 +1740,16 @@ the audio output is pasted into the audio tracks.
 
 <div class="node">
 <p><hr>
-Node:<a name="BATCH%20RENDERING">BATCH RENDERING</a>,
-Next:<a rel="next" accesskey="n" href="#THE%20RENDER%20FARM">THE RENDER FARM</a>,
-Previous:<a rel="previous" accesskey="p" href="#SINGLE%20FILE%20RENDERING">SINGLE FILE RENDERING</a>,
-Up:<a rel="up" accesskey="u" href="#RENDERING%20FILES">RENDERING FILES</a>
+Node:&nbsp;<a name="BATCH%20RENDERING">BATCH RENDERING</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#THE%20RENDER%20FARM">THE RENDER FARM</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#SINGLE%20FILE%20RENDERING">SINGLE FILE RENDERING</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#RENDERING%20FILES">RENDERING FILES</a>
 <br>
 </div>
 
-<h4 class="subsection">BATCH RENDERING</h4>
+<h3 class="subsection">BATCH RENDERING</h4>
 
-   <p>If you want to render many projects to media files without having to
+<p>If you want to render many projects to media files without having to
 repeatedly attend to the <b>Render</b> dialog, <b>batch rendering</b> is the
 function to use.  In this function, you specify many EDL files to
 render and the unique output files for each.  Then Cinelerra loads each
@@ -1817,16 +1828,16 @@ rendered, hit <b>Cancel</b>.
 
 <div class="node">
 <p><hr>
-Node:<a name="THE%20RENDER%20FARM">THE RENDER FARM</a>,
-Next:<a rel="next" accesskey="n" href="#COMMAND%20LINE%20RENDERING">COMMAND LINE RENDERING</a>,
-Previous:<a rel="previous" accesskey="p" href="#BATCH%20RENDERING">BATCH RENDERING</a>,
-Up:<a rel="up" accesskey="u" href="#RENDERING%20FILES">RENDERING FILES</a>
+Node:&nbsp;<a name="THE%20RENDER%20FARM">THE RENDER FARM</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#COMMAND%20LINE%20RENDERING">COMMAND LINE RENDERING</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#BATCH%20RENDERING">BATCH RENDERING</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#RENDERING%20FILES">RENDERING FILES</a>
 <br>
 </div>
 
-<h4 class="subsection">THE RENDER FARM</h4>
+<h3 class="subsection">THE RENDER FARM</h4>
 
-   <p>When bicubic interpolation and HDTV was first done on Cinelerra, the
+<p>When bicubic interpolation and HDTV was first done on Cinelerra, the
 time needed to produce the simplest output became unbearable even on
 the fastest dual 1.7Ghz Xeon of the time.  Renderfarm support even in
 the simplest form brings HDTV times back in line with SD while making
@@ -1882,15 +1893,15 @@ could have rendered it faster.
 
 <div class="node">
 <p><hr>
-Node:<a name="COMMAND%20LINE%20RENDERING">COMMAND LINE RENDERING</a>,
-Previous:<a rel="previous" accesskey="p" href="#THE%20RENDER%20FARM">THE RENDER FARM</a>,
-Up:<a rel="up" accesskey="u" href="#RENDERING%20FILES">RENDERING FILES</a>
+Node:&nbsp;<a name="COMMAND%20LINE%20RENDERING">COMMAND LINE RENDERING</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#THE%20RENDER%20FARM">THE RENDER FARM</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#RENDERING%20FILES">RENDERING FILES</a>
 <br>
 </div>
 
-<h4 class="subsection">COMMAND LINE RENDERING</h4>
+<h3 class="subsection">COMMAND LINE RENDERING</h4>
 
-   <p>The command line rendering facility consists of a way to load the
+<p>The command line rendering facility consists of a way to load the
 current set of batch rendering jobs and process them without a GUI. 
 This is useful if you're planning on crashing X repeatedly or want to
 do rendering on the other side of a low bandwidth network.  You might
@@ -1918,16 +1929,16 @@ defaults is very involved so it hasn't been tested.
 
 <div class="node">
 <p><hr>
-Node:<a name="NAVIGATING%20THE%20PROJECT">NAVIGATING THE PROJECT</a>,
-Next:<a rel="next" accesskey="n" href="#EDITING">EDITING</a>,
-Previous:<a rel="previous" accesskey="p" href="#LOADING%20AND%20SAVING%20FILES">LOADING AND SAVING FILES</a>,
-Up:<a rel="up" accesskey="u" href="#Top">Top</a>
+Node:&nbsp;<a name="NAVIGATING%20THE%20PROJECT">NAVIGATING THE PROJECT</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#EDITING">EDITING</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#LOADING%20AND%20SAVING%20FILES">LOADING AND SAVING FILES</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
 <br>
 </div>
 
 <h2 class="chapter">NAVIGATING THE PROJECT</h2>
 
-   <p>The thing you want to do most of the time is get to a certain time and
+<p>The thing you want to do most of the time is get to a certain time and
 place in the media.  Internally the media is organized into tracks. 
 Each track extends across time.  Navigation involves both getting to a
 track and getting to a certain time in the track.
@@ -1942,15 +1953,15 @@ track and getting to a certain time in the track.
 
 <div class="node">
 <p><hr>
-Node:<a name="NAVIGATING%20THE%20PROGRAM%20WINDOW">NAVIGATING THE PROGRAM WINDOW</a>,
-Next:<a rel="next" accesskey="n" href="#NAVIGATING%20THE%20VIEWER%20AND%20COMPOSITOR">NAVIGATING THE VIEWER AND COMPOSITOR</a>,
-Up:<a rel="up" accesskey="u" href="#NAVIGATING%20THE%20PROJECT">NAVIGATING THE PROJECT</a>
+Node:&nbsp;<a name="NAVIGATING%20THE%20PROGRAM%20WINDOW">NAVIGATING THE PROGRAM WINDOW</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#NAVIGATING%20THE%20VIEWER%20AND%20COMPOSITOR">NAVIGATING THE VIEWER AND COMPOSITOR</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#NAVIGATING%20THE%20PROJECT">NAVIGATING THE PROJECT</a>
 <br>
 </div>
 
 <h3 class="section">NAVIGATING THE PROGRAM WINDOW</h3>
 
-   <p>The program window contains many features for navigation and displays
+<p>The program window contains many features for navigation and displays
 the timeline as it is structured in memory: tracks stacked vertically
 and extending across time.  The horizontal scroll bar allows you to
 scan across time.  The vertical scroll bar allows you to scan across
@@ -2006,15 +2017,15 @@ power of 2.
 
 <div class="node">
 <p><hr>
-Node:<a name="THE%20INSERTION%20POINT">THE INSERTION POINT</a>,
-Next:<a rel="next" accesskey="n" href="#THE%20IN%2fOUT%20POINTS">THE IN/OUT POINTS</a>,
-Up:<a rel="up" accesskey="u" href="#NAVIGATING%20THE%20PROGRAM%20WINDOW">NAVIGATING THE PROGRAM WINDOW</a>
+Node:&nbsp;<a name="THE%20INSERTION%20POINT">THE INSERTION POINT</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#THE%20IN%2fOUT%20POINTS">THE IN/OUT POINTS</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#NAVIGATING%20THE%20PROGRAM%20WINDOW">NAVIGATING THE PROGRAM WINDOW</a>
 <br>
 </div>
 
-<h4 class="subsection">THE INSERTION POINT</h4>
+<h3 class="subsection">THE INSERTION POINT</h4>
 
-   <p>By default you'll see a flashing insertion point in the program window
+<p>By default you'll see a flashing insertion point in the program window
 the first time you boot it up.  This is where new media is pasted onto
 the timeline.  It's also the starting point of all playback
 operations.  When rendering it defines the region of the timeline to be
@@ -2077,16 +2088,16 @@ this case you need to set <em>in/out points</em> to define an affected region.
 
 <div class="node">
 <p><hr>
-Node:<a name="THE%20IN%2fOUT%20POINTS">THE IN/OUT POINTS</a>,
-Next:<a rel="next" accesskey="n" href="#USING%20LABELS%20IN%20THE%20PROGRAM%20WINDOW">USING LABELS IN THE PROGRAM WINDOW</a>,
-Previous:<a rel="previous" accesskey="p" href="#THE%20INSERTION%20POINT">THE INSERTION POINT</a>,
-Up:<a rel="up" accesskey="u" href="#NAVIGATING%20THE%20PROGRAM%20WINDOW">NAVIGATING THE PROGRAM WINDOW</a>
+Node:&nbsp;<a name="THE%20IN%2fOUT%20POINTS">THE IN/OUT POINTS</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#USING%20LABELS%20IN%20THE%20PROGRAM%20WINDOW">USING LABELS IN THE PROGRAM WINDOW</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#THE%20INSERTION%20POINT">THE INSERTION POINT</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#NAVIGATING%20THE%20PROGRAM%20WINDOW">NAVIGATING THE PROGRAM WINDOW</a>
 <br>
 </div>
 
-<h4 class="subsection">THE IN/OUT POINTS</h4>
+<h3 class="subsection">THE IN/OUT POINTS</h4>
 
-   <p>In both editing modes you can set in/out points.  The in/out points
+<p>In both editing modes you can set in/out points.  The in/out points
 define the affected region.  In drag and drop mode they are the only
 way to define an affected region.  In both cut and paste mode and drag
 and drop mode they override the highlighted area.  If a highlighted
@@ -2125,15 +2136,15 @@ timeline very easily.  For this purpose there are labels.
 
 <div class="node">
 <p><hr>
-Node:<a name="USING%20LABELS%20IN%20THE%20PROGRAM%20WINDOW">USING LABELS IN THE PROGRAM WINDOW</a>,
-Previous:<a rel="previous" accesskey="p" href="#THE%20IN%2fOUT%20POINTS">THE IN/OUT POINTS</a>,
-Up:<a rel="up" accesskey="u" href="#NAVIGATING%20THE%20PROGRAM%20WINDOW">NAVIGATING THE PROGRAM WINDOW</a>
+Node:&nbsp;<a name="USING%20LABELS%20IN%20THE%20PROGRAM%20WINDOW">USING LABELS IN THE PROGRAM WINDOW</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#THE%20IN%2fOUT%20POINTS">THE IN/OUT POINTS</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#NAVIGATING%20THE%20PROGRAM%20WINDOW">NAVIGATING THE PROGRAM WINDOW</a>
 <br>
 </div>
 
-<h4 class="subsection">USING LABELS IN THE PROGRAM WINDOW</h4>
+<h3 class="subsection">USING LABELS IN THE PROGRAM WINDOW</h4>
 
-   <p>Labels are an easy way to set exact locations on the timeline you want
+<p>Labels are an easy way to set exact locations on the timeline you want
 to jump to.  When you position the insertion point somewhere and hit
 the <img src="label_button.png" alt="label_button.png"> <em>label button</em> a new label appears on the
 timeline.
@@ -2183,16 +2194,16 @@ in/out points are cleared and the highlighted region ignored.
 
 <div class="node">
 <p><hr>
-Node:<a name="NAVIGATING%20THE%20VIEWER%20AND%20COMPOSITOR">NAVIGATING THE VIEWER AND COMPOSITOR</a>,
-Next:<a rel="next" accesskey="n" href="#NAVIGATING%20THE%20RESOURCES">NAVIGATING THE RESOURCES</a>,
-Previous:<a rel="previous" accesskey="p" href="#NAVIGATING%20THE%20PROGRAM%20WINDOW">NAVIGATING THE PROGRAM WINDOW</a>,
-Up:<a rel="up" accesskey="u" href="#NAVIGATING%20THE%20PROJECT">NAVIGATING THE PROJECT</a>
+Node:&nbsp;<a name="NAVIGATING%20THE%20VIEWER%20AND%20COMPOSITOR">NAVIGATING THE VIEWER AND COMPOSITOR</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#NAVIGATING%20THE%20RESOURCES">NAVIGATING THE RESOURCES</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#NAVIGATING%20THE%20PROGRAM%20WINDOW">NAVIGATING THE PROGRAM WINDOW</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#NAVIGATING%20THE%20PROJECT">NAVIGATING THE PROJECT</a>
 <br>
 </div>
 
 <h3 class="section">NAVIGATING THE VIEWER AND COMPOSITOR</h3>
 
-   <p>The navigation features of the Viewer and Compositor behave very
+<p>The navigation features of the Viewer and Compositor behave very
 similarly.  Each has a timebar and slider below the video output.  The
 timebar and slider are critical for navigation.
 
@@ -2275,16 +2286,16 @@ the desktop.
 
 <div class="node">
 <p><hr>
-Node:<a name="NAVIGATING%20THE%20RESOURCES">NAVIGATING THE RESOURCES</a>,
-Next:<a rel="next" accesskey="n" href="#USING%20THE%20TRANSPORT%20CONTROLS">USING THE TRANSPORT CONTROLS</a>,
-Previous:<a rel="previous" accesskey="p" href="#NAVIGATING%20THE%20VIEWER%20AND%20COMPOSITOR">NAVIGATING THE VIEWER AND COMPOSITOR</a>,
-Up:<a rel="up" accesskey="u" href="#NAVIGATING%20THE%20PROJECT">NAVIGATING THE PROJECT</a>
+Node:&nbsp;<a name="NAVIGATING%20THE%20RESOURCES">NAVIGATING THE RESOURCES</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#USING%20THE%20TRANSPORT%20CONTROLS">USING THE TRANSPORT CONTROLS</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#NAVIGATING%20THE%20VIEWER%20AND%20COMPOSITOR">NAVIGATING THE VIEWER AND COMPOSITOR</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#NAVIGATING%20THE%20PROJECT">NAVIGATING THE PROJECT</a>
 <br>
 </div>
 
 <h3 class="section">NAVIGATING THE RESOURCES</h3>
 
-   <p>The resource window is divided into two areas.  One area lists folders
+<p>The resource window is divided into two areas.  One area lists folders
 and another area lists folder contents.  Going into the folder list and
 clicking on a folder updates the contents area with the contents of
 that folder.
@@ -2298,16 +2309,16 @@ folder alphabetically.
 
 <div class="node">
 <p><hr>
-Node:<a name="USING%20THE%20TRANSPORT%20CONTROLS">USING THE TRANSPORT CONTROLS</a>,
-Next:<a rel="next" accesskey="n" href="#USING%20BACKGROUND%20RENDERING">USING BACKGROUND RENDERING</a>,
-Previous:<a rel="previous" accesskey="p" href="#NAVIGATING%20THE%20RESOURCES">NAVIGATING THE RESOURCES</a>,
-Up:<a rel="up" accesskey="u" href="#NAVIGATING%20THE%20PROJECT">NAVIGATING THE PROJECT</a>
+Node:&nbsp;<a name="USING%20THE%20TRANSPORT%20CONTROLS">USING THE TRANSPORT CONTROLS</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#USING%20BACKGROUND%20RENDERING">USING BACKGROUND RENDERING</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#NAVIGATING%20THE%20RESOURCES">NAVIGATING THE RESOURCES</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#NAVIGATING%20THE%20PROJECT">NAVIGATING THE PROJECT</a>
 <br>
 </div>
 
 <h3 class="section">USING THE TRANSPORT CONTROLS</h3>
 
-   <p>Transport controls are just as useful in navigation as they are in
+<p>Transport controls are just as useful in navigation as they are in
 playing back footage, hence they are described here.  Each of the
 Viewer, Compositor, and Program windows has a transport panel.
 
@@ -2358,15 +2369,15 @@ frame both times and so the same frame is displayed.
 
 <div class="node">
 <p><hr>
-Node:<a name="USING%20BACKGROUND%20RENDERING">USING BACKGROUND RENDERING</a>,
-Previous:<a rel="previous" accesskey="p" href="#USING%20THE%20TRANSPORT%20CONTROLS">USING THE TRANSPORT CONTROLS</a>,
-Up:<a rel="up" accesskey="u" href="#NAVIGATING%20THE%20PROJECT">NAVIGATING THE PROJECT</a>
+Node:&nbsp;<a name="USING%20BACKGROUND%20RENDERING">USING BACKGROUND RENDERING</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#USING%20THE%20TRANSPORT%20CONTROLS">USING THE TRANSPORT CONTROLS</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#NAVIGATING%20THE%20PROJECT">NAVIGATING THE PROJECT</a>
 <br>
 </div>
 
 <h3 class="section">USING BACKGROUND RENDERING</h3>
 
-   <p>Background rendering allows impossibly slow effects to play back in
+<p>Background rendering allows impossibly slow effects to play back in
 realtime shortly after the effect is pasted in the timeline.  It
 continuously renders temporary output.  When renderfarm is enabled,
 background rendering uses the renderfarm continuously.  This way, any
@@ -2385,16 +2396,16 @@ in full framerates.
 
 <div class="node">
 <p><hr>
-Node:<a name="EDITING">EDITING</a>,
-Next:<a rel="next" accesskey="n" href="#USING%20EFFECTS">USING EFFECTS</a>,
-Previous:<a rel="previous" accesskey="p" href="#NAVIGATING%20THE%20PROJECT">NAVIGATING THE PROJECT</a>,
-Up:<a rel="up" accesskey="u" href="#Top">Top</a>
+Node:&nbsp;<a name="EDITING">EDITING</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#USING%20EFFECTS">USING EFFECTS</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#NAVIGATING%20THE%20PROJECT">NAVIGATING THE PROJECT</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
 <br>
 </div>
 
 <h2 class="chapter">EDITING</h2>
 
-   <p>Editing comprises both the time domain and the track domain.  Since the
+<p>Editing comprises both the time domain and the track domain.  Since the
 timeline consists of a stack of tracks, you need to worry about how to
 sort and create tracks in addition to what time certain media appears
 on a track.
@@ -2443,15 +2454,15 @@ attribute.
 
 <div class="node">
 <p><hr>
-Node:<a name="THE%20PATCHBAY">THE PATCHBAY</a>,
-Next:<a rel="next" accesskey="n" href="#NUDGING%20TRACKS">NUDGING TRACKS</a>,
-Up:<a rel="up" accesskey="u" href="#EDITING">EDITING</a>
+Node:&nbsp;<a name="THE%20PATCHBAY">THE PATCHBAY</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#NUDGING%20TRACKS">NUDGING TRACKS</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#EDITING">EDITING</a>
 <br>
 </div>
 
 <h3 class="section">THE PATCHBAY</h3>
 
-   <p>On the left of the timeline is a region affectionately known as the
+<p>On the left of the timeline is a region affectionately known as the
 patchbay.  The patchbay enables features specific to each track.  All
 tracks have a text area for naming the track.
 
@@ -2537,16 +2548,16 @@ type, with the <b>arm</b> option enabled, the other faders should follow.
 
 <div class="node">
 <p><hr>
-Node:<a name="NUDGING%20TRACKS">NUDGING TRACKS</a>,
-Next:<a rel="next" accesskey="n" href="#MANIPULATING%20TRACKS">MANIPULATING TRACKS</a>,
-Previous:<a rel="previous" accesskey="p" href="#THE%20PATCHBAY">THE PATCHBAY</a>,
-Up:<a rel="up" accesskey="u" href="#EDITING">EDITING</a>
+Node:&nbsp;<a name="NUDGING%20TRACKS">NUDGING TRACKS</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#MANIPULATING%20TRACKS">MANIPULATING TRACKS</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#THE%20PATCHBAY">THE PATCHBAY</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#EDITING">EDITING</a>
 <br>
 </div>
 
 <h3 class="section">NUDGING TRACKS</h3>
 
-   <p>Each track has a nudge textbox in the patchbay under the fader and on
+<p>Each track has a nudge textbox in the patchbay under the fader and on
 the right.  You may have to expand the track to see it.  The nudge is
 the amount the track is shifted left or right during playback.  The
 track is not displayed shifted on the timeline, but it is shifted when
@@ -2562,16 +2573,16 @@ on the nudge textbox and using the context sensitive menu.
 
 <div class="node">
 <p><hr>
-Node:<a name="MANIPULATING%20TRACKS">MANIPULATING TRACKS</a>,
-Next:<a rel="next" accesskey="n" href="#TWO%20SCREEN%20EDITING">TWO SCREEN EDITING</a>,
-Previous:<a rel="previous" accesskey="p" href="#NUDGING%20TRACKS">NUDGING TRACKS</a>,
-Up:<a rel="up" accesskey="u" href="#EDITING">EDITING</a>
+Node:&nbsp;<a name="MANIPULATING%20TRACKS">MANIPULATING TRACKS</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#TWO%20SCREEN%20EDITING">TWO SCREEN EDITING</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#NUDGING%20TRACKS">NUDGING TRACKS</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#EDITING">EDITING</a>
 <br>
 </div>
 
 <h3 class="section">MANIPULATING TRACKS</h3>
 
-   <p>Tracks in Cinelerra either contain audio or video.  There is no special
+<p>Tracks in Cinelerra either contain audio or video.  There is no special
 designation for tracks other than the type of media they contain.  When
 you create a new project, it contains a certain mumber of default
 tracks.  You can still add or delete tracks from a number of menus. 
@@ -2615,16 +2626,16 @@ New video tracks are overlayed on top of old tracks.
 
 <div class="node">
 <p><hr>
-Node:<a name="TWO%20SCREEN%20EDITING">TWO SCREEN EDITING</a>,
-Next:<a rel="next" accesskey="n" href="#DRAG%20AND%20DROP%20EDITING">DRAG AND DROP EDITING</a>,
-Previous:<a rel="previous" accesskey="p" href="#MANIPULATING%20TRACKS">MANIPULATING TRACKS</a>,
-Up:<a rel="up" accesskey="u" href="#EDITING">EDITING</a>
+Node:&nbsp;<a name="TWO%20SCREEN%20EDITING">TWO SCREEN EDITING</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#DRAG%20AND%20DROP%20EDITING">DRAG AND DROP EDITING</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#MANIPULATING%20TRACKS">MANIPULATING TRACKS</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#EDITING">EDITING</a>
 <br>
 </div>
 
 <h3 class="section">TWO SCREEN EDITING</h3>
 
-   <p>This is the fastest way to construct a program out of movie files.  The
+<p>This is the fastest way to construct a program out of movie files.  The
 idea consists of viewing a movie file in one window and viewing the
 program in another window.  Sections of the movie file are defined in
 one window and transferred to the end of the program in the other
@@ -2691,16 +2702,16 @@ and splicing.
 
 <div class="node">
 <p><hr>
-Node:<a name="DRAG%20AND%20DROP%20EDITING">DRAG AND DROP EDITING</a>,
-Next:<a rel="next" accesskey="n" href="#CUT%20AND%20PASTE%20EDITING">CUT AND PASTE EDITING</a>,
-Previous:<a rel="previous" accesskey="p" href="#TWO%20SCREEN%20EDITING">TWO SCREEN EDITING</a>,
-Up:<a rel="up" accesskey="u" href="#EDITING">EDITING</a>
+Node:&nbsp;<a name="DRAG%20AND%20DROP%20EDITING">DRAG AND DROP EDITING</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#CUT%20AND%20PASTE%20EDITING">CUT AND PASTE EDITING</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#TWO%20SCREEN%20EDITING">TWO SCREEN EDITING</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#EDITING">EDITING</a>
 <br>
 </div>
 
 <h3 class="section">DRAG AND DROP EDITING</h3>
 
-   <p>The answer is yes, you can you create a bunch of clips and drag them on
+<p>The answer is yes, you can you create a bunch of clips and drag them on
 the timeline.  You can also drag edits around the timeline.
 
    <p>Load some files using <em>file-&gt;load</em>.  Set the insertion mode to
@@ -2759,16 +2770,16 @@ sort movie scenes, and give better NAB demos but not much else.
 
 <div class="node">
 <p><hr>
-Node:<a name="CUT%20AND%20PASTE%20EDITING">CUT AND PASTE EDITING</a>,
-Next:<a rel="next" accesskey="n" href="#TRIMMING">TRIMMING</a>,
-Previous:<a rel="previous" accesskey="p" href="#DRAG%20AND%20DROP%20EDITING">DRAG AND DROP EDITING</a>,
-Up:<a rel="up" accesskey="u" href="#EDITING">EDITING</a>
+Node:&nbsp;<a name="CUT%20AND%20PASTE%20EDITING">CUT AND PASTE EDITING</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#TRIMMING">TRIMMING</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#DRAG%20AND%20DROP%20EDITING">DRAG AND DROP EDITING</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#EDITING">EDITING</a>
 <br>
 </div>
 
 <h3 class="section">CUT AND PASTE EDITING</h3>
 
-   <p>This is the traditional method of editing in audio editors.  In the
+<p>This is the traditional method of editing in audio editors.  In the
 case of Cinelerra, you either need to start a second copy of Cinelerra
 and copy from one copy to the other, copy from different tracks in the
 same copy, or load a media file into the Viewer and copy from there.
@@ -2812,15 +2823,15 @@ edit.  This either results in the edit expanding or shrinking.
 
 <div class="node">
 <p><hr>
-Node:<a name="TRIMMING">TRIMMING</a>,
-Previous:<a rel="previous" accesskey="p" href="#CUT%20AND%20PASTE%20EDITING">CUT AND PASTE EDITING</a>,
-Up:<a rel="up" accesskey="u" href="#EDITING">EDITING</a>
+Node:&nbsp;<a name="TRIMMING">TRIMMING</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#CUT%20AND%20PASTE%20EDITING">CUT AND PASTE EDITING</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#EDITING">EDITING</a>
 <br>
 </div>
 
 <h3 class="section">TRIMMING</h3>
 
-   <p>With some edits on the timeline it's possible to do trimming.  By
+<p>With some edits on the timeline it's possible to do trimming.  By
 trimming you shrink or grow the edit boundaries by dragging them.  In
 either drag and drop mode or cut and paste mode, move the cursor over
 an edit boundary until it changes shape.  The cursor will either be an
@@ -2868,16 +2879,16 @@ tracks to prevent edits from getting affected.
 
 <div class="node">
 <p><hr>
-Node:<a name="USING%20EFFECTS">USING EFFECTS</a>,
-Next:<a rel="next" accesskey="n" href="#SETTING%20PROJECT%20ATTRIBUTES">SETTING PROJECT ATTRIBUTES</a>,
-Previous:<a rel="previous" accesskey="p" href="#EDITING">EDITING</a>,
-Up:<a rel="up" accesskey="u" href="#Top">Top</a>
+Node:&nbsp;<a name="USING%20EFFECTS">USING EFFECTS</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#SETTING%20PROJECT%20ATTRIBUTES">SETTING PROJECT ATTRIBUTES</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#EDITING">EDITING</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
 <br>
 </div>
 
 <h2 class="chapter">USING EFFECTS</h2>
 
-   <p>It would be sufficient to perform all changes to the timeline using
+<p>It would be sufficient to perform all changes to the timeline using
 editing operations, but this isn't very extensible.  Certain timeline
 changes should produce a different effect in the output without
 involving a unique procedure to apply each change.  This is why we have
@@ -2895,15 +2906,15 @@ applied using the same procedure.
 
 <div class="node">
 <p><hr>
-Node:<a name="REALTIME%20EFFECTS">REALTIME EFFECTS</a>,
-Next:<a rel="next" accesskey="n" href="#RENDERED%20EFFECTS">RENDERED EFFECTS</a>,
-Up:<a rel="up" accesskey="u" href="#USING%20EFFECTS">USING EFFECTS</a>
+Node:&nbsp;<a name="REALTIME%20EFFECTS">REALTIME EFFECTS</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#RENDERED%20EFFECTS">RENDERED EFFECTS</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#USING%20EFFECTS">USING EFFECTS</a>
 <br>
 </div>
 
 <h3 class="section">REALTIME EFFECTS</h3>
 
-   <p>These are layered under the track they apply to.  They process the
+<p>These are layered under the track they apply to.  They process the
 track when the track is played back, with no permanent storage of the
 output except when the project is rendered.
 
@@ -2953,15 +2964,15 @@ entire duration of the effect.
 
 <div class="node">
 <p><hr>
-Node:<a name="REALTIME%20EFFECT%20TYPES">REALTIME EFFECT TYPES</a>,
-Next:<a rel="next" accesskey="n" href="#EDITING%20REALTIME%20EFFECTS">EDITING REALTIME EFFECTS</a>,
-Up:<a rel="up" accesskey="u" href="#REALTIME%20EFFECTS">REALTIME EFFECTS</a>
+Node:&nbsp;<a name="REALTIME%20EFFECT%20TYPES">REALTIME EFFECT TYPES</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#EDITING%20REALTIME%20EFFECTS">EDITING REALTIME EFFECTS</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#REALTIME%20EFFECTS">REALTIME EFFECTS</a>
 <br>
 </div>
 
-<h4 class="subsection">REALTIME EFFECT TYPES</h4>
+<h3 class="subsection">REALTIME EFFECT TYPES</h4>
 
-   <p>The two other effect types supported by the Attach Effect dialog are
+<p>The two other effect types supported by the Attach Effect dialog are
 recycled effects.  In order to use a recycled effect, three requiremenets
 must be met:
 
@@ -3036,15 +3047,15 @@ track it has to be composited before the original track is composited.
 
 <div class="node">
 <p><hr>
-Node:<a name="EDITING%20REALTIME%20EFFECTS">EDITING REALTIME EFFECTS</a>,
-Previous:<a rel="previous" accesskey="p" href="#REALTIME%20EFFECT%20TYPES">REALTIME EFFECT TYPES</a>,
-Up:<a rel="up" accesskey="u" href="#REALTIME%20EFFECTS">REALTIME EFFECTS</a>
+Node:&nbsp;<a name="EDITING%20REALTIME%20EFFECTS">EDITING REALTIME EFFECTS</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#REALTIME%20EFFECT%20TYPES">REALTIME EFFECT TYPES</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#REALTIME%20EFFECTS">REALTIME EFFECTS</a>
 <br>
 </div>
 
-<h4 class="subsection">EDITING REALTIME EFFECTS</h4>
+<h3 class="subsection">EDITING REALTIME EFFECTS</h4>
 
-   <p>Many operations exist for manipulating effects once they are in the
+<p>Many operations exist for manipulating effects once they are in the
 timeline.  Because mixing effects and media is such complex business,
 the methods used in editing effects aren't as concise as cutting and
 pasting.  Some of the editing happens by dragging in/out points, some
@@ -3107,16 +3118,16 @@ a shared effect.
 
 <div class="node">
 <p><hr>
-Node:<a name="RENDERED%20EFFECTS">RENDERED EFFECTS</a>,
-Next:<a rel="next" accesskey="n" href="#TRANSITIONS">TRANSITIONS</a>,
-Previous:<a rel="previous" accesskey="p" href="#REALTIME%20EFFECTS">REALTIME EFFECTS</a>,
-Up:<a rel="up" accesskey="u" href="#USING%20EFFECTS">USING EFFECTS</a>
+Node:&nbsp;<a name="RENDERED%20EFFECTS">RENDERED EFFECTS</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#TRANSITIONS">TRANSITIONS</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#REALTIME%20EFFECTS">REALTIME EFFECTS</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#USING%20EFFECTS">USING EFFECTS</a>
 <br>
 </div>
 
 <h3 class="section">RENDERED EFFECTS</h3>
 
-   <p>Another type of effect is performed on a section of the track and the
+<p>Another type of effect is performed on a section of the track and the
 result stored somewhere before it is played back.  The result is
 usually pasted into the track to replace the original data.
 
@@ -3164,16 +3175,16 @@ accepting the settings, the effect is processed.
 
 <div class="node">
 <p><hr>
-Node:<a name="TRANSITIONS">TRANSITIONS</a>,
-Next:<a rel="next" accesskey="n" href="#LADSPA%20EFFECTS">LADSPA EFFECTS</a>,
-Previous:<a rel="previous" accesskey="p" href="#RENDERED%20EFFECTS">RENDERED EFFECTS</a>,
-Up:<a rel="up" accesskey="u" href="#USING%20EFFECTS">USING EFFECTS</a>
+Node:&nbsp;<a name="TRANSITIONS">TRANSITIONS</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#LADSPA%20EFFECTS">LADSPA EFFECTS</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#RENDERED%20EFFECTS">RENDERED EFFECTS</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#USING%20EFFECTS">USING EFFECTS</a>
 <br>
 </div>
 
 <h3 class="section">TRANSITIONS</h3>
 
-   <p>When one edit ends and another edit begins, the default behaviour is to
+<p>When one edit ends and another edit begins, the default behaviour is to
 have the first edit's output immediately become the output of the
 second edit when played back.  Transitions are a way for the first
 edit's output to become the second edit's output with different
@@ -3227,15 +3238,15 @@ disturbance.
 
 <div class="node">
 <p><hr>
-Node:<a name="LADSPA%20EFFECTS">LADSPA EFFECTS</a>,
-Previous:<a rel="previous" accesskey="p" href="#TRANSITIONS">TRANSITIONS</a>,
-Up:<a rel="up" accesskey="u" href="#USING%20EFFECTS">USING EFFECTS</a>
+Node:&nbsp;<a name="LADSPA%20EFFECTS">LADSPA EFFECTS</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#TRANSITIONS">TRANSITIONS</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#USING%20EFFECTS">USING EFFECTS</a>
 <br>
 </div>
 
 <h3 class="section">LADSPA EFFECTS</h3>
 
-   <p>LADSPA effects are supported in realtime and rendered mode for audio. 
+<p>LADSPA effects are supported in realtime and rendered mode for audio. 
 The LADSPA plugins you get from the internet vary in quality.  Most
 can't be tweeked in realtime very easily and work better when
 rendered.  Some crash and some can only be applied to one track due to
@@ -3251,16 +3262,16 @@ them in the <em>/usr/lib/cinelerra</em> directory.
 
 <div class="node">
 <p><hr>
-Node:<a name="SETTING%20PROJECT%20ATTRIBUTES">SETTING PROJECT ATTRIBUTES</a>,
-Next:<a rel="next" accesskey="n" href="#COMPOSITING">COMPOSITING</a>,
-Previous:<a rel="previous" accesskey="p" href="#USING%20EFFECTS">USING EFFECTS</a>,
-Up:<a rel="up" accesskey="u" href="#Top">Top</a>
+Node:&nbsp;<a name="SETTING%20PROJECT%20ATTRIBUTES">SETTING PROJECT ATTRIBUTES</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#COMPOSITING">COMPOSITING</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#USING%20EFFECTS">USING EFFECTS</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
 <br>
 </div>
 
 <h2 class="chapter">SETTING PROJECT ATTRIBUTES</h2>
 
-   <p>When you play media files in Cinelerra, the media files have a certain
+<p>When you play media files in Cinelerra, the media files have a certain
 number of tracks, a certain frame size, a certain sample size, and so
 on and so forth.  No matter what the media file has; however, it is
 still played back according to the project attributes.  If an audio
@@ -3342,16 +3353,16 @@ match the aspect ratio.
 
 <div class="node">
 <p><hr>
-Node:<a name="COMPOSITING">COMPOSITING</a>,
-Next:<a rel="next" accesskey="n" href="#KEYFRAMES">KEYFRAMES</a>,
-Previous:<a rel="previous" accesskey="p" href="#SETTING%20PROJECT%20ATTRIBUTES">SETTING PROJECT ATTRIBUTES</a>,
-Up:<a rel="up" accesskey="u" href="#Top">Top</a>
+Node:&nbsp;<a name="COMPOSITING">COMPOSITING</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#KEYFRAMES">KEYFRAMES</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#SETTING%20PROJECT%20ATTRIBUTES">SETTING PROJECT ATTRIBUTES</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
 <br>
 </div>
 
 <h2 class="chapter">COMPOSITING</h2>
 
-   <p>A large amount of Cinelerra's binary size is directed towards
+<p>A large amount of Cinelerra's binary size is directed towards
 compositing.  When you remove the letterboxing from a widescreen show,
 you're compositing.  Changing the resolution of a show, making a split
 screen, and fading in and out among other things are all compositing
@@ -3375,15 +3386,15 @@ window is a good place to try compositing.
 
 <div class="node">
 <p><hr>
-Node:<a name="THE%20CAMERA%20AND%20PROJECTOR">THE CAMERA AND PROJECTOR</a>,
-Next:<a rel="next" accesskey="n" href="#MASKS">MASKS</a>,
-Up:<a rel="up" accesskey="u" href="#COMPOSITING">COMPOSITING</a>
+Node:&nbsp;<a name="THE%20CAMERA%20AND%20PROJECTOR">THE CAMERA AND PROJECTOR</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#MASKS">MASKS</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#COMPOSITING">COMPOSITING</a>
 <br>
 </div>
 
 <h3 class="section">THE CAMERA AND PROJECTOR</h3>
 
-   <p>In the compositor window, the most important functions are the
+<p>In the compositor window, the most important functions are the
 <img src="camera.png" alt="camera.png"> camera button and the <img src="projector.png" alt="projector.png"> projector
 button.  These control operation of the camera and projector.  Inside
 Cinelerra's compositing pipeline, the camera determines where in the
@@ -3478,16 +3489,16 @@ output.
 
 <div class="node">
 <p><hr>
-Node:<a name="MASKS">MASKS</a>,
-Next:<a rel="next" accesskey="n" href="#CROPPING">CROPPING</a>,
-Previous:<a rel="previous" accesskey="p" href="#THE%20CAMERA%20AND%20PROJECTOR">THE CAMERA AND PROJECTOR</a>,
-Up:<a rel="up" accesskey="u" href="#COMPOSITING">COMPOSITING</a>
+Node:&nbsp;<a name="MASKS">MASKS</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#CROPPING">CROPPING</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#THE%20CAMERA%20AND%20PROJECTOR">THE CAMERA AND PROJECTOR</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#COMPOSITING">COMPOSITING</a>
 <br>
 </div>
 
 <h3 class="section">MASKS</h3>
 
-   <p>Masks select a region of the video for either displaying or hiding. 
+<p>Masks select a region of the video for either displaying or hiding. 
 Masks are also used in conjunction with another effect to isolate the
 effect to a certain region of the frame.  A copy of one video track may
 be delayed slightly and unmasked in locations where the one copy has
@@ -3573,16 +3584,16 @@ entry.
 
 <div class="node">
 <p><hr>
-Node:<a name="CROPPING">CROPPING</a>,
-Next:<a rel="next" accesskey="n" href="#SAFE%20REGIONS">SAFE REGIONS</a>,
-Previous:<a rel="previous" accesskey="p" href="#MASKS">MASKS</a>,
-Up:<a rel="up" accesskey="u" href="#COMPOSITING">COMPOSITING</a>
+Node:&nbsp;<a name="CROPPING">CROPPING</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#SAFE%20REGIONS">SAFE REGIONS</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#MASKS">MASKS</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#COMPOSITING">COMPOSITING</a>
 <br>
 </div>
 
 <h3 class="section">CROPPING</h3>
 
-   <p>Cropping changes the value of the output dimensions and the projector
+<p>Cropping changes the value of the output dimensions and the projector
 to reduce the visible picture area.  Enable the <img src="crop.png" alt="crop.png"> crop
 toggle and the <img src="toolwindow.png" alt="toolwindow.png"> tool window to perform cropping in
 the compositing window.  This draws a rectangle over the video. 
@@ -3593,16 +3604,16 @@ positioned, hit the <em>do it</em> button in the tool window.
 
 <div class="node">
 <p><hr>
-Node:<a name="SAFE%20REGIONS">SAFE REGIONS</a>,
-Next:<a rel="next" accesskey="n" href="#OVERLAY%20MODES">OVERLAY MODES</a>,
-Previous:<a rel="previous" accesskey="p" href="#CROPPING">CROPPING</a>,
-Up:<a rel="up" accesskey="u" href="#COMPOSITING">COMPOSITING</a>
+Node:&nbsp;<a name="SAFE%20REGIONS">SAFE REGIONS</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#OVERLAY%20MODES">OVERLAY MODES</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#CROPPING">CROPPING</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#COMPOSITING">COMPOSITING</a>
 <br>
 </div>
 
 <h3 class="section">SAFE REGIONS</h3>
 
-   <p>On consumer displays the borders of the image are cut off and within
+<p>On consumer displays the borders of the image are cut off and within
 the cutoff point is a region which isn't always square like it is in
 the compositor window.  The borders are intended for scratch room and
 vertical blanking data.  You can show where these borders are by
@@ -3611,16 +3622,16 @@ the inner rectangle and keep action inside the outer rectangle.
 
 <div class="node">
 <p><hr>
-Node:<a name="OVERLAY%20MODES">OVERLAY MODES</a>,
-Next:<a rel="next" accesskey="n" href="#TRACK%20AND%20OUTPUT%20SIZES">TRACK AND OUTPUT SIZES</a>,
-Previous:<a rel="previous" accesskey="p" href="#SAFE%20REGIONS">SAFE REGIONS</a>,
-Up:<a rel="up" accesskey="u" href="#COMPOSITING">COMPOSITING</a>
+Node:&nbsp;<a name="OVERLAY%20MODES">OVERLAY MODES</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#TRACK%20AND%20OUTPUT%20SIZES">TRACK AND OUTPUT SIZES</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#SAFE%20REGIONS">SAFE REGIONS</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#COMPOSITING">COMPOSITING</a>
 <br>
 </div>
 
 <h3 class="section">OVERLAY MODES</h3>
 
-   <p>Every video track has an overlay mode, accessible by expanding the
+<p>Every video track has an overlay mode, accessible by expanding the
 track.  The overlay mode is a pulldown menu on the left under the
 fader.  When collapsed, it displays an icon representing the current
 overlay mode.
@@ -3669,15 +3680,15 @@ track.
 
 <div class="node">
 <p><hr>
-Node:<a name="TRACK%20AND%20OUTPUT%20SIZES">TRACK AND OUTPUT SIZES</a>,
-Previous:<a rel="previous" accesskey="p" href="#OVERLAY%20MODES">OVERLAY MODES</a>,
-Up:<a rel="up" accesskey="u" href="#COMPOSITING">COMPOSITING</a>
+Node:&nbsp;<a name="TRACK%20AND%20OUTPUT%20SIZES">TRACK AND OUTPUT SIZES</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#OVERLAY%20MODES">OVERLAY MODES</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#COMPOSITING">COMPOSITING</a>
 <br>
 </div>
 
 <h3 class="section">TRACK AND OUTPUT SIZES</h3>
 
-   <p>The size of the temporary and the size of the output in our compositing
+<p>The size of the temporary and the size of the output in our compositing
 pipeline are independant and variable.  This fits into everything
 covered so far.  The camera's viewport is the temporary size.  Effects
 are processed in the temporary and are affected by the temporary size. 
@@ -3701,16 +3712,16 @@ specified by these methods.
 
 <div class="node">
 <p><hr>
-Node:<a name="KEYFRAMES">KEYFRAMES</a>,
-Next:<a rel="next" accesskey="n" href="#CAPTURING%20MEDIA">CAPTURING MEDIA</a>,
-Previous:<a rel="previous" accesskey="p" href="#COMPOSITING">COMPOSITING</a>,
-Up:<a rel="up" accesskey="u" href="#Top">Top</a>
+Node:&nbsp;<a name="KEYFRAMES">KEYFRAMES</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#CAPTURING%20MEDIA">CAPTURING MEDIA</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#COMPOSITING">COMPOSITING</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
 <br>
 </div>
 
 <h2 class="chapter">KEYFRAMES</h2>
 
-   <p>Setting static compositing parameters isn't very useful most of the
+<p>Setting static compositing parameters isn't very useful most of the
 time.  Normally you need to move the camera around over time or change
 mask positions.  Masks need to follow objects.  We create dymanic
 changes by defining keyframes.  A keyframe is a certain point in time
@@ -3739,15 +3750,15 @@ tracks they apply to.
 
 <div class="node">
 <p><hr>
-Node:<a name="CURVE%20KEYFRAMES">CURVE KEYFRAMES</a>,
-Next:<a rel="next" accesskey="n" href="#TOGGLE%20KEYFRAMES">TOGGLE KEYFRAMES</a>,
-Up:<a rel="up" accesskey="u" href="#KEYFRAMES">KEYFRAMES</a>
+Node:&nbsp;<a name="CURVE%20KEYFRAMES">CURVE KEYFRAMES</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#TOGGLE%20KEYFRAMES">TOGGLE KEYFRAMES</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#KEYFRAMES">KEYFRAMES</a>
 <br>
 </div>
 
 <h3 class="section">CURVE KEYFRAMES</h3>
 
-   <p>Fade and zoom settings are stored in bezier curves.  Go to
+<p>Fade and zoom settings are stored in bezier curves.  Go to
 <em>view-&gt;fade keyframes</em> or <em>view-&gt;...zoom</em> to show curves on
 the timeline.  It's sometimes easier to pull down the <em>view</em> menu
 and then use the keyboard shortcuts listed in the menu to enable or
@@ -3773,16 +3784,16 @@ without having to copy the next or previous keyframe.
 
 <div class="node">
 <p><hr>
-Node:<a name="TOGGLE%20KEYFRAMES">TOGGLE KEYFRAMES</a>,
-Next:<a rel="next" accesskey="n" href="#AUTOMATIC%20KEYFRAMES">AUTOMATIC KEYFRAMES</a>,
-Previous:<a rel="previous" accesskey="p" href="#CURVE%20KEYFRAMES">CURVE KEYFRAMES</a>,
-Up:<a rel="up" accesskey="u" href="#KEYFRAMES">KEYFRAMES</a>
+Node:&nbsp;<a name="TOGGLE%20KEYFRAMES">TOGGLE KEYFRAMES</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#AUTOMATIC%20KEYFRAMES">AUTOMATIC KEYFRAMES</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#CURVE%20KEYFRAMES">CURVE KEYFRAMES</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#KEYFRAMES">KEYFRAMES</a>
 <br>
 </div>
 
 <h3 class="section">TOGGLE KEYFRAMES</h3>
 
-   <p>Mute is the only toggle keyframe.  Mute keyframes determine where the
+<p>Mute is the only toggle keyframe.  Mute keyframes determine where the
 track is processed but not rendered to the output.  Click-drag on these
 curves to create a keyframe.  Unlike curves, the toggle keyframe has
 only two values: on or off.  Ctrl and shift do nothing on toggle
@@ -3790,16 +3801,16 @@ keyframes.
 
 <div class="node">
 <p><hr>
-Node:<a name="AUTOMATIC%20KEYFRAMES">AUTOMATIC KEYFRAMES</a>,
-Next:<a rel="next" accesskey="n" href="#COMPOSITOR%20KEYFRAMES">COMPOSITOR KEYFRAMES</a>,
-Previous:<a rel="previous" accesskey="p" href="#TOGGLE%20KEYFRAMES">TOGGLE KEYFRAMES</a>,
-Up:<a rel="up" accesskey="u" href="#KEYFRAMES">KEYFRAMES</a>
+Node:&nbsp;<a name="AUTOMATIC%20KEYFRAMES">AUTOMATIC KEYFRAMES</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#COMPOSITOR%20KEYFRAMES">COMPOSITOR KEYFRAMES</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#TOGGLE%20KEYFRAMES">TOGGLE KEYFRAMES</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#KEYFRAMES">KEYFRAMES</a>
 <br>
 </div>
 
 <h3 class="section">AUTOMATIC KEYFRAMES</h3>
 
-   <p>You may have noticed when a few fade curves are set up, moving the
+<p>You may have noticed when a few fade curves are set up, moving the
 insertion point around the curves causes the faders to reflect the
 curve value under the insertion point.  This isn't just to look cool. 
 The faders themselves can set keyframes in automatic keyframe mode. 
@@ -3840,16 +3851,16 @@ time.
 
 <div class="node">
 <p><hr>
-Node:<a name="COMPOSITOR%20KEYFRAMES">COMPOSITOR KEYFRAMES</a>,
-Next:<a rel="next" accesskey="n" href="#EDITING%20KEYFRAMES">EDITING KEYFRAMES</a>,
-Previous:<a rel="previous" accesskey="p" href="#AUTOMATIC%20KEYFRAMES">AUTOMATIC KEYFRAMES</a>,
-Up:<a rel="up" accesskey="u" href="#KEYFRAMES">KEYFRAMES</a>
+Node:&nbsp;<a name="COMPOSITOR%20KEYFRAMES">COMPOSITOR KEYFRAMES</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#EDITING%20KEYFRAMES">EDITING KEYFRAMES</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#AUTOMATIC%20KEYFRAMES">AUTOMATIC KEYFRAMES</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#KEYFRAMES">KEYFRAMES</a>
 <br>
 </div>
 
 <h3 class="section">COMPOSITOR KEYFRAMES</h3>
 
-   <p>Camera and projector translation is represented by two parameters: x
+<p>Camera and projector translation is represented by two parameters: x
 and y.  Therefore it is cumbersome to adjust with curves.  Cinelerra
 solves this problem by relying on automatic keyframes.  With a video
 track loaded, move the insertion point to the beginning of the track
@@ -3901,15 +3912,15 @@ keyframes, is always centered while the camera boxes move.
 
 <div class="node">
 <p><hr>
-Node:<a name="EDITING%20KEYFRAMES">EDITING KEYFRAMES</a>,
-Previous:<a rel="previous" accesskey="p" href="#COMPOSITOR%20KEYFRAMES">COMPOSITOR KEYFRAMES</a>,
-Up:<a rel="up" accesskey="u" href="#KEYFRAMES">KEYFRAMES</a>
+Node:&nbsp;<a name="EDITING%20KEYFRAMES">EDITING KEYFRAMES</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#COMPOSITOR%20KEYFRAMES">COMPOSITOR KEYFRAMES</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#KEYFRAMES">KEYFRAMES</a>
 <br>
 </div>
 
 <h3 class="section">EDITING KEYFRAMES</h3>
 
-   <p>Keyframes can be shifted around and moved between tracks on the
+<p>Keyframes can be shifted around and moved between tracks on the
 timeline using similar cut and paste operations to editing media.  Only
 the keyframes selected in the <em>view</em> menu are affected by keyframe
 editing operations, however.
@@ -3954,16 +3965,16 @@ its following keyframe on the track.
 
 <div class="node">
 <p><hr>
-Node:<a name="CAPTURING%20MEDIA">CAPTURING MEDIA</a>,
-Next:<a rel="next" accesskey="n" href="#IMPROVING%20PERFORMANCE">IMPROVING PERFORMANCE</a>,
-Previous:<a rel="previous" accesskey="p" href="#KEYFRAMES">KEYFRAMES</a>,
-Up:<a rel="up" accesskey="u" href="#Top">Top</a>
+Node:&nbsp;<a name="CAPTURING%20MEDIA">CAPTURING MEDIA</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#IMPROVING%20PERFORMANCE">IMPROVING PERFORMANCE</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#KEYFRAMES">KEYFRAMES</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
 <br>
 </div>
 
 <h2 class="chapter">CAPTURING MEDIA</h2>
 
-   <p>Ideally, all media would be stored on hard drives, CD-ROM, flash, or
+<p>Ideally, all media would be stored on hard drives, CD-ROM, flash, or
 DVD and loading it into Cinelerra would be a matter of loading a file. 
 In reality, very few sources of media can be accessed like a filesystem
 but instead rely on tape transport mechanisms and dumb I/O mechanisms
@@ -4033,15 +4044,15 @@ frame.
 
 <div class="node">
 <p><hr>
-Node:<a name="BATCHES">BATCHES</a>,
-Next:<a rel="next" accesskey="n" href="#EDITING%20TUNER%20INFORMATION">EDITING TUNER INFORMATION</a>,
-Up:<a rel="up" accesskey="u" href="#CAPTURING%20MEDIA">CAPTURING MEDIA</a>
+Node:&nbsp;<a name="BATCHES">BATCHES</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#EDITING%20TUNER%20INFORMATION">EDITING TUNER INFORMATION</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#CAPTURING%20MEDIA">CAPTURING MEDIA</a>
 <br>
 </div>
 
 <h3 class="section">BATCHES</h3>
 
-   <p>Now we come to the concept of batches.  Batches try to make the dumb
+<p>Now we come to the concept of batches.  Batches try to make the dumb
 I/O look more like a filesystem.  Batches are traditionally used to
 divide tape into different programs and save the different programs as
 different files instead of recording straight through an entire tape. 
@@ -4141,15 +4152,15 @@ batch deletes the file.
 
 <div class="node">
 <p><hr>
-Node:<a name="EDITING%20TUNER%20INFORMATION">EDITING TUNER INFORMATION</a>,
-Previous:<a rel="previous" accesskey="p" href="#BATCHES">BATCHES</a>,
-Up:<a rel="up" accesskey="u" href="#CAPTURING%20MEDIA">CAPTURING MEDIA</a>
+Node:&nbsp;<a name="EDITING%20TUNER%20INFORMATION">EDITING TUNER INFORMATION</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#BATCHES">BATCHES</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#CAPTURING%20MEDIA">CAPTURING MEDIA</a>
 <br>
 </div>
 
 <h3 class="section">EDITING TUNER INFORMATION</h3>
 
-   <p>Sometimes in the recording process and the configuration process,
+<p>Sometimes in the recording process and the configuration process,
 you'll need to define and select tuner channels to either record or
 play back to.  In the case of the Video4Linux and Buz recording
 drivers, tuner channels define the source.  When the Buz driver is also
@@ -4187,16 +4198,16 @@ the right order.
 
 <div class="node">
 <p><hr>
-Node:<a name="IMPROVING%20PERFORMANCE">IMPROVING PERFORMANCE</a>,
-Next:<a rel="next" accesskey="n" href="#TROUBLESHOOTING">TROUBLESHOOTING</a>,
-Previous:<a rel="previous" accesskey="p" href="#CAPTURING%20MEDIA">CAPTURING MEDIA</a>,
-Up:<a rel="up" accesskey="u" href="#Top">Top</a>
+Node:&nbsp;<a name="IMPROVING%20PERFORMANCE">IMPROVING PERFORMANCE</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#TROUBLESHOOTING">TROUBLESHOOTING</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#CAPTURING%20MEDIA">CAPTURING MEDIA</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
 <br>
 </div>
 
 <h2 class="chapter">IMPROVING PERFORMANCE</h2>
 
-   <p>Let's get one thing perfectly clear.  Linux is not a very good
+<p>Let's get one thing perfectly clear.  Linux is not a very good
 desktop.  It's a server.  Most of what you'll find on modern Linux
 distributions are faceless, network-only programs strategicly designed
 to counteract one Microsoft server feature or another and not to
@@ -4218,15 +4229,15 @@ more like a thoroughbred in desktop usage.
 
 <div class="node">
 <p><hr>
-Node:<a name="DISABLING%20SWAP%20SPACE">DISABLING SWAP SPACE</a>,
-Next:<a rel="next" accesskey="n" href="#ENLARGING%20SOUND%20BUFFERS">ENLARGING SOUND BUFFERS</a>,
-Up:<a rel="up" accesskey="u" href="#IMPROVING%20PERFORMANCE">IMPROVING PERFORMANCE</a>
+Node:&nbsp;<a name="DISABLING%20SWAP%20SPACE">DISABLING SWAP SPACE</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#ENLARGING%20SOUND%20BUFFERS">ENLARGING SOUND BUFFERS</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#IMPROVING%20PERFORMANCE">IMPROVING PERFORMANCE</a>
 <br>
 </div>
 
 <h3 class="section">DISABLING SWAP SPACE</h3>
 
-   <p>On systems with lots of memory, Cinelerra sometimes runs better without
+<p>On systems with lots of memory, Cinelerra sometimes runs better without
 a swap space.  If you have 4 GB of RAM, you're probably better off
 without a swap space.  If you have 512MB of RAM, you should keep the
 swap.  If you want to do recording, you should probably disable swap
@@ -4254,16 +4265,16 @@ In this file, put a line saying <b>return 0;</b> before it says
 
 <div class="node">
 <p><hr>
-Node:<a name="ENLARGING%20SOUND%20BUFFERS">ENLARGING SOUND BUFFERS</a>,
-Next:<a rel="next" accesskey="n" href="#FREEING%20MORE%20SHARED%20MEMORY">FREEING MORE SHARED MEMORY</a>,
-Previous:<a rel="previous" accesskey="p" href="#DISABLING%20SWAP%20SPACE">DISABLING SWAP SPACE</a>,
-Up:<a rel="up" accesskey="u" href="#IMPROVING%20PERFORMANCE">IMPROVING PERFORMANCE</a>
+Node:&nbsp;<a name="ENLARGING%20SOUND%20BUFFERS">ENLARGING SOUND BUFFERS</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#FREEING%20MORE%20SHARED%20MEMORY">FREEING MORE SHARED MEMORY</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#DISABLING%20SWAP%20SPACE">DISABLING SWAP SPACE</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#IMPROVING%20PERFORMANCE">IMPROVING PERFORMANCE</a>
 <br>
 </div>
 
 <h3 class="section">ENLARGING SOUND BUFFERS</h3>
 
-   <p>In order to improve realtime performance, the audio buffers for all the
+<p>In order to improve realtime performance, the audio buffers for all the
 Linux sound drivers were limited from 128k to 64k.  For recording audio
 and video simultaneously and for most audio recording this causes
 dropouts.  Application of low latency and preemtible kernel patches
@@ -4326,16 +4337,16 @@ sound cards.  Edit <b>linux/drivers/sound/emu10k1/audio.c</b>
 
 <div class="node">
 <p><hr>
-Node:<a name="FREEING%20MORE%20SHARED%20MEMORY">FREEING MORE SHARED MEMORY</a>,
-Next:<a rel="next" accesskey="n" href="#SPEEDING%20UP%20THE%20HARD%20DRIVE">SPEEDING UP THE HARD DRIVE</a>,
-Previous:<a rel="previous" accesskey="p" href="#ENLARGING%20SOUND%20BUFFERS">ENLARGING SOUND BUFFERS</a>,
-Up:<a rel="up" accesskey="u" href="#IMPROVING%20PERFORMANCE">IMPROVING PERFORMANCE</a>
+Node:&nbsp;<a name="FREEING%20MORE%20SHARED%20MEMORY">FREEING MORE SHARED MEMORY</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#SPEEDING%20UP%20THE%20HARD%20DRIVE">SPEEDING UP THE HARD DRIVE</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#ENLARGING%20SOUND%20BUFFERS">ENLARGING SOUND BUFFERS</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#IMPROVING%20PERFORMANCE">IMPROVING PERFORMANCE</a>
 <br>
 </div>
 
 <h3 class="section">FREEING MORE SHARED MEMORY</h3>
 
-   <p>The Linux kernel only allows 32MB of shared memory to be allocated by
+<p>The Linux kernel only allows 32MB of shared memory to be allocated by
 default.  This needs to be increased to do anything useful.  Run the
 following command:
 
@@ -4343,16 +4354,16 @@ following command:
 
 <div class="node">
 <p><hr>
-Node:<a name="SPEEDING%20UP%20THE%20HARD%20DRIVE">SPEEDING UP THE HARD DRIVE</a>,
-Next:<a rel="next" accesskey="n" href="#DISABLING%20CRON">DISABLING CRON</a>,
-Previous:<a rel="previous" accesskey="p" href="#FREEING%20MORE%20SHARED%20MEMORY">FREEING MORE SHARED MEMORY</a>,
-Up:<a rel="up" accesskey="u" href="#IMPROVING%20PERFORMANCE">IMPROVING PERFORMANCE</a>
+Node:&nbsp;<a name="SPEEDING%20UP%20THE%20HARD%20DRIVE">SPEEDING UP THE HARD DRIVE</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#DISABLING%20CRON">DISABLING CRON</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#FREEING%20MORE%20SHARED%20MEMORY">FREEING MORE SHARED MEMORY</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#IMPROVING%20PERFORMANCE">IMPROVING PERFORMANCE</a>
 <br>
 </div>
 
 <h3 class="section">SPEEDING UP THE HARD DRIVE</h3>
 
-   <p>This is a very popular command sequence among Linux gurus, which is not
+<p>This is a very popular command sequence among Linux gurus, which is not
 done by default on Linux distributions.
 
    <p><b>hdparm -c3 -d1 -u1 -k1 /dev/hda</b>
@@ -4373,16 +4384,16 @@ glitch.
 
 <div class="node">
 <p><hr>
-Node:<a name="DISABLING%20CRON">DISABLING CRON</a>,
-Next:<a rel="next" accesskey="n" href="#REDUCING%20USB%20MOUSE%20SENSITIVITY">REDUCING USB MOUSE SENSITIVITY</a>,
-Previous:<a rel="previous" accesskey="p" href="#SPEEDING%20UP%20THE%20HARD%20DRIVE">SPEEDING UP THE HARD DRIVE</a>,
-Up:<a rel="up" accesskey="u" href="#IMPROVING%20PERFORMANCE">IMPROVING PERFORMANCE</a>
+Node:&nbsp;<a name="DISABLING%20CRON">DISABLING CRON</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#REDUCING%20USB%20MOUSE%20SENSITIVITY">REDUCING USB MOUSE SENSITIVITY</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#SPEEDING%20UP%20THE%20HARD%20DRIVE">SPEEDING UP THE HARD DRIVE</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#IMPROVING%20PERFORMANCE">IMPROVING PERFORMANCE</a>
 <br>
 </div>
 
 <h3 class="section">DISABLING CRON</h3>
 
-   <p>Linux runs some daily operations like compressing man pages.  These may
+<p>Linux runs some daily operations like compressing man pages.  These may
 be acceptable background tasks while compiling or word processing but
 not while playing video.  Disable these operations by editing
 <b>/etc/rc.d/init.d/anacron</b>.
@@ -4397,16 +4408,16 @@ anyways?
 
 <div class="node">
 <p><hr>
-Node:<a name="REDUCING%20USB%20MOUSE%20SENSITIVITY">REDUCING USB MOUSE SENSITIVITY</a>,
-Next:<a rel="next" accesskey="n" href="#ASSORTED%20X%20TWEEKS">ASSORTED X TWEEKS</a>,
-Previous:<a rel="previous" accesskey="p" href="#DISABLING%20CRON">DISABLING CRON</a>,
-Up:<a rel="up" accesskey="u" href="#IMPROVING%20PERFORMANCE">IMPROVING PERFORMANCE</a>
+Node:&nbsp;<a name="REDUCING%20USB%20MOUSE%20SENSITIVITY">REDUCING USB MOUSE SENSITIVITY</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#ASSORTED%20X%20TWEEKS">ASSORTED X TWEEKS</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#DISABLING%20CRON">DISABLING CRON</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#IMPROVING%20PERFORMANCE">IMPROVING PERFORMANCE</a>
 <br>
 </div>
 
 <h3 class="section">REDUCING USB MOUSE SENSITIVITY</h3>
 
-   <p>Gamers like high resolution mice, but this can be painful for precisely
+<p>Gamers like high resolution mice, but this can be painful for precisely
 positioning the mouse on a timeline or video screen.  XFree86 once
 allowed you to reduce PS/2 mouse sensitivity using commands like
 <b>xset m 1 1</b> but you're out of luck with USB mice or KVM's.
@@ -4464,16 +4475,16 @@ allowed you to reduce PS/2 mouse sensitivity using commands like
 
 <div class="node">
 <p><hr>
-Node:<a name="ASSORTED%20X%20TWEEKS">ASSORTED X TWEEKS</a>,
-Next:<a rel="next" accesskey="n" href="#SPEEDING%20UP%20THE%20FILE%20SYSTEM">SPEEDING UP THE FILE SYSTEM</a>,
-Previous:<a rel="previous" accesskey="p" href="#REDUCING%20USB%20MOUSE%20SENSITIVITY">REDUCING USB MOUSE SENSITIVITY</a>,
-Up:<a rel="up" accesskey="u" href="#IMPROVING%20PERFORMANCE">IMPROVING PERFORMANCE</a>
+Node:&nbsp;<a name="ASSORTED%20X%20TWEEKS">ASSORTED X TWEEKS</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#SPEEDING%20UP%20THE%20FILE%20SYSTEM">SPEEDING UP THE FILE SYSTEM</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#REDUCING%20USB%20MOUSE%20SENSITIVITY">REDUCING USB MOUSE SENSITIVITY</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#IMPROVING%20PERFORMANCE">IMPROVING PERFORMANCE</a>
 <br>
 </div>
 
 <h3 class="section">ASSORTED X TWEEKS</h3>
 
-   <p>XFree86 by default can't display Cinelerra's advanced pixmap rendering
+<p>XFree86 by default can't display Cinelerra's advanced pixmap rendering
 very fast.  The X server stalls during list box drawing.  Fix this by
 adding a line to your XF86Config* files.
 
@@ -4521,16 +4532,16 @@ down video with extra event trapping and aren't as efficient in layout.
 
 <div class="node">
 <p><hr>
-Node:<a name="SPEEDING%20UP%20THE%20FILE%20SYSTEM">SPEEDING UP THE FILE SYSTEM</a>,
-Next:<a rel="next" accesskey="n" href="#IMPROVING%20ZORAN%20VIDEO">IMPROVING ZORAN VIDEO</a>,
-Previous:<a rel="previous" accesskey="p" href="#ASSORTED%20X%20TWEEKS">ASSORTED X TWEEKS</a>,
-Up:<a rel="up" accesskey="u" href="#IMPROVING%20PERFORMANCE">IMPROVING PERFORMANCE</a>
+Node:&nbsp;<a name="SPEEDING%20UP%20THE%20FILE%20SYSTEM">SPEEDING UP THE FILE SYSTEM</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#IMPROVING%20ZORAN%20VIDEO">IMPROVING ZORAN VIDEO</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#ASSORTED%20X%20TWEEKS">ASSORTED X TWEEKS</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#IMPROVING%20PERFORMANCE">IMPROVING PERFORMANCE</a>
 <br>
 </div>
 
 <h3 class="section">SPEEDING UP THE FILE SYSTEM</h3>
 
-   <p>You'll often store video on an expensive, gigantic disk array separate
+<p>You'll often store video on an expensive, gigantic disk array separate
 from your boot disk.  You'll thus have to manually install an EXT
 filesystem on this disk array, using the <b>mke2fs</b> command.  By far
 the fastest file system is
@@ -4557,15 +4568,15 @@ power failures.
 
 <div class="node">
 <p><hr>
-Node:<a name="IMPROVING%20ZORAN%20VIDEO">IMPROVING ZORAN VIDEO</a>,
-Previous:<a rel="previous" accesskey="p" href="#SPEEDING%20UP%20THE%20FILE%20SYSTEM">SPEEDING UP THE FILE SYSTEM</a>,
-Up:<a rel="up" accesskey="u" href="#IMPROVING%20PERFORMANCE">IMPROVING PERFORMANCE</a>
+Node:&nbsp;<a name="IMPROVING%20ZORAN%20VIDEO">IMPROVING ZORAN VIDEO</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#SPEEDING%20UP%20THE%20FILE%20SYSTEM">SPEEDING UP THE FILE SYSTEM</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#IMPROVING%20PERFORMANCE">IMPROVING PERFORMANCE</a>
 <br>
 </div>
 
 <h3 class="section">IMPROVING ZORAN VIDEO</h3>
 
-   <p>Video recorded from the ZORAN inputs is normally unaligned or not
+<p>Video recorded from the ZORAN inputs is normally unaligned or not
 completely encoded on the right.  This can be slightly compensated by
 adjusting parameters in the driver sourcecode.
 
@@ -4593,16 +4604,47 @@ line 76 affect alignment and encoding.
 <pre class="example">     {868 - 24, 2, 523, 1, 0x00f8, 0x0000},
      </pre>
 
-   <p>Adjusting these parameters may or may not improve your picture.  More
-of the time, they'll cause the driver to lock up before capturing
-the first frame.
+   <p>Adjusting these parameters may or may not move your picture closer to
+the center.  More of the time, they'll cause the driver to lock up
+before capturing the first frame.
+
+<h3 class="subsection">NEW IN 2.6.5</h4>
+
+<p>In the 2.6 kernels, the video subsystem was rewritten again from
+scratch.  To adjust the Zoran parameters go to
+<b>drivers/media/video/zoran_card.c</b> and look for a group of lines like
+
+<pre class="example">     static struct tvnorm f50sqpixel = { 944, 768, 83, 880, 625, 576, 16 };
+     static struct tvnorm f60sqpixel = { 780, 640, 51, 716, 525, 480, 12 };
+     static struct tvnorm f50ccir601 = { 864, 720, 75, 804, 625, 576, 18 };
+     static struct tvnorm f60ccir601 = { 858, 720, 57, 788, 525, 480, 16 };
+     
+     static struct tvnorm f50ccir601_lml33 = { 864, 720, 75+34, 804, 625, 576, 18 };
+     static struct tvnorm f60ccir601_lml33 = { 858, 720, 57+34, 788, 525, 480, 16 };
+     
+     /* The DC10 (57/16/50) uses VActive as HSync, so HStart must be 0 */
+     static struct tvnorm f50sqpixel_dc10 = { 944, 768, 0, 880, 625, 576, 0 };
+     static struct tvnorm f60sqpixel_dc10 = { 780, 640, 0, 716, 525, 480, 12 };
+     
+     /* FIXME: I cannot swap U and V in saa7114, so i do one
+      * pixel left shift in zoran (75 -&gt; 74)
+      * (Maxim Yevtyushkin &lt;max@linuxmedialabs.com&gt;) */
+     static struct tvnorm f50ccir601_lm33r10 = { 864, 720, 74+54, 804, 625, 576, 18 };
+     static struct tvnorm f60ccir601_lm33r10 = { 858, 720, 56+54, 788, 525, 480, 16 };
+     </pre>
+
+   <p>These seem to control the image position.  At least for the LML33 the
+following definition for <b>f60ccir601_lml33</b> does the trick.
+
+<pre class="example">     static struct tvnorm f60ccir601_lml33 = { 858, 720, 67+34, 788, 525, 480, 13 };
+     </pre>
 
 <div class="node">
 <p><hr>
-Node:<a name="TROUBLESHOOTING">TROUBLESHOOTING</a>,
-Next:<a rel="next" accesskey="n" href="#SECRETS%20OF%20CINELERRA">SECRETS OF CINELERRA</a>,
-Previous:<a rel="previous" accesskey="p" href="#IMPROVING%20PERFORMANCE">IMPROVING PERFORMANCE</a>,
-Up:<a rel="up" accesskey="u" href="#Top">Top</a>
+Node:&nbsp;<a name="TROUBLESHOOTING">TROUBLESHOOTING</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#SECRETS%20OF%20CINELERRA">SECRETS OF CINELERRA</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#IMPROVING%20PERFORMANCE">IMPROVING PERFORMANCE</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
 <br>
 </div>
 
@@ -4616,15 +4658,15 @@ Up:<a rel="up" accesskey="u" href="#Top">Top</a>
 
 <div class="node">
 <p><hr>
-Node:<a name="BUZ%20DRIVER%20CRASHES">BUZ DRIVER CRASHES</a>,
-Next:<a rel="next" accesskey="n" href="#DRAGGING%20IN%20AND%20OUT%20POINTS%20DOESN'T%20WORK">DRAGGING IN AND OUT POINTS DOESN'T WORK</a>,
-Up:<a rel="up" accesskey="u" href="#TROUBLESHOOTING">TROUBLESHOOTING</a>
+Node:&nbsp;<a name="BUZ%20DRIVER%20CRASHES">BUZ DRIVER CRASHES</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#DRAGGING%20IN%20AND%20OUT%20POINTS%20DOESN'T%20WORK">DRAGGING IN AND OUT POINTS DOESN'T WORK</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#TROUBLESHOOTING">TROUBLESHOOTING</a>
 <br>
 </div>
 
 <h3 class="section">BUZ DRIVER CRASHES</h3>
 
-   <p>First, Zoran capture boards must be accessed using the <b>Buz</b> video
+<p>First, Zoran capture boards must be accessed using the <b>Buz</b> video
 driver in <b>Preferences-&gt;Recording</b> and <b>Preferences-&gt;Playback</b>. 
 Some performance tweeks are available in another section. 
 See <a href="#IMPROVING%20PERFORMANCE">IMPROVING PERFORMANCE</a>.
@@ -4635,30 +4677,30 @@ buffer in device</b> is below 10.
 
 <div class="node">
 <p><hr>
-Node:<a name="DRAGGING%20IN%20AND%20OUT%20POINTS%20DOESN'T%20WORK">DRAGGING IN AND OUT POINTS DOESN'T WORK</a>,
-Next:<a rel="next" accesskey="n" href="#SYNCHRONIZATION%20LOST%20WHILE%20RECORDING">SYNCHRONIZATION LOST WHILE RECORDING</a>,
-Previous:<a rel="previous" accesskey="p" href="#BUZ%20DRIVER%20CRASHES">BUZ DRIVER CRASHES</a>,
-Up:<a rel="up" accesskey="u" href="#TROUBLESHOOTING">TROUBLESHOOTING</a>
+Node:&nbsp;<a name="DRAGGING%20IN%20AND%20OUT%20POINTS%20DOESN'T%20WORK">DRAGGING IN AND OUT POINTS DOESN'T WORK</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#SYNCHRONIZATION%20LOST%20WHILE%20RECORDING">SYNCHRONIZATION LOST WHILE RECORDING</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#BUZ%20DRIVER%20CRASHES">BUZ DRIVER CRASHES</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#TROUBLESHOOTING">TROUBLESHOOTING</a>
 <br>
 </div>
 
 <h3 class="section">DRAGGING IN AND OUT POINTS DOESN'T WORK</h3>
 
-   <p>Sometimes there will be two edits really close together.  The point
+<p>Sometimes there will be two edits really close together.  The point
 selected for dragging may be next to the indended edit on an edit too
 small to see at the current zoom level.  Zoom in horizontally.
 
 <div class="node">
 <p><hr>
-Node:<a name="SYNCHRONIZATION%20LOST%20WHILE%20RECORDING">SYNCHRONIZATION LOST WHILE RECORDING</a>,
-Previous:<a rel="previous" accesskey="p" href="#DRAGGING%20IN%20AND%20OUT%20POINTS%20DOESN'T%20WORK">DRAGGING IN AND OUT POINTS DOESN'T WORK</a>,
-Up:<a rel="up" accesskey="u" href="#TROUBLESHOOTING">TROUBLESHOOTING</a>
+Node:&nbsp;<a name="SYNCHRONIZATION%20LOST%20WHILE%20RECORDING">SYNCHRONIZATION LOST WHILE RECORDING</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#DRAGGING%20IN%20AND%20OUT%20POINTS%20DOESN'T%20WORK">DRAGGING IN AND OUT POINTS DOESN'T WORK</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#TROUBLESHOOTING">TROUBLESHOOTING</a>
 <br>
 </div>
 
 <h3 class="section">SYNCHRONIZATION LOST WHILE RECORDING</h3>
 
-   <p>If the framerate of the recording is much lower than the framerate of
+<p>If the framerate of the recording is much lower than the framerate of
 the source, the video will accumulate in the recording buffers over
 time while the audio and video are well out of sync.  Decrease the
 <b>number of frames to buffer in the device</b> in
@@ -4667,10 +4709,10 @@ buffered.
 
 <div class="node">
 <p><hr>
-Node:<a name="SECRETS%20OF%20CINELERRA">SECRETS OF CINELERRA</a>,
-Next:<a rel="next" accesskey="n" href="#SECRETS%20OF%20CINELERRA%20EFFECTS">SECRETS OF CINELERRA EFFECTS</a>,
-Previous:<a rel="previous" accesskey="p" href="#TROUBLESHOOTING">TROUBLESHOOTING</a>,
-Up:<a rel="up" accesskey="u" href="#Top">Top</a>
+Node:&nbsp;<a name="SECRETS%20OF%20CINELERRA">SECRETS OF CINELERRA</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#SECRETS%20OF%20CINELERRA%20EFFECTS">SECRETS OF CINELERRA EFFECTS</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#TROUBLESHOOTING">TROUBLESHOOTING</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
 <br>
 </div>
 
@@ -4686,15 +4728,15 @@ Up:<a rel="up" accesskey="u" href="#Top">Top</a>
 
 <div class="node">
 <p><hr>
-Node:<a name="DOLBY%20PRO%20LOGIC%20ENCODING">DOLBY PRO LOGIC ENCODING</a>,
-Next:<a rel="next" accesskey="n" href="#ANALOG%20TV%20CLEANING">ANALOG TV CLEANING</a>,
-Up:<a rel="up" accesskey="u" href="#SECRETS%20OF%20CINELERRA">SECRETS OF CINELERRA</a>
+Node:&nbsp;<a name="DOLBY%20PRO%20LOGIC%20ENCODING">DOLBY PRO LOGIC ENCODING</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#ANALOG%20TV%20CLEANING">ANALOG TV CLEANING</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#SECRETS%20OF%20CINELERRA">SECRETS OF CINELERRA</a>
 <br>
 </div>
 
 <h3 class="section">DOLBY PRO LOGIC ENCODING</h3>
 
-   <p>Dolby pro logic is an easy way to output 6 channel audio from a 2
+<p>Dolby pro logic is an easy way to output 6 channel audio from a 2
 channel soundcard with degraded but useful results.  Rudimentary Dolby
 pro logic encoding can be achieved with clever usage of the effects.
 
@@ -4728,16 +4770,16 @@ subwoofer.
 
 <div class="node">
 <p><hr>
-Node:<a name="ANALOG%20TV%20CLEANING">ANALOG TV CLEANING</a>,
-Next:<a rel="next" accesskey="n" href="#DEFEATING%20INTERLACING">DEFEATING INTERLACING</a>,
-Previous:<a rel="previous" accesskey="p" href="#DOLBY%20PRO%20LOGIC%20ENCODING">DOLBY PRO LOGIC ENCODING</a>,
-Up:<a rel="up" accesskey="u" href="#SECRETS%20OF%20CINELERRA">SECRETS OF CINELERRA</a>
+Node:&nbsp;<a name="ANALOG%20TV%20CLEANING">ANALOG TV CLEANING</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#DEFEATING%20INTERLACING">DEFEATING INTERLACING</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#DOLBY%20PRO%20LOGIC%20ENCODING">DOLBY PRO LOGIC ENCODING</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#SECRETS%20OF%20CINELERRA">SECRETS OF CINELERRA</a>
 <br>
 </div>
 
 <h3 class="section">ANALOG TV CLEANING</h3>
 
-   <p>Unless you live in a rich nation like China or are a terrorist, you
+<p>Unless you live in a rich nation like China or are a terrorist, you
 probably record analog TV more than you record digital TV.  The picture
 quality on analog TV is horrible but you can do things in Cinelerra to
 make it look more like it did in the studio.
@@ -4780,16 +4822,16 @@ techniques involve deinterlacing.
 
 <div class="node">
 <p><hr>
-Node:<a name="DEFEATING%20INTERLACING">DEFEATING INTERLACING</a>,
-Next:<a rel="next" accesskey="n" href="#MAKING%20VIDEO%20LOOK%20LIKE%20FILM">MAKING VIDEO LOOK LIKE FILM</a>,
-Previous:<a rel="previous" accesskey="p" href="#ANALOG%20TV%20CLEANING">ANALOG TV CLEANING</a>,
-Up:<a rel="up" accesskey="u" href="#SECRETS%20OF%20CINELERRA">SECRETS OF CINELERRA</a>
+Node:&nbsp;<a name="DEFEATING%20INTERLACING">DEFEATING INTERLACING</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#MAKING%20VIDEO%20LOOK%20LIKE%20FILM">MAKING VIDEO LOOK LIKE FILM</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#ANALOG%20TV%20CLEANING">ANALOG TV CLEANING</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#SECRETS%20OF%20CINELERRA">SECRETS OF CINELERRA</a>
 <br>
 </div>
 
 <h3 class="section">DEFEATING INTERLACING</h3>
 
-   <p>Interlacing is done on most video sources because it costs too much to
+<p>Interlacing is done on most video sources because it costs too much to
 build progressive scanning cameras and progressive scanning CRT's. 
 Many a consumer has been dissapointed to spend 5 paychecks on a
 camcorder and discover what horrible jagged images it produces on a
@@ -4866,16 +4908,16 @@ doubling algorithm to deinterlace it, See <a href="#1080%20TO%20480">1080 TO 480
 
 <div class="node">
 <p><hr>
-Node:<a name="MAKING%20VIDEO%20LOOK%20LIKE%20FILM">MAKING VIDEO LOOK LIKE FILM</a>,
-Next:<a rel="next" accesskey="n" href="#CLEARING%20OUT%20HAZE">CLEARING OUT HAZE</a>,
-Previous:<a rel="previous" accesskey="p" href="#DEFEATING%20INTERLACING">DEFEATING INTERLACING</a>,
-Up:<a rel="up" accesskey="u" href="#SECRETS%20OF%20CINELERRA">SECRETS OF CINELERRA</a>
+Node:&nbsp;<a name="MAKING%20VIDEO%20LOOK%20LIKE%20FILM">MAKING VIDEO LOOK LIKE FILM</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#CLEARING%20OUT%20HAZE">CLEARING OUT HAZE</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#DEFEATING%20INTERLACING">DEFEATING INTERLACING</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#SECRETS%20OF%20CINELERRA">SECRETS OF CINELERRA</a>
 <br>
 </div>
 
 <h3 class="section">MAKING VIDEO LOOK LIKE FILM</h3>
 
-   <p>Video sweetening is constantly getting better.  Lately the best thing
+<p>Video sweetening is constantly getting better.  Lately the best thing
 you can do for dirt cheap consumer camcorder video is to turn it into
 progressive 24fps output.  While you can't really do that, you can get
 pretty close for the money.  Mind you, this procedure can degrade high
@@ -4919,15 +4961,15 @@ Still debating that one.
 
 <div class="node">
 <p><hr>
-Node:<a name="CLEARING%20OUT%20HAZE">CLEARING OUT HAZE</a>,
-Previous:<a rel="previous" accesskey="p" href="#MAKING%20VIDEO%20LOOK%20LIKE%20FILM">MAKING VIDEO LOOK LIKE FILM</a>,
-Up:<a rel="up" accesskey="u" href="#SECRETS%20OF%20CINELERRA">SECRETS OF CINELERRA</a>
+Node:&nbsp;<a name="CLEARING%20OUT%20HAZE">CLEARING OUT HAZE</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#MAKING%20VIDEO%20LOOK%20LIKE%20FILM">MAKING VIDEO LOOK LIKE FILM</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#SECRETS%20OF%20CINELERRA">SECRETS OF CINELERRA</a>
 <br>
 </div>
 
 <h3 class="section">CLEARING OUT HAZE</h3>
 
-   <p>Let's face it, if you're employed you live in Silicon Valley.  As such
+<p>Let's face it, if you're employed you live in Silicon Valley.  As such
 you probably photograph a lot of haze and never see blue sky ever. 
 Even if you can afford to briefly go somewhere where there is blue sky,
 horizon shots usually can stand for more depth.  This is what the
@@ -4949,16 +4991,16 @@ Some scenes may work better with orange or brown for an evening feel.
 
 <div class="node">
 <p><hr>
-Node:<a name="SECRETS%20OF%20CINELERRA%20EFFECTS">SECRETS OF CINELERRA EFFECTS</a>,
-Next:<a rel="next" accesskey="n" href="#PLUGIN%20AUTHORING">PLUGIN AUTHORING</a>,
-Previous:<a rel="previous" accesskey="p" href="#SECRETS%20OF%20CINELERRA">SECRETS OF CINELERRA</a>,
-Up:<a rel="up" accesskey="u" href="#Top">Top</a>
+Node:&nbsp;<a name="SECRETS%20OF%20CINELERRA%20EFFECTS">SECRETS OF CINELERRA EFFECTS</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#PLUGIN%20AUTHORING">PLUGIN AUTHORING</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#SECRETS%20OF%20CINELERRA">SECRETS OF CINELERRA</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
 <br>
 </div>
 
 <h2 class="chapter">SECRETS OF CINELERRA EFFECTS</h2>
 
-   <p>Most effects in Cinelerra can be figured out just by using them and
+<p>Most effects in Cinelerra can be figured out just by using them and
 tweeking.  Here are brief descriptions of effects which you might not
 utilize fully by mere experimentation.
 
@@ -4979,15 +5021,15 @@ utilize fully by mere experimentation.
 
 <div class="node">
 <p><hr>
-Node:<a name="1080%20TO%20480">1080 TO 480</a>,
-Next:<a rel="next" accesskey="n" href="#CHROMA%20KEY">CHROMA KEY</a>,
-Up:<a rel="up" accesskey="u" href="#SECRETS%20OF%20CINELERRA%20EFFECTS">SECRETS OF CINELERRA EFFECTS</a>
+Node:&nbsp;<a name="1080%20TO%20480">1080 TO 480</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#CHROMA%20KEY">CHROMA KEY</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#SECRETS%20OF%20CINELERRA%20EFFECTS">SECRETS OF CINELERRA EFFECTS</a>
 <br>
 </div>
 
 <h3 class="section">1080 TO 480</h3>
 
-   <p>Most TV broadcasts are recieved with a 1920x1080 resolution but
+<p>Most TV broadcasts are recieved with a 1920x1080 resolution but
 originate from a 720x480 source at the studio.  It's a waste of space
 to compress the entire 1920x1080 if the only resolvable details are
 720x480.  Unfortunately resizing 1920x1080 video to 720x480 isn't as
@@ -5021,16 +5063,16 @@ progressive frames.
 
 <div class="node">
 <p><hr>
-Node:<a name="CHROMA%20KEY">CHROMA KEY</a>,
-Next:<a rel="next" accesskey="n" href="#DECIMATE">DECIMATE</a>,
-Previous:<a rel="previous" accesskey="p" href="#1080%20TO%20480">1080 TO 480</a>,
-Up:<a rel="up" accesskey="u" href="#SECRETS%20OF%20CINELERRA%20EFFECTS">SECRETS OF CINELERRA EFFECTS</a>
+Node:&nbsp;<a name="CHROMA%20KEY">CHROMA KEY</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#DECIMATE">DECIMATE</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#1080%20TO%20480">1080 TO 480</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#SECRETS%20OF%20CINELERRA%20EFFECTS">SECRETS OF CINELERRA EFFECTS</a>
 <br>
 </div>
 
 <h3 class="section">CHROMA KEY</h3>
 
-   <p>This effect replaces the selected color or intensity with black if
+<p>This effect replaces the selected color or intensity with black if
 there is no alpha channel and replaces it with transparency if there is
 an alpha channel.  The selection of color model is important.
 
@@ -5047,16 +5089,16 @@ to blur just the alpha.
 
 <div class="node">
 <p><hr>
-Node:<a name="DECIMATE">DECIMATE</a>,
-Next:<a rel="next" accesskey="n" href="#DEINTERLACE">DEINTERLACE</a>,
-Previous:<a rel="previous" accesskey="p" href="#CHROMA%20KEY">CHROMA KEY</a>,
-Up:<a rel="up" accesskey="u" href="#SECRETS%20OF%20CINELERRA%20EFFECTS">SECRETS OF CINELERRA EFFECTS</a>
+Node:&nbsp;<a name="DECIMATE">DECIMATE</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#DEINTERLACE">DEINTERLACE</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#CHROMA%20KEY">CHROMA KEY</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#SECRETS%20OF%20CINELERRA%20EFFECTS">SECRETS OF CINELERRA EFFECTS</a>
 <br>
 </div>
 
 <h3 class="section">DECIMATE</h3>
 
-   <p>This effect drops frames from a track which are most similar in order
+<p>This effect drops frames from a track which are most similar in order
 to reduce the frame rate.  This is usually applied to a DVD to convert
 the 29.97 fps video to the 23.97 fps film rate but this decimate effect
 can take any input rate and convert it to any lower output rate.
@@ -5078,16 +5120,16 @@ merely replicates each frame.
 
 <div class="node">
 <p><hr>
-Node:<a name="DEINTERLACE">DEINTERLACE</a>,
-Next:<a rel="next" accesskey="n" href="#FREEZE%20FRAME">FREEZE FRAME</a>,
-Previous:<a rel="previous" accesskey="p" href="#DECIMATE">DECIMATE</a>,
-Up:<a rel="up" accesskey="u" href="#SECRETS%20OF%20CINELERRA%20EFFECTS">SECRETS OF CINELERRA EFFECTS</a>
+Node:&nbsp;<a name="DEINTERLACE">DEINTERLACE</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#FREEZE%20FRAME">FREEZE FRAME</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#DECIMATE">DECIMATE</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#SECRETS%20OF%20CINELERRA%20EFFECTS">SECRETS OF CINELERRA EFFECTS</a>
 <br>
 </div>
 
 <h3 class="section">DEINTERLACE</h3>
 
-   <p>The deinterlace effect has evolved over the years to deinterlacing and
+<p>The deinterlace effect has evolved over the years to deinterlacing and
 a whole lot more.  In fact two of the deinterlacing methods, <b>Inverse
 Telecine</b> and <b>Frames to Fields</b>, are separate effects.  The
 deinterlace effect offers several variations of line replication to
@@ -5097,16 +5139,16 @@ reverse effect display fields in the right order.
 
 <div class="node">
 <p><hr>
-Node:<a name="FREEZE%20FRAME">FREEZE FRAME</a>,
-Next:<a rel="next" accesskey="n" href="#HISTOGRAM">HISTOGRAM</a>,
-Previous:<a rel="previous" accesskey="p" href="#DEINTERLACE">DEINTERLACE</a>,
-Up:<a rel="up" accesskey="u" href="#SECRETS%20OF%20CINELERRA%20EFFECTS">SECRETS OF CINELERRA EFFECTS</a>
+Node:&nbsp;<a name="FREEZE%20FRAME">FREEZE FRAME</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#HISTOGRAM">HISTOGRAM</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#DEINTERLACE">DEINTERLACE</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#SECRETS%20OF%20CINELERRA%20EFFECTS">SECRETS OF CINELERRA EFFECTS</a>
 <br>
 </div>
 
 <h3 class="section">FREEZE FRAME</h3>
 
-   <p>In its simplest form, highlight a region of the track to freeze, drop
+<p>In its simplest form, highlight a region of the track to freeze, drop
 the freeze frame effect on the highlighted region, and the lowest
 numbered frame in the affected area will play throughout the entire
 region.
@@ -5129,16 +5171,16 @@ disabled regions play through.
 
 <div class="node">
 <p><hr>
-Node:<a name="HISTOGRAM">HISTOGRAM</a>,
-Next:<a rel="next" accesskey="n" href="#INVERSE%20TELECINE">INVERSE TELECINE</a>,
-Previous:<a rel="previous" accesskey="p" href="#FREEZE%20FRAME">FREEZE FRAME</a>,
-Up:<a rel="up" accesskey="u" href="#SECRETS%20OF%20CINELERRA%20EFFECTS">SECRETS OF CINELERRA EFFECTS</a>
+Node:&nbsp;<a name="HISTOGRAM">HISTOGRAM</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#INVERSE%20TELECINE">INVERSE TELECINE</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#FREEZE%20FRAME">FREEZE FRAME</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#SECRETS%20OF%20CINELERRA%20EFFECTS">SECRETS OF CINELERRA EFFECTS</a>
 <br>
 </div>
 
 <h3 class="section">HISTOGRAM</h3>
 
-   <p>This shows the number of occurances of each value of a certain color
+<p>This shows the number of occurances of each value of a certain color
 channel.  It is always performed in 16 bit RGB regardless of the
 project colorspace.  Use the upper gradient to determine the range of
 input intensities to be expanded to the output.  Use the lower gradient
@@ -5150,16 +5192,16 @@ boundaries of the histogram the automatic gain should be.
 
 <div class="node">
 <p><hr>
-Node:<a name="INVERSE%20TELECINE">INVERSE TELECINE</a>,
-Next:<a rel="next" accesskey="n" href="#LOOP">LOOP</a>,
-Previous:<a rel="previous" accesskey="p" href="#HISTOGRAM">HISTOGRAM</a>,
-Up:<a rel="up" accesskey="u" href="#SECRETS%20OF%20CINELERRA%20EFFECTS">SECRETS OF CINELERRA EFFECTS</a>
+Node:&nbsp;<a name="INVERSE%20TELECINE">INVERSE TELECINE</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#LOOP">LOOP</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#HISTOGRAM">HISTOGRAM</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#SECRETS%20OF%20CINELERRA%20EFFECTS">SECRETS OF CINELERRA EFFECTS</a>
 <br>
 </div>
 
 <h3 class="section">INVERSE TELECINE</h3>
 
-   <p>This is the most effective deinterlacing tool when the footage is a
+<p>This is the most effective deinterlacing tool when the footage is a
 video transfer of a film.  Here the film was converted from 24fps to
 60fps.  Then the 60fps was downsampled to 30fps by extracting odd and
 even lines and interlacing the lines.  The IVTC effect is primarily a
@@ -5182,16 +5224,16 @@ lack of a frame rate reduction.
 
 <div class="node">
 <p><hr>
-Node:<a name="LOOP">LOOP</a>,
-Next:<a rel="next" accesskey="n" href="#REVERSE%20VIDEO%2fAUDIO">REVERSE VIDEO/AUDIO</a>,
-Previous:<a rel="previous" accesskey="p" href="#INVERSE%20TELECINE">INVERSE TELECINE</a>,
-Up:<a rel="up" accesskey="u" href="#SECRETS%20OF%20CINELERRA%20EFFECTS">SECRETS OF CINELERRA EFFECTS</a>
+Node:&nbsp;<a name="LOOP">LOOP</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#REVERSE%20VIDEO%2fAUDIO">REVERSE VIDEO/AUDIO</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#INVERSE%20TELECINE">INVERSE TELECINE</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#SECRETS%20OF%20CINELERRA%20EFFECTS">SECRETS OF CINELERRA EFFECTS</a>
 <br>
 </div>
 
 <h3 class="section">LOOP</h3>
 
-   <p>Sections of audio or video can be looped by dropping a <b>loop</b> effect
+<p>Sections of audio or video can be looped by dropping a <b>loop</b> effect
 on them.  Contrary to the the <b>settings-&gt;loop playback</b> option, the
 loop effects can be rendered where the <b>settings-&gt;loop playback</b>
 option can not be.  The loop effects are also convenient for short
@@ -5211,16 +5253,16 @@ looped from the beginning by setting the keyframe near the end.
 
 <div class="node">
 <p><hr>
-Node:<a name="REVERSE%20VIDEO%2fAUDIO">REVERSE VIDEO/AUDIO</a>,
-Next:<a rel="next" accesskey="n" href="#TIME%20AVERAGE">TIME AVERAGE</a>,
-Previous:<a rel="previous" accesskey="p" href="#LOOP">LOOP</a>,
-Up:<a rel="up" accesskey="u" href="#SECRETS%20OF%20CINELERRA%20EFFECTS">SECRETS OF CINELERRA EFFECTS</a>
+Node:&nbsp;<a name="REVERSE%20VIDEO%2fAUDIO">REVERSE VIDEO/AUDIO</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#TIME%20AVERAGE">TIME AVERAGE</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#LOOP">LOOP</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#SECRETS%20OF%20CINELERRA%20EFFECTS">SECRETS OF CINELERRA EFFECTS</a>
 <br>
 </div>
 
 <h3 class="section">REVERSE VIDEO/AUDIO</h3>
 
-   <p>Media can be reversed on the timeline in realtime.  This isn't to be
+<p>Media can be reversed on the timeline in realtime.  This isn't to be
 confused with using the reverse playback on the transport.  The reverse
 effects reverse the region covered by the effect regardless of the
 transport direction.  Apply <b>reverse audio</b> to an audio track and
@@ -5242,16 +5284,16 @@ timeline doesn't reflect the actual reversed output.
 
 <div class="node">
 <p><hr>
-Node:<a name="TIME%20AVERAGE">TIME AVERAGE</a>,
-Next:<a rel="next" accesskey="n" href="#TITLER">TITLER</a>,
-Previous:<a rel="previous" accesskey="p" href="#REVERSE%20VIDEO%2fAUDIO">REVERSE VIDEO/AUDIO</a>,
-Up:<a rel="up" accesskey="u" href="#SECRETS%20OF%20CINELERRA%20EFFECTS">SECRETS OF CINELERRA EFFECTS</a>
+Node:&nbsp;<a name="TIME%20AVERAGE">TIME AVERAGE</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#TITLER">TITLER</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#REVERSE%20VIDEO%2fAUDIO">REVERSE VIDEO/AUDIO</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#SECRETS%20OF%20CINELERRA%20EFFECTS">SECRETS OF CINELERRA EFFECTS</a>
 <br>
 </div>
 
 <h3 class="section">TIME AVERAGE</h3>
 
-   <p>Time average is one effect which has many uses besides creating nifty
+<p>Time average is one effect which has many uses besides creating nifty
 trail patterns of moving objects.  It's main use is reducing noise in
 still images.  Merely point a video camera at a stationary subject for
 30 frames, capture the frames, and average them using TIME AVERAGE and
@@ -5260,16 +5302,16 @@ average can increase the dynamic range of lousy cameras.
 
 <div class="node">
 <p><hr>
-Node:<a name="TITLER">TITLER</a>,
-Next:<a rel="next" accesskey="n" href="#VIDEO%20SCOPE">VIDEO SCOPE</a>,
-Previous:<a rel="previous" accesskey="p" href="#TIME%20AVERAGE">TIME AVERAGE</a>,
-Up:<a rel="up" accesskey="u" href="#SECRETS%20OF%20CINELERRA%20EFFECTS">SECRETS OF CINELERRA EFFECTS</a>
+Node:&nbsp;<a name="TITLER">TITLER</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#VIDEO%20SCOPE">VIDEO SCOPE</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#TIME%20AVERAGE">TIME AVERAGE</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#SECRETS%20OF%20CINELERRA%20EFFECTS">SECRETS OF CINELERRA EFFECTS</a>
 <br>
 </div>
 
 <h3 class="section">TITLER</h3>
 
-   <p>While it is possible to add text to movies by importing still images
+<p>While it is possible to add text to movies by importing still images
 from The Gimp and compositing them, the Titler allows you to add text
 from within Cinelerra.
 
@@ -5313,15 +5355,15 @@ timeline in seconds and frames.
 
 <div class="node">
 <p><hr>
-Node:<a name="ADDING%20FONTS%20TO%20THE%20TITLER">ADDING FONTS TO THE TITLER</a>,
-Next:<a rel="next" accesskey="n" href="#THE%20TITLE-SAFE%20REGION">THE TITLE-SAFE REGION</a>,
-Up:<a rel="up" accesskey="u" href="#TITLER">TITLER</a>
+Node:&nbsp;<a name="ADDING%20FONTS%20TO%20THE%20TITLER">ADDING FONTS TO THE TITLER</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#THE%20TITLE-SAFE%20REGION">THE TITLE-SAFE REGION</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#TITLER">TITLER</a>
 <br>
 </div>
 
-<h4 class="subsection">ADDING FONTS TO THE TITLER</h4>
+<h3 class="subsection">ADDING FONTS TO THE TITLER</h4>
 
-   <p>The X Window system originally didn't have a suitable font renderer for
+<p>The X Window system originally didn't have a suitable font renderer for
 video.  It also is restricted to the current bit depth.  It doesn't
 have a convenient way to know which fonts work with the suitable font
 renderer in the desired bit depth.  The easiest way we've found to
@@ -5336,15 +5378,15 @@ fonts should appear.
 
 <div class="node">
 <p><hr>
-Node:<a name="THE%20TITLE-SAFE%20REGION">THE TITLE-SAFE REGION</a>,
-Previous:<a rel="previous" accesskey="p" href="#ADDING%20FONTS%20TO%20THE%20TITLER">ADDING FONTS TO THE TITLER</a>,
-Up:<a rel="up" accesskey="u" href="#TITLER">TITLER</a>
+Node:&nbsp;<a name="THE%20TITLE-SAFE%20REGION">THE TITLE-SAFE REGION</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#ADDING%20FONTS%20TO%20THE%20TITLER">ADDING FONTS TO THE TITLER</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#TITLER">TITLER</a>
 <br>
 </div>
 
-<h4 class="subsection">THE TITLE-SAFE REGION</h4>
+<h3 class="subsection">THE TITLE-SAFE REGION</h4>
 
-   <p>If the video is displayed on a consumer TV, the outer border is going
+<p>If the video is displayed on a consumer TV, the outer border is going
 to be cropped by 5% on each side.  Moreover, text which is too close to
 the edge looks sloppy.  Make sure when adding titles to have the
 <b>title-safe</b> <img src="titlesafe.png" alt="titlesafe.png"> tool active in the <b>compositor</b> window. 
@@ -5352,15 +5394,15 @@ The text shouldn't cross the inner rectangle.
 
 <div class="node">
 <p><hr>
-Node:<a name="VIDEO%20SCOPE">VIDEO SCOPE</a>,
-Previous:<a rel="previous" accesskey="p" href="#TITLER">TITLER</a>,
-Up:<a rel="up" accesskey="u" href="#SECRETS%20OF%20CINELERRA%20EFFECTS">SECRETS OF CINELERRA EFFECTS</a>
+Node:&nbsp;<a name="VIDEO%20SCOPE">VIDEO SCOPE</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#TITLER">TITLER</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#SECRETS%20OF%20CINELERRA%20EFFECTS">SECRETS OF CINELERRA EFFECTS</a>
 <br>
 </div>
 
 <h3 class="section">VIDEO SCOPE</h3>
 
-   <p>The video scope plots two views of the image.  One view plots the
+<p>The video scope plots two views of the image.  One view plots the
 intensity of each pixel against horizontal position.  They call this
 the WAVEFORM.  Another view translates hue to angle and saturation to
 radius for each pixel.  They call this the VECTORSCOPE.
@@ -5378,16 +5420,16 @@ scope for all the different video drivers.
 
 <div class="node">
 <p><hr>
-Node:<a name="PLUGIN%20AUTHORING">PLUGIN AUTHORING</a>,
-Next:<a rel="next" accesskey="n" href="#KEYBOARD%20SHORTCUTS">KEYBOARD SHORTCUTS</a>,
-Previous:<a rel="previous" accesskey="p" href="#SECRETS%20OF%20CINELERRA%20EFFECTS">SECRETS OF CINELERRA EFFECTS</a>,
-Up:<a rel="up" accesskey="u" href="#Top">Top</a>
+Node:&nbsp;<a name="PLUGIN%20AUTHORING">PLUGIN AUTHORING</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#KEYBOARD%20SHORTCUTS">KEYBOARD SHORTCUTS</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#SECRETS%20OF%20CINELERRA%20EFFECTS">SECRETS OF CINELERRA EFFECTS</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
 <br>
 </div>
 
 <h2 class="chapter">PLUGIN AUTHORING</h2>
 
-   <p>The plugin API in Cinelerra dates back to 1997, before the LADSPA and
+<p>The plugin API in Cinelerra dates back to 1997, before the LADSPA and
 before VST became popular.  It's fundamentally the same as it was in
 1997, with minor modifications to handle keyframes and GUI feedback. 
 Unfortunately, the GUI is not abstracted from the programmer.  This
@@ -5413,15 +5455,15 @@ out of the group and rename the symbols.
 
 <div class="node">
 <p><hr>
-Node:<a name="INTRODUCING%20THE%20PULL%20METHOD">INTRODUCING THE PULL METHOD</a>,
-Next:<a rel="next" accesskey="n" href="#COMMON%20PLUGIN%20FUNCTIONS">COMMON PLUGIN FUNCTIONS</a>,
-Up:<a rel="up" accesskey="u" href="#PLUGIN%20AUTHORING">PLUGIN AUTHORING</a>
+Node:&nbsp;<a name="INTRODUCING%20THE%20PULL%20METHOD">INTRODUCING THE PULL METHOD</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#COMMON%20PLUGIN%20FUNCTIONS">COMMON PLUGIN FUNCTIONS</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#PLUGIN%20AUTHORING">PLUGIN AUTHORING</a>
 <br>
 </div>
 
 <h3 class="section">INTRODUCING THE PULL METHOD</h3>
 
-   <p>The simplest way to design plugins is with the push method.  The push
+<p>The simplest way to design plugins is with the push method.  The push
 method is intuitive.  A source pushes data to a plugin, the plugin does
 math operations on it, and the plugin pushes it to a destination.  For
 6 years this was the way all realtime plugins were driven internally
@@ -5463,16 +5505,16 @@ below.
 
 <div class="node">
 <p><hr>
-Node:<a name="COMMON%20PLUGIN%20FUNCTIONS">COMMON PLUGIN FUNCTIONS</a>,
-Next:<a rel="next" accesskey="n" href="#REALTIME%20PLUGINS">REALTIME PLUGINS</a>,
-Previous:<a rel="previous" accesskey="p" href="#INTRODUCING%20THE%20PULL%20METHOD">INTRODUCING THE PULL METHOD</a>,
-Up:<a rel="up" accesskey="u" href="#PLUGIN%20AUTHORING">PLUGIN AUTHORING</a>
+Node:&nbsp;<a name="COMMON%20PLUGIN%20FUNCTIONS">COMMON PLUGIN FUNCTIONS</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#REALTIME%20PLUGINS">REALTIME PLUGINS</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#INTRODUCING%20THE%20PULL%20METHOD">INTRODUCING THE PULL METHOD</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#PLUGIN%20AUTHORING">PLUGIN AUTHORING</a>
 <br>
 </div>
 
 <h3 class="section">COMMON PLUGIN FUNCTIONS</h3>
 
-   <p>All plugins inherit from a derivative of PluginClient.  This
+<p>All plugins inherit from a derivative of PluginClient.  This
 PluginClient derivative implements most of the required methods in
 PluginClient, but users must still define methods for PluginClient. 
 The most commonly used methods are predefined in macros to reduce the
@@ -5534,15 +5576,15 @@ keyframes.
 
 <div class="node">
 <p><hr>
-Node:<a name="THE%20PROCESSING%20OBJECT">THE PROCESSING OBJECT</a>,
-Next:<a rel="next" accesskey="n" href="#THE%20CONFIGURATION%20OBJECT">THE CONFIGURATION OBJECT</a>,
-Up:<a rel="up" accesskey="u" href="#COMMON%20PLUGIN%20FUNCTIONS">COMMON PLUGIN FUNCTIONS</a>
+Node:&nbsp;<a name="THE%20PROCESSING%20OBJECT">THE PROCESSING OBJECT</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#THE%20CONFIGURATION%20OBJECT">THE CONFIGURATION OBJECT</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#COMMON%20PLUGIN%20FUNCTIONS">COMMON PLUGIN FUNCTIONS</a>
 <br>
 </div>
 
-<h4 class="subsection">THE PROCESSING OBJECT</h4>
+<h3 class="subsection">THE PROCESSING OBJECT</h4>
 
-   <p>Load up a simple plugin like gain to see what this object looks like. 
+<p>Load up a simple plugin like gain to see what this object looks like. 
 The processing object should inherit from the intended PluginClient
 derivative.  Its constructor should take a PluginServer argument.
 
@@ -5716,16 +5758,16 @@ depending on the plugin type.
 
 <div class="node">
 <p><hr>
-Node:<a name="THE%20CONFIGURATION%20OBJECT">THE CONFIGURATION OBJECT</a>,
-Next:<a rel="next" accesskey="n" href="#THE%20USER%20INTERFACE%20OBJECT">THE USER INTERFACE OBJECT</a>,
-Previous:<a rel="previous" accesskey="p" href="#THE%20PROCESSING%20OBJECT">THE PROCESSING OBJECT</a>,
-Up:<a rel="up" accesskey="u" href="#COMMON%20PLUGIN%20FUNCTIONS">COMMON PLUGIN FUNCTIONS</a>
+Node:&nbsp;<a name="THE%20CONFIGURATION%20OBJECT">THE CONFIGURATION OBJECT</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#THE%20USER%20INTERFACE%20OBJECT">THE USER INTERFACE OBJECT</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#THE%20PROCESSING%20OBJECT">THE PROCESSING OBJECT</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#COMMON%20PLUGIN%20FUNCTIONS">COMMON PLUGIN FUNCTIONS</a>
 <br>
 </div>
 
-<h4 class="subsection">THE CONFIGURATION OBJECT</h4>
+<h3 class="subsection">THE CONFIGURATION OBJECT</h4>
 
-   <p>The configuration object is critical for GUI updates, signal
+<p>The configuration object is critical for GUI updates, signal
 processing, and default settings in realtime plugins.  Be aware it is
 not used in nonrealtime plugins.  The configuration object inherits
 from nothing and has no dependancies.  It's merely a class containing
@@ -5823,15 +5865,15 @@ fragments of 1 sample.
 
 <div class="node">
 <p><hr>
-Node:<a name="THE%20USER%20INTERFACE%20OBJECT">THE USER INTERFACE OBJECT</a>,
-Previous:<a rel="previous" accesskey="p" href="#THE%20CONFIGURATION%20OBJECT">THE CONFIGURATION OBJECT</a>,
-Up:<a rel="up" accesskey="u" href="#COMMON%20PLUGIN%20FUNCTIONS">COMMON PLUGIN FUNCTIONS</a>
+Node:&nbsp;<a name="THE%20USER%20INTERFACE%20OBJECT">THE USER INTERFACE OBJECT</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#THE%20CONFIGURATION%20OBJECT">THE CONFIGURATION OBJECT</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#COMMON%20PLUGIN%20FUNCTIONS">COMMON PLUGIN FUNCTIONS</a>
 <br>
 </div>
 
-<h4 class="subsection">THE USER INTERFACE OBJECT</h4>
+<h3 class="subsection">THE USER INTERFACE OBJECT</h4>
 
-   <p>The user interface object at the very least consists of a pointer to a
+<p>The user interface object at the very least consists of a pointer to a
 window and pointers to all the widgets in the window.  Using
 Cinelerra's toolkit, it consists of a <b>BCWindow</b> derivative and a
 <b>Thread</b> derivative.  The Thread derivative is declared in the plugin
@@ -5908,16 +5950,16 @@ copies of the plugin which are processing data.
 
 <div class="node">
 <p><hr>
-Node:<a name="REALTIME%20PLUGINS">REALTIME PLUGINS</a>,
-Next:<a rel="next" accesskey="n" href="#NONREALTIME%20PLUGINS">NONREALTIME PLUGINS</a>,
-Previous:<a rel="previous" accesskey="p" href="#COMMON%20PLUGIN%20FUNCTIONS">COMMON PLUGIN FUNCTIONS</a>,
-Up:<a rel="up" accesskey="u" href="#PLUGIN%20AUTHORING">PLUGIN AUTHORING</a>
+Node:&nbsp;<a name="REALTIME%20PLUGINS">REALTIME PLUGINS</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#NONREALTIME%20PLUGINS">NONREALTIME PLUGINS</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#COMMON%20PLUGIN%20FUNCTIONS">COMMON PLUGIN FUNCTIONS</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#PLUGIN%20AUTHORING">PLUGIN AUTHORING</a>
 <br>
 </div>
 
 <h3 class="section">REALTIME PLUGINS</h3>
 
-   <p>Realtime plugins should use PLUGIN_CLASS_MEMBERS to define the basic
+<p>Realtime plugins should use PLUGIN_CLASS_MEMBERS to define the basic
 set of members in their headers.  All realtime plugins must define an
 
 <pre class="example">     int is_realtime()
@@ -6029,16 +6071,16 @@ how the Defaults object is used.
 
 <div class="node">
 <p><hr>
-Node:<a name="NONREALTIME%20PLUGINS">NONREALTIME PLUGINS</a>,
-Next:<a rel="next" accesskey="n" href="#AUDIO%20PLUGINS">AUDIO PLUGINS</a>,
-Previous:<a rel="previous" accesskey="p" href="#REALTIME%20PLUGINS">REALTIME PLUGINS</a>,
-Up:<a rel="up" accesskey="u" href="#PLUGIN%20AUTHORING">PLUGIN AUTHORING</a>
+Node:&nbsp;<a name="NONREALTIME%20PLUGINS">NONREALTIME PLUGINS</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#AUDIO%20PLUGINS">AUDIO PLUGINS</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#REALTIME%20PLUGINS">REALTIME PLUGINS</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#PLUGIN%20AUTHORING">PLUGIN AUTHORING</a>
 <br>
 </div>
 
 <h3 class="section">NONREALTIME PLUGINS</h3>
 
-   <p>Some references for non-realtime plugins are <b>Normalize</b> for audio
+<p>Some references for non-realtime plugins are <b>Normalize</b> for audio
 and <b>Reframe</b> for video.
 
    <p>Like realtime plugins, <b>load_defaults</b> and <b>save_defaults</b> must be
@@ -6170,16 +6212,16 @@ Then it should delete any objects it created for processing in
 
 <div class="node">
 <p><hr>
-Node:<a name="AUDIO%20PLUGINS">AUDIO PLUGINS</a>,
-Next:<a rel="next" accesskey="n" href="#VIDEO%20PLUGINS">VIDEO PLUGINS</a>,
-Previous:<a rel="previous" accesskey="p" href="#NONREALTIME%20PLUGINS">NONREALTIME PLUGINS</a>,
-Up:<a rel="up" accesskey="u" href="#PLUGIN%20AUTHORING">PLUGIN AUTHORING</a>
+Node:&nbsp;<a name="AUDIO%20PLUGINS">AUDIO PLUGINS</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#VIDEO%20PLUGINS">VIDEO PLUGINS</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#NONREALTIME%20PLUGINS">NONREALTIME PLUGINS</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#PLUGIN%20AUTHORING">PLUGIN AUTHORING</a>
 <br>
 </div>
 
 <h3 class="section">AUDIO PLUGINS</h3>
 
-   <p>The simplest audio plugin is Gain.  The processing object should
+<p>The simplest audio plugin is Gain.  The processing object should
 include <b>pluginaclient.h</b> and inherit from <b>PluginAClient</b>.  Realtime audio plugins need to
 define
 
@@ -6228,16 +6270,16 @@ project sample rate.
 
 <div class="node">
 <p><hr>
-Node:<a name="VIDEO%20PLUGINS">VIDEO PLUGINS</a>,
-Next:<a rel="next" accesskey="n" href="#TRANSITION%20PLUGINS">TRANSITION PLUGINS</a>,
-Previous:<a rel="previous" accesskey="p" href="#AUDIO%20PLUGINS">AUDIO PLUGINS</a>,
-Up:<a rel="up" accesskey="u" href="#PLUGIN%20AUTHORING">PLUGIN AUTHORING</a>
+Node:&nbsp;<a name="VIDEO%20PLUGINS">VIDEO PLUGINS</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#TRANSITION%20PLUGINS">TRANSITION PLUGINS</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#AUDIO%20PLUGINS">AUDIO PLUGINS</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#PLUGIN%20AUTHORING">PLUGIN AUTHORING</a>
 <br>
 </div>
 
 <h3 class="section">VIDEO PLUGINS</h3>
 
-   <p>The simplest video plugin is Flip.  The processing object should
+<p>The simplest video plugin is Flip.  The processing object should
 include <b>pluginvclient.h</b> and inherit from <b>PluginVClient</b>. 
 Realtime video plugins need to define
 
@@ -6275,16 +6317,16 @@ non-realtime video plugins.  These are fixed to the project frame rate.
 
 <div class="node">
 <p><hr>
-Node:<a name="TRANSITION%20PLUGINS">TRANSITION PLUGINS</a>,
-Next:<a rel="next" accesskey="n" href="#PLUGIN%20GUI'S%20WHICH%20UPDATE%20DURING%20PLAYBACK">PLUGIN GUI'S WHICH UPDATE DURING PLAYBACK</a>,
-Previous:<a rel="previous" accesskey="p" href="#VIDEO%20PLUGINS">VIDEO PLUGINS</a>,
-Up:<a rel="up" accesskey="u" href="#PLUGIN%20AUTHORING">PLUGIN AUTHORING</a>
+Node:&nbsp;<a name="TRANSITION%20PLUGINS">TRANSITION PLUGINS</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#PLUGIN%20GUI'S%20WHICH%20UPDATE%20DURING%20PLAYBACK">PLUGIN GUI'S WHICH UPDATE DURING PLAYBACK</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#VIDEO%20PLUGINS">VIDEO PLUGINS</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#PLUGIN%20AUTHORING">PLUGIN AUTHORING</a>
 <br>
 </div>
 
 <h3 class="section">TRANSITION PLUGINS</h3>
 
-   <p>The simplest video transition is <b>wipe</b> and the simplest audio
+<p>The simplest video transition is <b>wipe</b> and the simplest audio
 transition is <b>crossfade</b>.  These use a subset of the default class
 members of realtime plugins, but so far no analogue to
 PLUGIN_CLASS_MEMBERS has been done for transitions.
@@ -6361,16 +6403,16 @@ process_realtime lacks a rate argument, use <b>get_framerate()</b> or
 
 <div class="node">
 <p><hr>
-Node:<a name="PLUGIN%20GUI'S%20WHICH%20UPDATE%20DURING%20PLAYBACK">PLUGIN GUI'S WHICH UPDATE DURING PLAYBACK</a>,
-Next:<a rel="next" accesskey="n" href="#PLUGIN%20QUERIES">PLUGIN QUERIES</a>,
-Previous:<a rel="previous" accesskey="p" href="#TRANSITION%20PLUGINS">TRANSITION PLUGINS</a>,
-Up:<a rel="up" accesskey="u" href="#PLUGIN%20AUTHORING">PLUGIN AUTHORING</a>
+Node:&nbsp;<a name="PLUGIN%20GUI'S%20WHICH%20UPDATE%20DURING%20PLAYBACK">PLUGIN GUI'S WHICH UPDATE DURING PLAYBACK</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#PLUGIN%20QUERIES">PLUGIN QUERIES</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#TRANSITION%20PLUGINS">TRANSITION PLUGINS</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#PLUGIN%20AUTHORING">PLUGIN AUTHORING</a>
 <br>
 </div>
 
 <h3 class="section">PLUGIN GUI'S WHICH UPDATE DURING PLAYBACK</h3>
 
-   <p>Effects like <b>Histogram</b> and <b>VideoScope</b> need to update the GUI
+<p>Effects like <b>Histogram</b> and <b>VideoScope</b> need to update the GUI
 during playback to display information about the signal.  This is
 achieved with the <b>send_render_gui</b> and <b>render_gui</b> methods. 
 Normally in process_buffer, when the processing object wants to update
@@ -6400,15 +6442,15 @@ should typecast this pointer into something useful.
 
 <div class="node">
 <p><hr>
-Node:<a name="PLUGIN%20QUERIES">PLUGIN QUERIES</a>,
-Previous:<a rel="previous" accesskey="p" href="#PLUGIN%20GUI'S%20WHICH%20UPDATE%20DURING%20PLAYBACK">PLUGIN GUI'S WHICH UPDATE DURING PLAYBACK</a>,
-Up:<a rel="up" accesskey="u" href="#PLUGIN%20AUTHORING">PLUGIN AUTHORING</a>
+Node:&nbsp;<a name="PLUGIN%20QUERIES">PLUGIN QUERIES</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#PLUGIN%20GUI'S%20WHICH%20UPDATE%20DURING%20PLAYBACK">PLUGIN GUI'S WHICH UPDATE DURING PLAYBACK</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#PLUGIN%20AUTHORING">PLUGIN AUTHORING</a>
 <br>
 </div>
 
 <h3 class="section">PLUGIN QUERIES</h3>
 
-   <p>There are several useful queries in PluginClient which can be accessed
+<p>There are several useful queries in PluginClient which can be accessed
 from the processing object.  Some of them have different meaning in
 realtime and non-realtime mode.  They all give information about the
 operating system or the project which can be used to improve the
@@ -6421,13 +6463,13 @@ quality of the processing.
 
 <div class="node">
 <p><hr>
-Node:<a name="SYSTEM%20QUERIES">SYSTEM QUERIES</a>,
-Next:<a rel="next" accesskey="n" href="#TIMING%20QUERIES">TIMING QUERIES</a>,
-Up:<a rel="up" accesskey="u" href="#PLUGIN%20QUERIES">PLUGIN QUERIES</a>
+Node:&nbsp;<a name="SYSTEM%20QUERIES">SYSTEM QUERIES</a>,
+Next:&nbsp;<a rel="next" accesskey="n" href="#TIMING%20QUERIES">TIMING QUERIES</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#PLUGIN%20QUERIES">PLUGIN QUERIES</a>
 <br>
 </div>
 
-<h4 class="subsection">SYSTEM QUERIES</h4>
+<h3 class="subsection">SYSTEM QUERIES</h4>
 
      <ul>
 
@@ -6446,19 +6488,19 @@ number should be used to gain parallelism.
 <b>get_total_buffers()</b> Gives the number of tracks a multichannel
 plugin needs to process.
 
-   </ul>
+</ul>
 
 <div class="node">
 <p><hr>
-Node:<a name="TIMING%20QUERIES">TIMING QUERIES</a>,
-Previous:<a rel="previous" accesskey="p" href="#SYSTEM%20QUERIES">SYSTEM QUERIES</a>,
-Up:<a rel="up" accesskey="u" href="#PLUGIN%20QUERIES">PLUGIN QUERIES</a>
+Node:&nbsp;<a name="TIMING%20QUERIES">TIMING QUERIES</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#SYSTEM%20QUERIES">SYSTEM QUERIES</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#PLUGIN%20QUERIES">PLUGIN QUERIES</a>
 <br>
 </div>
 
-<h4 class="subsection">TIMING QUERIES</h4>
+<h3 class="subsection">TIMING QUERIES</h4>
 
-   <p>There are two rates for media a realtime plugin has to be aware of: the
+<p>There are two rates for media a realtime plugin has to be aware of: the
 project rate and the requested rate.  Functions are provided for
 getting the project and requested rate.  In addition, doing time
 dependant effects requires using several functions which tell where you
@@ -6546,22 +6588,22 @@ Do this by using edl_to_local on the keyframe positions.
 
 <div class="node">
 <p><hr>
-Node:<a name="KEYBOARD%20SHORTCUTS">KEYBOARD SHORTCUTS</a>,
-Previous:<a rel="previous" accesskey="p" href="#PLUGIN%20AUTHORING">PLUGIN AUTHORING</a>,
-Up:<a rel="up" accesskey="u" href="#Top">Top</a>
+Node:&nbsp;<a name="KEYBOARD%20SHORTCUTS">KEYBOARD SHORTCUTS</a>,
+Previous:&nbsp;<a rel="previous" accesskey="p" href="#PLUGIN%20AUTHORING">PLUGIN AUTHORING</a>,
+Up:&nbsp;<a rel="up" accesskey="u" href="#Top">Top</a>
 <br>
 </div>
 
 <h2 class="chapter">KEYBOARD SHORTCUTS</h2>
 
-   <p>Alex Ferrer started summarizing most of the keyboard shortcuts.  Most
+<p>Alex Ferrer started summarizing most of the keyboard shortcuts.  Most
 of the keys work without any modifier like shift or ctrl.  Most windows
 can be closed with a <b>Ctrl-w</b>.  Most operations can be cancelled with
 <b>ESC</b> and accepted with <b>Enter</b>.
 
 <h3 class="section">PROGRAM WINDOW</h3>
 
-<h4 class="subsection">Editing Media</h4>
+<h3 class="subsection">Editing Media</h4>
 
 <pre class="example">     z         Undo
      Shift Z   Re-Do
@@ -6574,7 +6616,7 @@ can be closed with a <b>Ctrl-w</b>.  Most operations can be cancelled with
      a         Select all
      </pre>
 
-<h4 class="subsection">Editing Labels &amp; In/Out Points</h4>
+<h3 class="subsection">Editing Labels &amp; In/Out Points</h4>
 
 <pre class="example">     [             Toggle In point
      ]             Toggle Out point
@@ -6584,7 +6626,7 @@ can be closed with a <b>Ctrl-w</b>.  Most operations can be cancelled with
      f             Fit display to selection
      </pre>
 
-<h4 class="subsection">Navigation</h4>
+<h3 class="subsection">Navigation</h4>
 
 <pre class="example">     Right arrow      Move right*
      Left arrow       Move left*
@@ -6604,7 +6646,7 @@ can be closed with a <b>Ctrl-w</b>.  Most operations can be cancelled with
    <p>* You may have to click on the timeline to deactivate any text boxes or
 tumblers before these work.
 
-<h4 class="subsection">File operations</h4>
+<h3 class="subsection">File operations</h4>
 
 <pre class="example">     n         New project
      o         Load Files
@@ -6617,7 +6659,7 @@ tumblers before these work.
      Shift F   Set Format
      </pre>
 
-<h4 class="subsection">Key Frame Editing</h4>
+<h3 class="subsection">Key Frame Editing</h4>
 
 <pre class="example">     
      Shift X    Cut keyframes
@@ -6629,7 +6671,7 @@ tumblers before these work.
      
      </pre>
 
-<h4 class="subsection">Track Manipulation</h4>
+<h3 class="subsection">Track Manipulation</h4>
 
 <pre class="example">     
      t         Add Audio Track
@@ -6641,7 +6683,7 @@ tumblers before these work.
      
      </pre>
 
-<h4 class="subsection">What's drawn on the timeline</h4>
+<h3 class="subsection">What's drawn on the timeline</h4>
 
 <pre class="example">     
      1         Show titles
@@ -6681,7 +6723,7 @@ tumblers before these work.
 
 <h3 class="section">PLAYBACK TRANSPORT</h3>
 
-   <p>Transport controls work in any window which has a playback transport.  They are
+<p>Transport controls work in any window which has a playback transport.  They are
 accessed through the number pad with num lock disabled.
 
 <pre class="example">     4 Frame back         5 Reverse Slow     6 Reverse      + Reverse Fast

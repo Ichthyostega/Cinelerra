@@ -16,6 +16,15 @@ DEST := /usr/bin
 
 #CFLAGS += -g
 
+ifeq ($(OBJDIR), i686)
+BOOTSTRAPFLAGS := -DBOOTSTRAP="\"objcopy -B i386 -I binary -O elf32-i386\""
+endif
+
+ifeq ($(OBJDIR), x86_64)
+BOOTSTRAPFLAGS := -DBOOTSTRAP="\"objcopy -B i386 -I binary -O elf64-x86-64\""
+endif
+
+
 $(shell sh -c 'if ! test -d $(OBJDIR)\; then mkdir $(OBJDIR)\; fi' )
 
 OBJS = \
@@ -57,6 +66,7 @@ OBJS = \
 	$(OBJDIR)/bcwindow.o \
 	$(OBJDIR)/bcwindowbase.o \
 	$(OBJDIR)/bcwindowdraw.o \
+	$(OBJDIR)/bcwindowevents.o \
 	$(OBJDIR)/condition.o \
 	$(OBJDIR)/errorbox.o \
 	$(OBJDIR)/defaults.o \
@@ -106,7 +116,7 @@ $(STATICOUTPUT): $(OBJS)
 	ar rcs $(STATICOUTPUT) `cat $(OBJDIR)/objs`
 
 $(OBJDIR)/bootstrap:
-	gcc -O2 bootstrap.c -o $(OBJDIR)/bootstrap
+	gcc -O2 $(BOOTSTRAPFLAGS) bootstrap.c -o $(OBJDIR)/bootstrap
 
 $(OBJDIR)/pngtoh:
 	gcc -O2 pngtoh.c -o $(OBJDIR)/pngtoh
@@ -196,6 +206,7 @@ $(OBJDIR)/bctumble.o: 	   				      bctumble.C
 $(OBJDIR)/bcwindow.o: 	   				      bcwindow.C
 $(OBJDIR)/bcwindowbase.o:  				      bcwindowbase.C
 $(OBJDIR)/bcwindowdraw.o:  				      bcwindowdraw.C
+$(OBJDIR)/bcwindowevents.o:  				      bcwindowevents.C
 $(OBJDIR)/condition.o:  				      condition.C
 $(OBJDIR)/errorbox.o: 	   				      errorbox.C
 $(OBJDIR)/defaults.o: 	   				      defaults.C

@@ -5,6 +5,7 @@ OBJS := \
 	de.mo \
 	es.mo \
 	fr.mo \
+	nb.mo \
 	sl.mo
 
 
@@ -32,6 +33,7 @@ $(OBJS):
 de.mo:   de.po
 es.mo:   es.po
 fr.mo:   fr.po
+nb.mo:   nb.po
 sl.mo:   sl.po
 
 

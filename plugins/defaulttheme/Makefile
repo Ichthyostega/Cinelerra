@@ -1,21 +1,25 @@
 include ../../global_config
 
 OBJS = $(OBJDIR)/defaulttheme.o
+THEME_DATA := $(OBJDIR)/defaulttheme_data.o
 
 OUTPUT_THEME := ../$(OBJDIR)/defaulttheme.plugin
 
 CFLAGS += -I../../$(AVC_DIR) -I../../$(LIBRAW_DIR)
 
-$(OUTPUT_THEME): $(OBJS)
-	$(LDLINKER) -o $(OUTPUT_THEME) $(OBJS)
+$(OUTPUT_THEME): $(OBJS) $(THEME_DATA)
+	$(LDLINKER) -o $(OUTPUT_THEME) $(OBJS) $(THEME_DATA)
 	strip $(OUTPUT_THEME)
-	../../guicast/$(OBJDIR)/bootstrap $(OUTPUT_THEME) data/*.png
 
 
 
 include ../../plugin_config
 
 $(OBJDIR)/defaulttheme.o: defaulttheme.C
+
+$(THEME_DATA):
+	cd $(OBJDIR) && \
+	../../../guicast/$(OBJDIR)/bootstrap defaulttheme_data.o ../data/*.png
 
 inst:
 	rm -f /usr/lib/cinelerra/defaulttheme.plugin

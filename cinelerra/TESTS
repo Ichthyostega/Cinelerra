@@ -1,3 +1,4 @@
+Test 8, 16, 24 bit X server.
 Single frame record.
 Audio transition.
 Change channels.
@@ -22,6 +23,7 @@ Change number of tracks shared by a plugin on the fly.
 Pan automation
 Fade automation
 Overlay tracks of different sizes
+Test pull console with LAD.
 
 
 
@@ -42,6 +44,7 @@ Cancel batch render.
 
 Batch record:
 record several batches 1 minute apart.
+
 
 
 XMovie:

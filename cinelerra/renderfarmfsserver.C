@@ -246,7 +246,22 @@ buffer, return_value);
 		{
 			struct stat64 stat_buf;
 			int return_value = stat64(buffer, &stat_buf);
-			server->write_socket((char*)&stat_buf, sizeof(struct stat64), RENDERFARM_TIMEOUT);
+			vfs_stat_t arg;
+			arg.dev = stat_buf.st_dev;
+//			arg.ino32 = stat_buf.__st_ino;
+			arg.ino = stat_buf.st_ino;
+			arg.nlink = stat_buf.st_nlink;
+			arg.mode = stat_buf.st_mode;
+			arg.uid = stat_buf.st_uid;
+			arg.gid = stat_buf.st_gid;
+			arg.rdev = stat_buf.st_rdev;
+			arg.size = stat_buf.st_size;
+			arg.blksize = stat_buf.st_blksize;
+			arg.blocks = stat_buf.st_blocks;
+			arg.atim = stat_buf.st_atim.tv_sec;
+			arg.mtim = stat_buf.st_mtim.tv_sec;
+			arg.ctim = stat_buf.st_ctim.tv_sec;
+			server->write_socket((char*)&arg, sizeof(arg), RENDERFARM_TIMEOUT);
 			result = 1;
 if(DEBUG)
 printf("RenderFarmFSServer::handle_request path=%s result=%d\n", 
