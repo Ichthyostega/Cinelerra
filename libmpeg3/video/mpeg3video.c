@@ -526,7 +526,7 @@ mpeg3video_t* mpeg3video_new(mpeg3_t *file, mpeg3_vtrack_t *track)
 		mpeg3video_delete(video);
 		video = 0;
 	}
-//printf("mpeg3video_new 4 %p\n", video);
+//printf("mpeg3video_new 100 %p\n", video);
 
 	return video;
 }

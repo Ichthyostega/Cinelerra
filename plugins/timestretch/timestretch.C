@@ -1,0 +1,415 @@
+#include "bcdisplayinfo.h"
+#include "clip.h"
+#include "defaults.h"
+#include "mainprogress.h"
+#include "picon_png.h"
+#include "resample.h"
+#include "timestretch.h"
+#include "timestretchengine.h"
+#include "vframe.h"
+
+#define WINDOW_SIZE 8192
+
+
+PluginClient* new_plugin(PluginServer *server)
+{
+	return new TimeStretch(server);
+}
+
+
+
+
+TimeStretchFraction::TimeStretchFraction(TimeStretch *plugin, int x, int y)
+ : BC_TextBox(x, y, 100, 1, (float)plugin->scale)
+{
+	this->plugin = plugin;
+}
+
+int TimeStretchFraction::handle_event()
+{
+	plugin->scale = atof(get_text());
+	return 1;
+}
+
+
+
+
+
+TimeStretchFreq::TimeStretchFreq(TimeStretch *plugin, 
+	TimeStretchWindow *gui, 
+	int x, 
+	int y)
+ : BC_Radial(x, y, plugin->use_fft, "Use fast fourier transform")
+{
+	this->plugin = plugin;
+	this->gui = gui;
+}
+
+int TimeStretchFreq::handle_event()
+{
+	plugin->use_fft = 1;
+	update(1);
+	gui->time->update(0);
+}
+
+
+
+
+
+
+TimeStretchTime::TimeStretchTime(TimeStretch *plugin, 
+	TimeStretchWindow *gui, 
+	int x, 
+	int y)
+ : BC_Radial(x, y, !plugin->use_fft, "Use overlapping windows")
+{
+	this->plugin = plugin;
+	this->gui = gui;
+}
+
+int TimeStretchTime::handle_event()
+{
+	plugin->use_fft = 0;
+	update(1);
+	gui->freq->update(0);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+TimeStretchWindow::TimeStretchWindow(TimeStretch *plugin, int x, int y)
+ : BC_Window(PROGRAM_NAME ": Time stretch", 
+ 				x - 160,
+				y - 75,
+ 				320, 
+				150, 
+				320, 
+				150,
+				0,
+				0,
+				1)
+{
+	this->plugin = plugin;
+}
+
+
+TimeStretchWindow::~TimeStretchWindow()
+{
+}
+
+void TimeStretchWindow::create_objects()
+{
+	int x = 10, y = 10;
+
+	add_subwindow(new BC_Title(x, y, "Fraction of original length:"));
+	y += 20;
+	add_subwindow(new TimeStretchFraction(plugin, x, y));
+
+	y += 30;
+	add_subwindow(freq = new TimeStretchFreq(plugin, this, x, y));
+	y += 20;
+	add_subwindow(time = new TimeStretchTime(plugin, this, x, y));
+
+	add_subwindow(new BC_OKButton(this));
+	add_subwindow(new BC_CancelButton(this));
+	show_window();
+
+
+
+	flush();
+}
+
+
+
+
+
+
+
+
+
+
+PitchEngine::PitchEngine(TimeStretch *plugin)
+ : CrossfadeFFT()
+{
+	this->plugin = plugin;
+}
+
+
+int PitchEngine::signal_process()
+{
+
+	int min_freq = 
+		1 + (int)(20.0 / ((double)plugin->PluginAClient::project_sample_rate / window_size * 2) + 0.5);
+
+	if(plugin->scale < 1)
+	{
+		for(int i = min_freq; i < window_size / 2; i++)
+		{
+			double destination = i * plugin->scale;
+			int dest_i = (int)(destination + 0.5);
+			if(dest_i != i)
+			{
+				if(dest_i <= window_size / 2)
+				{
+					freq_real[dest_i] = freq_real[i];
+					freq_imag[dest_i] = freq_imag[i];
+				}
+				freq_real[i] = 0;
+				freq_imag[i] = 0;
+			}
+		}
+	}
+	else
+	if(plugin->scale > 1)
+	{
+//printf("PitchEngine::signal_process 1\n");
+		for(int i = window_size / 2 - 1; i >= min_freq; i--)
+		{
+			double destination = i * plugin->scale;
+			int dest_i = (int)(destination + 0.5);
+			if(dest_i != i)
+			{
+				if(dest_i <= window_size / 2)
+				{
+					freq_real[dest_i] = freq_real[i];
+					freq_imag[dest_i] = freq_imag[i];
+				}
+				freq_real[i] = 0;
+				freq_imag[i] = 0;
+			}
+		}
+//printf("PitchEngine::signal_process 1\n");
+	}
+
+	symmetry(window_size, freq_real, freq_imag);
+//printf("PitchEngine::signal_process 2\n");
+	return 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+TimeStretch::TimeStretch(PluginServer *server)
+ : PluginAClient(server)
+{
+	load_defaults();
+	temp = 0;
+	pitch = 0;
+	resample = 0;
+	stretch = 0;
+	input = 0;
+	input_allocated = 0;
+}
+
+
+TimeStretch::~TimeStretch()
+{
+	save_defaults();
+	delete defaults;
+	if(temp) delete [] temp;
+	if(input) delete [] input;
+	if(pitch) delete pitch;
+	if(resample) delete resample;
+	if(stretch) delete stretch;
+}
+
+	
+	
+char* TimeStretch::plugin_title()
+{
+	return "Time stretch";
+}
+
+int TimeStretch::get_parameters()
+{
+	BC_DisplayInfo info;
+	TimeStretchWindow window(this, info.get_abs_cursor_x(), info.get_abs_cursor_y());
+	window.create_objects();
+	int result = window.run_window();
+	
+	return result;
+}
+
+VFrame* TimeStretch::new_picon()
+{
+	return new VFrame(picon_png);
+}
+
+
+int TimeStretch::start_loop()
+{
+	if(PluginClient::interactive)
+	{
+		char string[BCTEXTLEN];
+		sprintf(string, "%s...", plugin_title());
+		progress = start_progress(string, 
+			(int64_t)((double)(PluginClient::end - PluginClient::start) * scale));
+	}
+
+	current_position = PluginClient::start;
+	total_written = 0;
+
+
+
+// The FFT case
+	if(use_fft)
+	{
+		pitch = new PitchEngine(this);
+		pitch->initialize(WINDOW_SIZE);
+		resample = new Resample(0, 1);
+	}
+	else
+// The windowing case
+	{
+// Must be short enough to mask beating but long enough to mask humming.
+		stretch = new TimeStretchEngine(scale, PluginAClient::project_sample_rate);
+	}
+
+
+
+	
+	return 0;
+}
+
+int TimeStretch::stop_loop()
+{
+	if(PluginClient::interactive)
+	{
+		progress->stop_progress();
+		delete progress;
+	}
+	return 0;
+}
+
+int TimeStretch::process_loop(double *buffer, int64_t &write_length)
+{
+//printf("TimeStretch::process_loop 1\n");
+	int result = 0;
+// Length to read based on desired output size
+	int64_t size = (int64_t)((double)PluginAClient::in_buffer_size / scale);
+	int64_t predicted_total = (int64_t)((double)(PluginClient::end - PluginClient::start) * scale + 0.5);
+	int samples_rendered = 0;
+
+	if(input_allocated < size)
+	{
+		if(input) delete [] input;
+		input = new double[size];
+		input_allocated = size;
+	}
+
+	read_samples(input, 0, current_position, size);
+	current_position += size;
+
+
+// The FFT case
+	if(use_fft)
+	{
+
+		resample->resample_chunk(input, 
+			size, 
+			1000000, 
+			(int)(1000000.0 * scale), 
+			0);
+
+
+		if(resample->get_output_size(0))
+		{
+			int64_t output_size = resample->get_output_size(0);
+			if(temp && temp_allocated < output_size)
+			{
+				delete [] temp;
+				temp = 0;
+			}
+
+			if(!temp)
+			{
+				temp = new double[output_size];
+				temp_allocated = output_size;
+			}
+			resample->read_output(temp, 0, output_size);
+
+
+			samples_rendered = pitch->process_fifo(output_size, 
+				temp, 
+				buffer);
+
+
+		}
+	}
+	else
+// The windowing case
+	{
+//printf("TimeStretch::process_loop 10\n");
+		samples_rendered = stretch->process(input, size);
+//printf("TimeStretch::process_loop 20 %d\n", samples_rendered);
+		if(samples_rendered)
+		{
+			samples_rendered = MIN(samples_rendered, PluginAClient::in_buffer_size);
+			stretch->read_output(buffer, samples_rendered);
+		}
+//printf("TimeStretch::process_loop 30\n");
+	}
+
+
+	if(samples_rendered)
+	{
+		total_written += samples_rendered;
+	}
+
+// Trim output to predicted length of stretched selection.
+	if(total_written > predicted_total)
+	{
+		samples_rendered -= total_written - predicted_total;
+		result = 1;
+	}
+
+
+	write_length = samples_rendered;
+	if(PluginClient::interactive) result = progress->update(total_written);
+//printf("TimeStretch::process_loop 100\n");
+
+	return result;
+}
+
+
+
+int TimeStretch::load_defaults()
+{
+	char directory[BCTEXTLEN];
+
+// set the default directory
+	sprintf(directory, "%stimestretch.rc", BCASTDIR);
+// load the defaults
+	defaults = new Defaults(directory);
+	defaults->load();
+
+	scale = defaults->get("SCALE", (double)1);
+	use_fft = defaults->get("USE_FFT", 0);
+	return 0;
+}
+
+int TimeStretch::save_defaults()
+{
+	defaults->update("SCALE", scale);
+	defaults->update("USE_FFT", use_fft);
+	defaults->save();
+	return 0;
+}
