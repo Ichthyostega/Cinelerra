@@ -1,9 +1,14 @@
 include ../../global_config
 
-OBJS = ../parametric/$(OBJDIR)/fourier.o \
+FFTW_PATH := $(shell expr ../../fftw* )
+OBJS = $(OBJDIR)/fourier.o \
 	$(OBJDIR)/pitch.o
 
+
 OUTPUT = ../$(OBJDIR)/pitch.plugin
+
+LFLAGS += $(FFTW_PATH)/.libs/libfftw3.a
+CFLAGS += -I $(FFTW_PATH)/api
 
 include ../../plugin_config
 

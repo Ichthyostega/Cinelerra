@@ -18,13 +18,50 @@ ENCORE_DIR := encore50
 ENCORE_INCLUDE := $(ENCORE_DIR)/encore.h
 #DECORE_INCLUDE := $(DECORE_DIR)/decore.h
 MPEG3_DIR := $(shell expr ../libmpeg3* )
-FAAD_DIR := faad2
-FAAC_DIR := faac
 OBJS := 
 
 
+FFMPEG_DIR := ffmpeg.071405
+FFMPEG_LIB := $(OBJDIR)/ffmpeg/
+FFMPEG_INCLUDE := $(FFMPEG_DIR)/libavcodec
 
+FAAD_DIR := faad2-2.0
+FAAD_LIB := $(OBJDIR)/faad/
+FAAD_INCLUDE := $(FAAD_DIR)/include/
 
+FAAC_DIR := faac-1.24
+FAAC_LIB := $(OBJDIR)/faac/
+FAAC_INCLUDE := $(FAAC_DIR)/include/
+
+X264_DIR := x264.071405
+X264_LIB := $(OBJDIR)/x264
+X264_INCLUDE := $(X264_DIR)
+
+DV_DIR := libdv-0.104
+DV_LIB := $(OBJDIR)/libdv
+DV_INCLUDE := $(DV_DIR)
+
+OGG_DIR := $(shell expr libogg* )
+OGG_LIB := $(OBJDIR)/ogg
+
+VORBIS_DIR := $(shell expr libvorbis* )
+VORBIS_LIB := $(OBJDIR)/vorbis
+
+ifeq ($(OBJDIR), i686)
+
+  JPEG_DIR := $(shell expr jpeg-mmx* )
+  JPEG_LIB := $(OBJDIR)/jpeg
+  JPEG_LIB2 := $(JPEG_DIR)/libjpeg-mmx.a
+  JPEG_INCLUDE := $(JPEG_DIR)
+
+else
+
+  JPEG_DIR := jpeg
+  JPEG_LIB := $(OBJDIR)/jpeg
+  JPEG_LIB2 := $(JPEG_DIR)/libjpeg.a
+  JPEG_INCLUDE := $(JPEG_DIR)
+
+endif
 
 ifneq ($(HAVE_CFLAGS), y)
 
@@ -52,14 +89,11 @@ DIRS = $(OBJDIR)
 
 
 
-include Makefile.jpeg
-include Makefile.vorbis
-include Makefile.ffmpeg
+#include Makefile.jpeg
+#include Makefile.vorbis
 include Makefile.lame
-include Makefile.dv
+#include Makefile.dv
 include Makefile.encore50
-include Makefile.faad
-include Makefile.faac
 
 
 
@@ -68,14 +102,8 @@ include Makefile.faac
 #CFLAGS += -g
 CFLAGS += -D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64
 CFLAGS += -DHAVE_FIREWIRE
-CFLAGS += -I. \
-	-I$(JPEG_DIR) \
-	-I$(MPEG3_DIR) \
-	-I$(LAME_DIR)/include
 
 
-#	$(OBJDIR)/div3.o \
-#	$(OBJDIR)/divx.o \
 
 
 
@@ -84,6 +112,7 @@ CFLAGS += -I. \
 
 OBJS += \
 	$(OBJDIR)/atom.o \
+	$(OBJDIR)/avcc.o \
 	$(OBJDIR)/avi_hdrl.o \
 	$(OBJDIR)/avi_ix.o \
 	$(OBJDIR)/avi_idx1.o \
@@ -101,7 +130,6 @@ OBJS += \
 	$(OBJDIR)/ctab.o \
 	$(OBJDIR)/dinf.o \
 	$(OBJDIR)/dref.o \
-	$(OBJDIR)/dv.o \
 	$(OBJDIR)/edts.o \
 	$(OBJDIR)/elst.o \
 	$(OBJDIR)/esds.o \
@@ -109,7 +137,6 @@ OBJS += \
 	$(OBJDIR)/hdlr.o \
 	$(OBJDIR)/ima4.o \
 	$(OBJDIR)/jpeg.o \
-	$(OBJDIR)/jpeg_old.o \
 	$(OBJDIR)/libdv.o \
 	$(OBJDIR)/libmjpeg.o \
 	$(OBJDIR)/matrix.o \
@@ -122,6 +149,9 @@ OBJS += \
 	$(OBJDIR)/mpeg4.o \
 	$(OBJDIR)/mvhd.o \
 	$(OBJDIR)/plugin.o \
+	$(OBJDIR)/qtdv.o \
+	$(OBJDIR)/qtffmpeg.o \
+	$(OBJDIR)/qth264.o \
 	$(OBJDIR)/qtpng.o \
 	$(OBJDIR)/qtmp3.o \
 	$(OBJDIR)/quicktime.o \
@@ -173,44 +203,21 @@ OUTPUT = $(OBJDIR)/libquicktime.a
 SHAREDOUTPUT = $(OBJDIR)/libquicktime.so
 
 CFLAGS += \
+	-I. \
 	-I$(ENCORE_DIR) \
+	-I$(FAAC_INCLUDE) \
+	-I$(FAAD_INCLUDE) \
+	-I$(FFMPEG_INCLUDE) \
 	-DENCORE_INCLUDE=\"$(ENCORE_INCLUDE)\" \
-	-DLINUX
-
-#	-DDECORE_INCLUDE=\"$(DECORE_INCLUDE)\" \
-#	-I$(DECORE_DIR) \
-#	-D_DECORE
-
-
-CFLAGS += \
+	-I$(X264_INCLUDE) \
+	-I$(DV_INCLUDE) \
+	-I$(JPEG_INCLUDE) \
+	-I$(MPEG3_DIR) \
+	-I$(LAME_DIR)/include \
+	-I$(OGG_DIR)/include \
+	-I$(VORBIS_DIR)/include \
 	-ffast-math \
-	-mno-ieee-fp \
-	-DHAVE_ALLOCA_H=1 \
-	-DHAVE_ALLOCA=1 \
-	-DHAVE_SQRTF=1 \
-	-DHAVE_LOGF=1 \
-	-DHAVE_EXPF=1 \
-	-DHAVE_ACOSF=1 \
-	-DHAVE_ATANF=1 \
-	-DHAVE_FREXPF=1 \
-	-DHAVE_RINTF=1 \
-	-DUSE_MEMORY_H \
-	-D_REENTRANT \
-	-DHAVE_ALLOCA=1 \
-	-DHAVE_ALLOCA_H=1 \
-	-DVORBIS_IEEE_FLOAT32 \
-	-DHAVE_DLFCN_H=1 \
-	-DSTDC_HEADERS=1 \
-	-DSIZEOF_SHORT=2 \
-	-DSIZEOF_INT=4 \
-	-DSIZEOF_LONG=4 \
-	-DSIZEOF_LONG_LONG=8 \
-	-DUSE_MEMORY_H
-
-CFLAGS += \
-	-I$(FFMPEG_DIR)/libavcodec/ \
-	-I$(FFMPEG_DIR)/libav
-
+	-mno-ieee-fp
 
 
 #DIRS += \
@@ -235,18 +242,71 @@ LIBS := $(OUTPUT) $(MPEG3_DIR)/$(OBJDIR)/libmpeg3.a -lpng -lz -lpthread -ldl -lm
 
 $(shell if ! test -d $(OBJDIR) \; then mkdir -p $(DIRS) \; fi )
 $(shell echo  $(CFLAGS) > $(OBJDIR)/c_flags)
-$(shell echo  $(FFMPEG_CFLAGS) > $(OBJDIR)/ffmpeg_flags)
-$(shell echo $(FAAD_CFLAGS) > $(OBJDIR)/faad_flags)
-$(shell echo $(FAAC_CFLAGS) > $(OBJDIR)/faac_flags)
 $(shell echo  $(LAME_CFLAGS) > $(OBJDIR)/lame_flags)
-$(shell echo  $(OBJS) $(DV_OBJS) $(DVMMXOBJS) $(ENCOREMMX_OBJS) $(JPEG_NASM) $(JPEG_FAIL) $(FFMPEG_OBJS) $(FFMPEGIA32_OBJS) $(LAME_OBJS) $(FAAD_OBJS) $(FAAC_OBJS) > $(OBJDIR)/objs)
-#$(shell echo  $(OBJS) $(DV_OBJS) $(DVMMXOBJS) $(DECOREMMX_OBJS) $(ENCOREMMX_OBJS) $(JPEG_NASM) $(JPEG_FAIL) $(FFMPEG_OBJS) $(FFMPEGIA32_OBJS) $(LAME_OBJS) > $(OBJDIR)/objs)
+$(shell echo  $(OBJS) $(JPEG_LIB)/*.o $(DV_LIB)/*.o $(FAAD_LIB)/*.o $(FAAC_LIB)/*.o $(FFMPEG_LIB)/*.o $(X264_LIB)/*.o $(OGG_LIB)/*.o $(VORBIS_LIB)/*.o $(LAME_OBJS) > $(OBJDIR)/objs)
 
 all: $(OBJDIR) $(OUTPUT)
 
-#$(OUTPUT): $(DV_OBJS) $(DVMMXOBJ) $(OBJS) $(DVMMXOBJS) $(DECOREMMX_OBJS) $(ENCOREMMX_OBJS) $(JPEG_NASM) $(FFMPEG_OBJS) $(FFMPEGIA32_OBJS) $(LAME_OBJS) $(JPEG_FAIL) 
-$(OUTPUT): $(DV_OBJS) $(DVMMXOBJ) $(OBJS) $(DVMMXOBJS) $(ENCOREMMX_OBJS) $(JPEG_NASM) $(FFMPEG_OBJS) $(FFMPEGIA32_OBJS) $(LAME_OBJS) $(FAAD_OBJS) $(FAAC_OBJS) $(JPEG_FAIL) 
+$(OUTPUT): $(OBJS) $(ENCOREMMX_OBJS) $(JPEG_NASM) $(LAME_OBJS) $(FAAD_LIB) $(FAAC_LIB) $(FFMPEG_LIB) $(X264_LIB) $(DV_LIB) $(JPEG_LIB) $(OGG_LIB)/ $(VORBIS_LIB)
 	ar rcs $(OUTPUT) `cat $(OBJDIR)/objs`
+
+# this is the only way we figured out to merge .a files
+$(FFMPEG_LIB):
+	$(MAKE) -C $(FFMPEG_DIR) && \
+	mkdir -p $(FFMPEG_LIB) && \
+	cd $(FFMPEG_LIB) && \
+	ar x ../../$(FFMPEG_DIR)/libavcodec/libavcodec.a
+
+$(FAAD_LIB):
+	$(MAKE) -C $(FAAD_DIR) && \
+	mkdir -p $(FAAD_LIB) && \
+	cd $(FAAD_LIB) && \
+	ar x ../../$(FAAD_DIR)/libfaad/.libs/libfaad.a
+
+$(FAAC_LIB):
+	$(MAKE) -C $(FAAC_DIR) && \
+	mkdir -p $(FAAC_LIB) && \
+	cd $(FAAC_LIB) && \
+	ar x ../../$(FAAC_DIR)/libfaac/.libs/libfaac.a
+
+$(DV_LIB):
+	$(MAKE) -C $(DV_DIR) && \
+	mkdir -p $(DV_LIB) && \
+	cd $(DV_LIB) && \
+	ar x ../../$(DV_DIR)/libdv/.libs/libdv.a
+
+$(JPEG_LIB):
+	$(MAKE) -C $(JPEG_DIR) && \
+	mkdir -p $(JPEG_LIB) && \
+	cd $(JPEG_LIB) && \
+	ar x ../../$(JPEG_LIB2)
+
+# need some trickery to get the duplicated filenames out
+$(X264_LIB):
+	$(MAKE) -C $(X264_DIR) && \
+	mkdir -p $(X264_LIB) && \
+	cd $(X264_LIB) && \
+	ar x ../../$(X264_DIR)/libx264.a && \
+	mv predict.o predict2.o && \
+	mv cabac.o cabac2.o && \
+	mv macroblock.o macroblock2.o && \
+	mv set.o set2.o && \
+	ar xN 1 ../../$(X264_DIR)/libx264.a predict.o cabac.o macroblock.o set.o
+
+$(OGG_LIB):
+	$(MAKE) -C $(OGG_DIR) && \
+	mkdir -p $(OGG_LIB) && \
+	cd $(OGG_LIB) && \
+	ar x ../../$(OGG_DIR)/src/.libs/libogg.a
+
+$(VORBIS_LIB):
+	$(MAKE) -C $(VORBIS_DIR) && \
+	mkdir -p $(VORBIS_LIB) && \
+	cd $(VORBIS_LIB) && \
+	ar x ../../$(VORBIS_DIR)/lib/.libs/libvorbis.a && \
+	ar x ../../$(VORBIS_DIR)/lib/.libs/libvorbisenc.a && \
+	ar x ../../$(VORBIS_DIR)/lib/.libs/libvorbisfile.a
+
 
 
 $(OBJDIR)/qtdump: $(OBJDIR)/dump.o $(OUTPUT)
@@ -274,8 +334,15 @@ util:  $(UTILS)
 	
 
 clean:
-	rm -rf $(OBJDIR)
-	rm -f $(DVMMXOBJ)
+	find \( -name 'core*' \
+		-o -name '*.lo' \
+		-o -name '*.o' \
+		-o -name '*.la' \
+		-o -name '*.a' \
+		-o -name '*.plugin' \
+		-o -name '*.so' \) -exec rm -f {} \; -prune
+	find \( -name $(OBJDIR) \) -exec rm -rf {} \; -prune
+	find \( -name .deps \) -exec rm -rf {} \; -prune
 
 wc:
 	cat *.c *.h | wc
@@ -303,11 +370,11 @@ $(JPEG_FAIL):
 $(DV_OBJS):
 	$(CC) -c `cat $(OBJDIR)/c_flags` $(subst $(OBJDIR)/,, $*.c) -o $*.o
 
-$(FAAD_OBJS):
-	$(CC) -c `cat $(OBJDIR)/faad_flags` $(subst $(OBJDIR)/,, $*.c) -o $*.o
+#$(FAAD_OBJS):
+#	$(CC) -c `cat $(OBJDIR)/faad_flags` $(subst $(OBJDIR)/,, $*.c) -o $*.o
 
-$(FAAC_OBJS):
-	$(CC) -c `cat $(OBJDIR)/faac_flags` $(subst $(OBJDIR)/,, $*.c) -o $*.o
+#$(FAAC_OBJS):
+#	$(CC) -c `cat $(OBJDIR)/faac_flags` $(subst $(OBJDIR)/,, $*.c) -o $*.o
 
 $(DVMMXOBJS):
 	$(CC) -c `cat $(OBJDIR)/c_flags` $(subst $(OBJDIR)/,, $*.S) -o $*.o
@@ -326,8 +393,8 @@ $(ENCOREMMX_OBJS):
 #	$(CC) -c `cat $(OBJDIR)/c_flags` $(subst $(OBJDIR)/,, $*.S) -o $*.o
 
 
-$(FFMPEG_OBJS) $(FFMPEGIA32_OBJS):
-	$(CC) `cat $(OBJDIR)/ffmpeg_flags` -c $(subst $(OBJDIR)/,, $*.c) -o $*.o
+#$(FFMPEG_OBJS) $(FFMPEGIA32_OBJS):
+#	$(CC) `cat $(OBJDIR)/ffmpeg_flags` -c $(subst $(OBJDIR)/,, $*.c) -o $*.o
 
 $(LAME_OBJS):
 	$(CC) `cat $(OBJDIR)/lame_flags` -c $(subst $(OBJDIR)/,, $*.c) -o $*.o
@@ -343,6 +410,7 @@ $(LAME_OBJS):
 
 
 $(OBJDIR)/atom.o:			  atom.c
+$(OBJDIR)/avcc.o:                         avcc.c
 $(OBJDIR)/avi_hdrl.o:                     avi_hdrl.c
 $(OBJDIR)/avi_ix.o:                       avi_ix.c
 $(OBJDIR)/avi_idx1.o:                     avi_idx1.c
@@ -362,7 +430,6 @@ $(OBJDIR)/dechunk.o:			  dechunk.c
 $(OBJDIR)/dinf.o:			  dinf.c
 $(OBJDIR)/dref.o:			  dref.c
 $(OBJDIR)/dump.o:			  dump.c
-$(OBJDIR)/dv.o:			  	  dv.c
 $(OBJDIR)/edts.o:			  edts.c
 $(OBJDIR)/elst.o:			  elst.c
 $(OBJDIR)/esds.o:                         esds.c
@@ -370,7 +437,6 @@ $(OBJDIR)/graphics.o:			  graphics.c
 $(OBJDIR)/hdlr.o:			  hdlr.c
 $(OBJDIR)/ima4.o:			  ima4.c
 $(OBJDIR)/jpeg.o:			  jpeg.c
-$(OBJDIR)/jpeg_old.o:			  jpeg_old.c
 $(OBJDIR)/libdv.o:			  libdv.c
 $(OBJDIR)/libmjpeg.o:			  libmjpeg.c
 $(OBJDIR)/make_streamable.o:		  make_streamable.c
@@ -384,6 +450,9 @@ $(OBJDIR)/mpeg4.o:			  mpeg4.c
 $(OBJDIR)/mp4a.o:                         mp4a.c
 $(OBJDIR)/mvhd.o:			  mvhd.c
 $(OBJDIR)/plugin.o:			  plugin.c
+$(OBJDIR)/qtdv.o:			  qtdv.c
+$(OBJDIR)/qtffmpeg.o:                     qtffmpeg.c
+$(OBJDIR)/qth264.o:                       qth264.c
 $(OBJDIR)/qtinfo.o:			  qtinfo.c
 $(OBJDIR)/qtmp3.o:                        qtmp3.c
 $(OBJDIR)/qtpng.o:			  qtpng.c
@@ -463,11 +532,11 @@ $(OBJDIR)/yv12.o:			  yv12.c
 
 
 
-include depend.vorbis
-include depend.ffmpeg
-include depend.jpeg
+#include depend.vorbis
+#include depend.ffmpeg
+#include depend.jpeg
 include depend.lame
-include depend.dv
+#include depend.dv
 include depend.encore50
-include depend.faad
-include depend.faac
+#include depend.faad
+#include depend.faac

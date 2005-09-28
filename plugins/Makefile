@@ -22,7 +22,6 @@ DIRS = \
 	compressor \
 	crossfade \
 	decimate \
-	defaulttheme \
 	deinterlace \
 	delayaudio \
 	delayvideo \
@@ -30,6 +29,7 @@ DIRS = \
 	denoisefft \
 	denoisevideo \
 	despike \
+	diffkey \
 	dissolve \
 	dot \
 	downsample \
@@ -52,6 +52,7 @@ DIRS = \
 	ivtc \
 	level \
 	linearblur \
+	linearize \
 	loopaudio \
 	loopvideo \
 	motion \
@@ -63,6 +64,7 @@ DIRS = \
 	polar \
 	radialblur \
 	reframe \
+	reframert \
 	resample \
 	reverb \
 	reverseaudio \
@@ -74,6 +76,7 @@ DIRS = \
 	shiftinterlace \
 	slide \
 	spectrogram \
+	suv \
 	swapchannels \
 	synthesizer \
 	threshold \
@@ -88,6 +91,7 @@ DIRS = \
 	wipe \
 	yuv \
 	zoomblur
+#	defaulttheme \
 
 # Make static table of all plugins
 ifeq ($(DO_STATIC), y)
@@ -116,11 +120,12 @@ wc:
 # Can't strip the themes so instead the plugins strip themselves
 install:
 #	strip $(OBJDIR)/*.plugin
-	rm -rf /usr/lib/cinelerra
-	mkdir -p /usr/lib/cinelerra
-	cp $(OBJDIR)/*.plugin /usr/lib/cinelerra
-	cp -a titler/fonts /usr/lib/cinelerra
-
+	rm -rf $(PLUGINDIR)
+	mkdir -p $(PLUGINDIR)
+	cp $(OBJDIR)/*.plugin $(PLUGINDIR)
+	mkdir -p $(PLUGINDIR)/fonts
+	cp titler/fonts/* $(PLUGINDIR)/fonts
+	cp ../mjpegtools*/mpeg2enc/mpeg2enc $(PLUGINDIR)/mpeg2enc.plugin
 
 
 

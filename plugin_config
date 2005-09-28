@@ -5,11 +5,12 @@ CFLAGS += -I../ -I../../cinelerra \
 	-fPIC
 
 $(shell echo $(CFLAGS) > ../$(OBJDIR)/c_flags)
+$(shell echo $(LFLAGS) > ../$(OBJDIR)/l_flags)
 
 
 $(OUTPUT): $(OBJS)
 	@echo LD $(OUTPUT)
-	@$(LDLINKER) -o $(OUTPUT) $(OBJS)
+	@$(LDLINKER) -o $(OUTPUT) $(OBJS) `cat ../$(OBJDIR)/l_flags`
 	@echo STRIP $(OUTPUT)
 	@strip $(OUTPUT)
 
@@ -21,6 +22,7 @@ install:
 clean:
 	find \( -name core 		-o -name '*.o' 		-o -name '*.a' \) -exec rm -f {} \;
 	rm -f $(OUTPUT)
+	rm -rf $(OBJDIR)
 
 wc:
 	cat *.C *.h | wc

@@ -1,18 +1,27 @@
 include ../global_config
 
-ALSA_DIR := ../alsa-lib-1.0.2
-AVC_DIR := ../libavc1394-0.4.1
-DV_DIR := ../quicktime/libdv-0.99
+ALSA_DIR := ../alsa-lib-1.0.8
+AVC_DIR := $(shell expr ../libavc1394* )
+DV_DIR := ../quicktime/libdv-0.104
+EXR_DIR := ../OpenEXR-1.2.1/
 FFMPEG_DIR := $(shell expr ../quicktime/ffmpeg* )
+JPEG_DIR := $(shell expr ../quicktime/jpeg-mmx* )
 LAME_DIR := ../quicktime/lame-3.93.1/include
-LIBRAW_DIR := ../libraw1394-0.9.0
-OGG_DIR := ../quicktime/libogg-1.0
+LIBIEC_DIR := $(shell expr ../libiec61883* )
+LIBRAW_DIR := $(shell expr ../libraw1394* )
+OGG_DIR := $(shell expr ../quicktime/libogg* )
 SNDFILE_DIR := $(shell expr ../libsndfile* )
+THEORA_DIR := $(shell expr ../libtheora* )
 TIFF_DIR := ../tiff-v3.5.7
 TOOLAME_DIR := ../toolame-02l
 UUID_DIR := ../uuid
-VORBIS_DIR := ../quicktime/libvorbis-1.0
-EXR_DIR := ../OpenEXR-1.2.1/
+VORBIS_DIR := $(shell expr ../quicktime/libvorbis* )
+
+AVC_LIB := $(AVC_DIR)/libavc1394/.libs/libavc1394.a $(AVC_DIR)/librom1394/.libs/librom1394.a
+RAW_LIB := $(LIBRAW_DIR)/src/.libs/libraw1394.a
+IEC_LIB := $(LIBIEC_DIR)/src/.libs/libiec61883.a
+SNDFILE_LIB := $(SNDFILE_DIR)/src/.libs/libsndfile.a
+THEORA_LIB := $(THEORA_DIR)/lib/.libs/libtheora.a
 
 OBJS = \
 	$(OBJDIR)/aattachmentpoint.o \
@@ -52,8 +61,6 @@ OBJS = \
 	$(OBJDIR)/awindowmenu.o \
 	$(OBJDIR)/batch.o \
 	$(OBJDIR)/batchrender.o \
-	$(OBJDIR)/bezierauto.o \
-	$(OBJDIR)/bezierautos.o \
 	$(OBJDIR)/bitspopup.o \
 	$(OBJDIR)/brender.o \
 	$(OBJDIR)/browsebutton.o \
@@ -98,11 +105,13 @@ OBJS = \
 	$(OBJDIR)/filebaseaudio.o \
 	$(OBJDIR)/filebaseima4.o \
 	$(OBJDIR)/filebaseulaw.o \
+	$(OBJDIR)/filecr2.o \
 	$(OBJDIR)/fileformat.o \
 	$(OBJDIR)/filelist.o \
 	$(OBJDIR)/filejpeg.o \
 	$(OBJDIR)/filemov.o \
 	$(OBJDIR)/filempeg.o \
+	$(OBJDIR)/fileogg.o \
 	$(OBJDIR)/filepng.o \
 	$(OBJDIR)/filesndfile.o \
 	$(OBJDIR)/filetga.o \
@@ -117,6 +126,10 @@ OBJS = \
 	$(OBJDIR)/formatpopup.o \
 	$(OBJDIR)/formattools.o \
 	$(OBJDIR)/framecache.o \
+	$(OBJDIR)/gwindow.o \
+	$(OBJDIR)/gwindowgui.o \
+	$(OBJDIR)/iec61883input.o \
+	$(OBJDIR)/iec61883output.o \
 	$(OBJDIR)/indexfile.o \
 	$(OBJDIR)/indexthread.o \
 	$(OBJDIR)/intauto.o \
@@ -206,8 +219,6 @@ OBJS = \
 	$(OBJDIR)/render.o \
 	$(OBJDIR)/renderfarm.o \
 	$(OBJDIR)/renderfarmclient.o \
-	$(OBJDIR)/renderfarmfsclient.o \
-	$(OBJDIR)/renderfarmfsserver.o \
 	$(OBJDIR)/renderengine.o \
 	$(OBJDIR)/resample.o \
 	$(OBJDIR)/resizetrackthread.o \
@@ -227,6 +238,7 @@ OBJS = \
 	$(OBJDIR)/threadfork.o \
 	$(OBJDIR)/timebar.o \
 	$(OBJDIR)/timeentry.o \
+	$(OBJDIR)/tipwindow.o \
 	$(OBJDIR)/track.o \
 	$(OBJDIR)/trackcanvas.o \
 	$(OBJDIR)/tracking.o \
@@ -274,8 +286,13 @@ OBJS = \
 	$(OBJDIR)/zoombar.o \
 	$(OBJDIR)/zoompanel.o
 
-FILEEXR := $(OBJDIR)/fileexr.o
 
+#	$(OBJDIR)/renderfarmfsclient.o \
+#	$(OBJDIR)/renderfarmfsserver.o \
+
+# some files need different compilation options
+FILEEXR := $(OBJDIR)/fileexr.o
+DCRAW := $(OBJDIR)/dcraw.o
 
 THEME_DATA := $(OBJDIR)/theme_data.o
 
@@ -292,19 +309,25 @@ ALSA_CFLAGS := -DHAVE_ALSA -I$(ALSA_DIR)/include
 ALSA_LIBS := $(ALSA_DIR)/$(OBJDIR)/libasound.a
 endif
 
+
+
 STATICLIBS = \
-	$(AVC_DIR)/$(OBJDIR)/libavc.a \
+	$(ALSA_LIBS) \
+	$(AVC_LIB) \
+	$(RAW_LIB) \
+	$(IEC_LIB) \
 	../quicktime/$(OBJDIR)/libquicktime.a \
         $(ESOUNDLIBS) \
 	$(EXR_DIR)/$(OBJDIR)/libexr.a \
 	$(TIFF_DIR)/$(OBJDIR)/libtiff.a \
 	../guicast/$(OBJDIR)/libguicast.a \
 	../libmpeg3/$(OBJDIR)/libmpeg3.a \
-	$(SNDFILE_DIR)/$(OBJDIR)/libsndfile.a \
+	$(SNDFILE_LIB) \
 	$(UUID_DIR)/$(OBJDIR)/libuuid.a \
 	../mpeg2enc/$(OBJDIR)/mpeg2enc.a \
 	$(TOOLAME_DIR)/$(OBJDIR)/toolame.a \
-	$(THEME_DATA)
+	$(THEME_DATA) \
+	$(THEORA_LIB)
 
 LIBS := \
 	-L./ \
@@ -321,8 +344,6 @@ endif
 
 
 LIBS += \
-	$(ALSA_LIBS) \
-	$(LIBRAW_DIR)/$(OBJDIR)/libraw1394.a \
 	$(GLLIBS) \
 	-lX11 \
 	-lXext \
@@ -334,7 +355,6 @@ LIBS += \
 	-lz \
 	-ldl
 
-
 ifeq ($(HAVE_XFT), y)
 LIBS += -lXft
 endif
@@ -342,22 +362,24 @@ endif
 CFLAGS += \
 	-I../guicast \
 	-I../quicktime \
+	-I$(JPEG_DIR) \
 	-I$(DV_DIR) \
 	-I$(OGG_DIR)/include \
 	-I$(VORBIS_DIR)/include \
 	-I$(LIBRAW_DIR)/ \
+	-I$(AVC_DIR) \
+	-I$(LIBIEC_DIR)/src/ \
 	-I$(TIFF_DIR)/libtiff \
 	-I$(UUID_DIR) \
-	-I$(DV_DIR) \
 	-I$(TOOLAME_DIR) \
 	-I$(LAME_DIR) \
-	-I$(AVC_DIR) \
 	-I../audiofile \
 	-I../libmpeg3 \
 	-I$(SNDFILE_DIR)/src \
 	$(ESOUNDCFLAGS) \
 	$(ALSA_CFLAGS) \
-	-I$(FFMPEG_DIR)/libavcodec
+	-I$(FFMPEG_DIR)/libavcodec \
+	-I$(THEORA_DIR)/include
 
 
 # Speed up linking with this linking sequence
@@ -416,7 +438,7 @@ endif
 
 $(shell echo "\#define BUILDDATE \"`date`\"" > builddate.h )
 $(shell echo $(CFLAGS) > $(OBJDIR)/c_flags)
-$(shell echo $(LDFLAGS1) $(OBJS) $(FILEEXR) $(AVIOBJS) $(CXXREPOSITORY) $(STATICLIBS) $(LIBS) $(LDFLAGS2) > $(OBJDIR)/objs)
+$(shell echo $(LDFLAGS1) $(OBJS) $(DCRAW) $(FILEEXR) $(AVIOBJS) $(CXXREPOSITORY) $(STATICLIBS) $(LIBS) $(LDFLAGS2) > $(OBJDIR)/objs)
 
 
 
@@ -425,7 +447,7 @@ $(shell echo $(LDFLAGS1) $(OBJS) $(FILEEXR) $(AVIOBJS) $(CXXREPOSITORY) $(STATIC
 # Static linking is not possible because the plugins depend on symbols
 # in the main executable.
 # Also VFS only overrides the C library when dynamic linking is used.
-$(OUTPUT): $(OBJS) $(FILEEXR) $(THEME_DATA)
+$(OUTPUT): $(OBJS) $(DCRAW) $(FILEEXR) $(THEME_DATA) $(SNDFILE_LIB)
 	@echo LD $(OUTPUT)
 	@$(LINKER) `cat $(OBJDIR)/objs`
 	@echo STRIP $(OUTPUT)
@@ -440,6 +462,11 @@ $(OBJDIR)/test:
 		`cat $(OBJDIR)/c_flags` \
 		$(OBJDIR)/test.so \
 		$(LIBS)
+
+$(SNDFILE_LIB):
+	mkdir -p $(SNDFILE_LIB) && \
+	cd $(SNDFILE_LIB) && \
+	ar x ../../$(SNDFILE_DIR)/src/.libs/libsndfile.a
 
 clean:
 	rm -rf $(OBJDIR)
@@ -463,6 +490,10 @@ $(LIBOBJS) $(OBJS):
 $(FILEEXR): fileexr.C
 	@echo C++ $*.o
 	@$(CC) -c `cat $(OBJDIR)/c_flags` -I$(EXR_DIR)IlmImf -I$(EXR_DIR)Imath -I$(EXR_DIR)Iex -I$(EXR_DIR)Half $(subst $(OBJDIR)/,, $*.C) -o $*.o
+
+$(DCRAW): dcraw.c
+	@echo CC $*.o
+	@$(GCC) -c `cat $(OBJDIR)/c_flags` dcraw.c -o $*.o
 
 $(THEME_DATA):
 	cd $(OBJDIR) && \
@@ -510,8 +541,6 @@ $(OBJDIR)/awindowgui.o: 			  awindowgui.C
 $(OBJDIR)/awindowmenu.o: 			  awindowmenu.C
 $(OBJDIR)/batch.o: 				  batch.C
 $(OBJDIR)/batchrender.o:			  batchrender.C
-$(OBJDIR)/bezierauto.o: 			  bezierauto.C
-$(OBJDIR)/bezierautos.o: 			  bezierautos.C
 $(OBJDIR)/bitspopup.o:  			  bitspopup.C
 $(OBJDIR)/brender.o:                              brender.C
 $(OBJDIR)/browsebutton.o: 			  browsebutton.C
@@ -540,6 +569,7 @@ $(OBJDIR)/cwindow.o: 				  cwindow.C
 $(OBJDIR)/cwindowgui.o: 			  cwindowgui.C
 $(OBJDIR)/cwindowtool.o: 			  cwindowtool.C
 $(OBJDIR)/dcoffset.o: 				  dcoffset.C
+$(OBJDIR)/dcraw.o:                                dcraw.c
 $(OBJDIR)/deleteallindexes.o: 			  deleteallindexes.C
 $(OBJDIR)/device1394input.o:                      device1394input.C
 $(OBJDIR)/device1394output.o:                     device1394output.C
@@ -560,17 +590,18 @@ $(OBJDIR)/filebaseaudio.o: 			  filebaseaudio.C
 $(OBJDIR)/filebaseima4.o: 			  filebaseima4.C
 $(OBJDIR)/filebaseulaw.o: 			  filebaseulaw.C
 $(OBJDIR)/filebasevideo.o: 			  filebasevideo.C
+$(OBJDIR)/filecr2.o:                              filecr2.C
 $(OBJDIR)/fileformat.o: 			  fileformat.C
 $(OBJDIR)/filejpeg.o: 				  filejpeg.C
 $(OBJDIR)/filelist.o: 				  filelist.C
 $(OBJDIR)/filemov.o: 				  filemov.C
 $(OBJDIR)/filempeg.o:                             filempeg.C
+$(OBJDIR)/fileogg.o:                              fileogg.C
 $(OBJDIR)/filepng.o: 				  filepng.C
 $(OBJDIR)/filesndfile.o: 			  filesndfile.C
 $(OBJDIR)/filetga.o: 			  	  filetga.C
 $(OBJDIR)/filethread.o: 			  filethread.C
 $(OBJDIR)/filetiff.o: 				  filetiff.C
-$(OBJDIR)/filevorbis.o: 			  filevorbis.C
 $(OBJDIR)/filexml.o: 				  filexml.C
 $(OBJDIR)/floatauto.o:  			  floatauto.C
 $(OBJDIR)/floatautos.o: 			  floatautos.C
@@ -579,6 +610,10 @@ $(OBJDIR)/formatpopup.o: 			  formatpopup.C
 $(OBJDIR)/formatpresets.o:                        formatpresets.C
 $(OBJDIR)/formattools.o: 			  formattools.C
 $(OBJDIR)/framecache.o:                           framecache.C
+$(OBJDIR)/gwindow.o:                              gwindow.C
+$(OBJDIR)/gwindowgui.o:                           gwindowgui.C
+$(OBJDIR)/iec61883input.o:                        iec61883input.C
+$(OBJDIR)/iec61883output.o:                       iec61883output.C
 $(OBJDIR)/indexfile.o:  			  indexfile.C
 $(OBJDIR)/indexthread.o: 			  indexthread.C
 $(OBJDIR)/intauto.o:                              intauto.C
@@ -695,6 +730,7 @@ $(OBJDIR)/threadloader.o: 			  threadloader.C
 $(OBJDIR)/timebar.o: 				  timebar.C
 $(OBJDIR)/timebomb.o: 				  timebomb.C
 $(OBJDIR)/timeentry.o:  			  timeentry.C
+$(OBJDIR)/tipwindow.o:                            tipwindow.C
 $(OBJDIR)/toggleauto.o: 			  toggleauto.C
 $(OBJDIR)/toggleautos.o: 			  toggleautos.C
 $(OBJDIR)/track.o: 				  track.C

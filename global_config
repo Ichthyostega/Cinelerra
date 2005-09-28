@@ -1,5 +1,3 @@
-AVC_DIR := libavc1394-0.4.1
-LIBRAW_DIR := libraw1394-0.9.0
 HAVE_ALSA := y
 HAVE_XFT := n
 HAVE_ESOUND := y
@@ -34,7 +32,15 @@ LIBPREFIX = $(PREFIX)/lib
 
 CC = g++
 GCC = gcc
+
+
+# libraries are stored in different directories depending on CPU
+ifeq ($(OBJDIR), i686)
 PLUGINDIR := /usr/lib/cinelerra
+else
+PLUGINDIR := /usr/lib64/cinelerra
+endif
+
 
 ifneq ($(HAVE_CFLAGS), y)
 CFLAGS = -O2 -fomit-frame-pointer -falign-loops=2 -falign-jumps=2 -falign-functions=2

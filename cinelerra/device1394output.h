@@ -8,7 +8,7 @@
 #include "audiodevice.inc"
 #include "condition.inc"
 #include "libdv.h"
-#include "libdv/dv1394.h"
+#include "dv1394.h"
 #include "ieee1394-ioctl.h"
 #include "mutex.inc"
 #include "thread.h"

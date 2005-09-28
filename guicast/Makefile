@@ -22,17 +22,20 @@ endif
 
 ifeq ($(OBJDIR), x86_64)
 BOOTSTRAPFLAGS := -DBOOTSTRAP="\"objcopy -B i386 -I binary -O elf64-x86-64\""
+LFLAGS += -L/usr/X11R6/lib64
 endif
 
 
 $(shell sh -c 'if ! test -d $(OBJDIR)\; then mkdir $(OBJDIR)\; fi' )
 
 OBJS = \
+	$(OBJDIR)/bcbar.o \
 	$(OBJDIR)/bcbitmap.o \
 	$(OBJDIR)/bcbutton.o \
 	$(OBJDIR)/bccapture.o \
 	$(OBJDIR)/bccounter.o \
 	$(OBJDIR)/bcclipboard.o \
+	$(OBJDIR)/bcdelete.o \
 	$(OBJDIR)/bcdialog.o \
 	$(OBJDIR)/bcdisplayinfo.o \
 	$(OBJDIR)/bcdragwindow.o \
@@ -44,6 +47,7 @@ OBJS = \
 	$(OBJDIR)/bcmenubar.o \
 	$(OBJDIR)/bcmenuitem.o \
 	$(OBJDIR)/bcmenupopup.o \
+	$(OBJDIR)/bcnewfolder.o \
 	$(OBJDIR)/bcmeter.o \
 	$(OBJDIR)/bcpan.o \
 	$(OBJDIR)/bcpixmap.o \
@@ -168,11 +172,13 @@ $(OBJS) $(OBJDIR)/test.o $(OBJDIR)/test2.o $(OBJDIR)/test3.o $(OBJDIR)/replace.o
 $(OBJDIR)/bootstrap: bootstrap.c
 $(OBJDIR)/pngtoh: pngtoh.c
 
+$(OBJDIR)/bcbar.o:                                            bcbar.C
 $(OBJDIR)/bcbitmap.o: 	   				      bcbitmap.C
 $(OBJDIR)/bcbutton.o: 	   				      bcbutton.C
 $(OBJDIR)/bccapture.o:     				      bccapture.C
 $(OBJDIR)/bccounter.o:                                        bccounter.C
 $(OBJDIR)/bcclipboard.o:   				      bcclipboard.C
+$(OBJDIR)/bcdelete.o:                                         bcdelete.C
 $(OBJDIR)/bcdialog.o:                                         bcdialog.C
 $(OBJDIR)/bcdisplayinfo.o: 				      bcdisplayinfo.C
 $(OBJDIR)/bcdragwindow.o:  				      bcdragwindow.C
@@ -185,6 +191,7 @@ $(OBJDIR)/bcmenubar.o:                                        bcmenubar.C
 $(OBJDIR)/bcmenuitem.o:                                       bcmenuitem.C
 $(OBJDIR)/bcmenupopup.o:                                      bcmenupopup.C
 $(OBJDIR)/bcmeter.o: 	   				      bcmeter.C
+$(OBJDIR)/bcnewfolder.o:                                      bcnewfolder.C
 $(OBJDIR)/bcpan.o: 	   				      bcpan.C
 $(OBJDIR)/bcpixmap.o: 	   				      bcpixmap.C
 $(OBJDIR)/bcpopup.o: 	   				      bcpopup.C

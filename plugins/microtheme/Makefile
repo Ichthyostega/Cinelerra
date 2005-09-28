@@ -16,5 +16,5 @@ $(OBJDIR)/microtheme.o: microtheme.C
 
 
 inst:
-	rm -f /usr/lib/cinelerra/microtheme.plugin
-	cp $(OUTPUT_THEME) /usr/lib/cinelerra
+	rm -f $(PLUGINDIR)/microtheme.plugin
+	cp $(OUTPUT_THEME) $(PLUGINDIR)

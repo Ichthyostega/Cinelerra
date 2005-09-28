@@ -222,6 +222,8 @@ public:
 // The output target frame for rotation tracking.
 	VFrame *rotate_target_dst;
 
+// The output of process_buffer
+	VFrame *output_frame;
 	int w;
 	int h;
 };

@@ -489,7 +489,30 @@ char *fgets (char *__restrict __s, int __n, FILE *__restrict __stream)
 	return result;
 }
 
+int fscanf (FILE *__restrict __stream,
+		   __const char *__restrict __format, ...)
+{
+	int result = 0;
+	int done = 0;
+	va_list ap;
+	va_start(ap, __format);
 
+	if(renderfarm_fs_global)
+	{
+		renderfarm_fs_global->lock();
+		if(renderfarm_fs_global->is_open(__stream))
+		{
+// Since this is currently only used in one place in dcraw, leave it blank.
+// The future implementation may just read until the next \n and scan the string.
+			result = renderfarm_fs_global->fscanf(__stream, __format, ap);
+			done = 1;
+		}
+		renderfarm_fs_global->unlock();
+	}
+
+	if(!done) result = vfscanf(__stream, __format, ap);
+	return result;
+}
 
 
 
@@ -643,6 +666,8 @@ printf("RenderFarmFSClient::fclose file=%p\n", file);
 
 int RenderFarmFSClient::fileno(FILE *file)
 {
+if(DEBUG)
+printf("RenderFarmFSClient::fileno file=%p\n", file);
 	int result = 0;
 	unsigned char datagram[8];
 	int i = 0;
@@ -782,6 +807,13 @@ if(DEBUG)
 printf("RenderFarmFSClient::fputc file=%p result=%02x\n", __stream, result);
 
 	return result;
+}
+
+int RenderFarmFSClient::fscanf(FILE *__restrict stream, const char *__restrict format, va_list ap)
+{
+	char string[BCTEXTLEN];
+	fgets (string, BCTEXTLEN, stream);
+	return 0;
 }
 
 char* RenderFarmFSClient::fgets (char *__restrict __s, int __n, FILE *__restrict __stream)

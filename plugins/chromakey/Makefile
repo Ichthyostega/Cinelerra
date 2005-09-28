@@ -1,7 +1,9 @@
 include ../../global_config
 
-OBJS = ../colors/$(OBJDIR)/plugincolors.o \
-	$(OBJDIR)/chromakey.o
+OBJS = \
+	$(OBJDIR)/chromakey.o \
+	../colors/$(OBJDIR)/colorpicker.o \
+	../colors/$(OBJDIR)/plugincolors.o
 
 OUTPUT = ../$(OBJDIR)/chromakey.plugin
 

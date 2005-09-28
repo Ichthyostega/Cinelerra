@@ -14,6 +14,8 @@ extern void quicktime_init_codec_mp4v(quicktime_video_map_t *);
 extern void quicktime_init_codec_svq1(quicktime_video_map_t *);
 extern void quicktime_init_codec_svq3(quicktime_video_map_t *);
 extern void quicktime_init_codec_h263(quicktime_video_map_t *);
+extern void quicktime_init_codec_xvid(quicktime_video_map_t *);
+extern void quicktime_init_codec_div5(quicktime_video_map_t *vtrack);
 
 
 #endif

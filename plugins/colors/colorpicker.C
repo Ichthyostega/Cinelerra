@@ -36,6 +36,7 @@ void ColorThread::start_window(int output, int alpha)
 	this->output = output;
 	this->alpha = alpha;
 	mutex.unlock();
+
 	if(!running())
 	{
 		completion.lock();
@@ -72,6 +73,7 @@ void ColorThread::run()
 	mutex.lock("lorThread::run 2");
 	delete window;
 	window = 0;
+	mutex.unlock();
 	completion.unlock();
 }
 

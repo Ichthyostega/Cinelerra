@@ -21,8 +21,9 @@ $(OUTPUT_PLUGIN): $(OBJS)
 include ../../plugin_config
 
 inst:
-	cp $(OUTPUT_PLUGIN) /usr/lib/cinelerra
-	cp -a fonts /usr/lib/cinelerra
+	cp $(OUTPUT_PLUGIN) $(PLUGINDIR)
+	mkdir -p $(PLUGINDIR)/fonts
+	cp fonts/* $(PLUGINDIR)/fonts
 
 
 

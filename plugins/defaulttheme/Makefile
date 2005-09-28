@@ -22,5 +22,5 @@ $(THEME_DATA):
 	../../../guicast/$(OBJDIR)/bootstrap defaulttheme_data.o ../data/*.png
 
 inst:
-	rm -f /usr/lib/cinelerra/defaulttheme.plugin
-	cp $(OUTPUT_THEME) /usr/lib/cinelerra
+	rm -f $(PLUGINDIR)/defaulttheme.plugin
+	cp $(OUTPUT_THEME) $(PLUGINDIR)

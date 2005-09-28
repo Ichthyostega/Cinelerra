@@ -52,10 +52,9 @@ KeyframePopupDelete::~KeyframePopupDelete()
 
 int KeyframePopupDelete::handle_event()
 {
-	mwindow->undo->update_undo_before(_("delete keyframe"), LOAD_ALL);
 	delete popup->keyframe;
 	mwindow->save_backup();
-	mwindow->undo->update_undo_after();
+	mwindow->undo->update_undo(_("delete keyframe"), LOAD_ALL);
 
 	mwindow->gui->update(0,
 	        1,      // 1 for incremental drawing.  2 for full refresh

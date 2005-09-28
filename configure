@@ -1,3 +1,5 @@
+#!/bin/sh
+
 # configuration is being done in a script because starting with GCC-3.2
 # the compiler flags are changing too much between minor releases to detect
 # with Makefile scripts alone.  For now it just tells you if you have the
@@ -6,6 +8,8 @@
 ERROR=0
 
 # test for nasm
+OBJDIR=`arch`
+TOPDIR=`pwd`
 
 if [ `arch` == i686 ];
 then
@@ -15,10 +19,17 @@ then
 	if [ "$HAVE_NASM" == "n" ]; 
 	then echo " *** Nasm is required.  Download it from nasm.sourceforge.net"; 
 	ERROR=1
-	exit 1
 	fi
 
 fi
+
+if [ -x /usr/bin/yasm -o -x /usr/local/bin/yasm ]; then HAVE_YASM=y; else HAVE_YASM=n; fi
+
+if [ $HAVE_YASM == n ]; 
+then echo " *** Yasm is required.  Download it from www.tortall.net/projects/yasm/"; 
+ERROR=1
+fi
+
 
 # test for videodev2.h
 
@@ -60,12 +71,61 @@ rm -f a.out conftest.c
 if [ $HAVE_GCC == n ]; 
 then echo " *** GCC 3.2.2 or greater is required.  Download it from gcc.gnu.org"; 
 ERROR=1
+fi
+
+
+if [ $ERROR == 1 ];
+then echo "Giving up and going to a movie."
 exit 1
 fi
 
 
-# fix ffmpeg for mmx
-cd quicktime/ffmpeg* && ./configure && cd ../..
+
+
+
+# fix libraries
+echo CONFIGURING QUICKTIME
+cd quicktime* && ./configure && cd ..
+
+echo CONFIGURING LIBMPEG3
+cd libmpeg3* && ./configure && cd ..
+
+echo CONFIGURING FFTW
+cd fftw* && CFLAGS=-fPIC ./configure && cd ..
+
+echo CONFIGURING MJPEGTOOLS
+ALSA_PATH=`expr $TOPDIR/alsa-lib*` && \
+cd mjpegtools* && CFLAGS="-I$ALSA_PATH/include -L$ALSA_PATH/$OBJDIR" ./configure --enable-shared=no && cd ..
+
+echo CONFIGURING SNDFILE
+cd libsndfile* && chmod a+x configure && ./configure && cd ..
+
+echo CONFIGURING RAW1394
+cd libraw1394* && \
+./configure --enable-shared=no && \
+ln -sf src libraw1394 && \
+cd ..
+
+echo CONFIGURING AVC1394
+cd libavc1394* && \
+RAW1394_PATH=`expr $TOPDIR/libraw1394*` && \
+PKG_CONFIG_PATH=$RAW1394_PATH CFLAGS=-I$RAW1394_PATH/ LDFLAGS=-L$RAW1394_PATH/src/.libs ./configure --enable-shared=no && \
+cd ..
+
+echo CONFIGURING IEC61883
+cd libiec61883* && \
+RAW1394_PATH=`expr $TOPDIR/libraw1394*` && \
+PKG_CONFIG_PATH=$RAW1394_PATH CFLAGS=-I$RAW1394_PATH/ LDFLAGS=-L$RAW1394_PATH/src/.libs ./configure --enable-shared=no && \
+cd ..
+
+echo CONFIGURING THEORA
+ALSA_PATH=`expr $TOPDIR/alsa-lib*` && \
+LIBOGG_PATH=`expr $TOPDIR/quicktime/libogg*` && \
+LIBVORBIS_PATH=`expr $TOPDIR/quicktime/libvorbis*` && \
+cd libtheora* && \
+PKG_CONFIG_PATH=$LIBOGG_PATH:$LIBVORBIS_PATH CFLAGS="-I$LIBOGG_PATH/include -I$ALSA_PATH -L$ALSA_PATH/$OBJDIR -L$LIBOGG_PATH/src -I$LIBVORBIS_PATH/include -L$LIBVORBIS_PATH/lib" ./configure --enable-shared=no && \
+cd ..
+
 
 
 # write configuration header

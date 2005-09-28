@@ -5,6 +5,9 @@ USE_CSS = 1
 A52DIR := $(shell expr a52dec* )
 
 
+ifeq ("$(PREFIX)", "")
+PREFIX=/usr
+endif
 
 ifeq ($(origin CFLAGS), environment)
 HAVE_CFLAGS := y
@@ -64,7 +67,9 @@ CFLAGS += \
 	-I$(A52DIR)/include \
 	-I$(A52DIR)/liba52
 
-#CFLAGS += -g
+
+
+CFLAGS += -g
 
 
 
@@ -85,14 +90,15 @@ OBJS = \
 	$(OBJDIR)/audio/pcm.o \
 	$(OBJDIR)/audio/synthesizers.o \
 	$(OBJDIR)/audio/tables.o \
-	$(OBJDIR)/bitstream.o \
 	$(OBJDIR)/libmpeg3.o \
 	$(OBJDIR)/mpeg3atrack.o \
+	$(OBJDIR)/mpeg3bits.o \
 	$(OBJDIR)/mpeg3css.o \
 	$(OBJDIR)/mpeg3demux.o \
 	$(OBJDIR)/mpeg3ifo.o \
 	$(OBJDIR)/mpeg3io.o \
 	$(OBJDIR)/mpeg3title.o \
+	$(OBJDIR)/mpeg3tocutil.o \
 	$(OBJDIR)/mpeg3vtrack.o \
 	$(OBJDIR)/video/getpicture.o \
 	$(OBJDIR)/video/headers.o \
@@ -133,7 +139,7 @@ DIRS += $(A52DIRS)
 
 
 OUTPUT = $(OBJDIR)/libmpeg3.a
-UTILS = $(OBJDIR)/mpeg3dump $(OBJDIR)/mpeg3toc  $(OBJDIR)/mpeg3cat
+UTILS = $(OBJDIR)/mpeg3dump $(OBJDIR)/mpeg3peek $(OBJDIR)/mpeg3toc  $(OBJDIR)/mpeg3cat
 
 #$(OBJDIR)/mpeg3split
 
@@ -158,6 +164,9 @@ $(OUTPUT): $(OBJS) $(ASMOBJS) $(NASMOBJS) $(A52OBJS)
 $(OBJDIR)/mpeg3dump: $(OUTPUT) mpeg3dump.c
 	$(CC) `cat $(OBJDIR)/c_flags` -o $(OBJDIR)/mpeg3dump mpeg3dump.c $(OUTPUT) $(LIBS)
 
+$(OBJDIR)/mpeg3peek: $(OUTPUT) mpeg3peek.c
+	$(CC) `cat $(OBJDIR)/c_flags` -o $(OBJDIR)/mpeg3peek mpeg3peek.c $(OUTPUT) $(LIBS)
+
 $(OBJDIR)/mpeg3toc: $(OUTPUT) mpeg3toc.c
 	$(CC) `cat $(OBJDIR)/c_flags` -o $(OBJDIR)/mpeg3toc mpeg3toc.c $(OUTPUT) $(LIBS)
 
@@ -179,7 +188,9 @@ $(OBJDIR)/mpeg2qt: $(OUTPUT)
 		-ldl
 
 install: 
-	cp $(UTILS) /usr/bin
+	cp $(UTILS) $(PREFIX)/bin
+#	cp $(OUTPUT) $(PREFIX)/lib
+#	cp libmpeg3.h mpeg3private.h $(PREFIX)/include
 
 clean:
 	rm -rf $(OBJDIR)
@@ -200,18 +211,18 @@ $(NASMOBJS):
 $(A52OBJS):
 	$(CC) -c `cat $(OBJDIR)/a52_flags` $(subst $(OBJDIR)/,, $*.c) -o $*.o
 
-$(OBJDIR)/bitstream.o:  			    bitstream.c
-$(OBJDIR)/mpeg3dump.o: 				    mpeg3dump.c
 $(OBJDIR)/libmpeg3.o: 				    libmpeg3.c
 $(OBJDIR)/mpeg3atrack.o: 			    mpeg3atrack.c
+$(OBJDIR)/mpeg3bits.o:  			    mpeg3bits.c
 $(OBJDIR)/mpeg3css.o: 				    mpeg3css.c
 $(OBJDIR)/mpeg3demux.o: 			    mpeg3demux.c
+$(OBJDIR)/mpeg3dump.o: 				    mpeg3dump.c
 $(OBJDIR)/mpeg3ifo.o: 				    mpeg3ifo.c
 $(OBJDIR)/mpeg3io.o: 				    mpeg3io.c
-#$(OBJDIR)/mpeg3split.o: 			    mpeg3split.c
 $(OBJDIR)/mpeg3title.o: 			    mpeg3title.c
-$(OBJDIR)/mpeg3toc.o: 				    mpeg3toc.c
 $(OBJDIR)/mpeg3toc3.o:  			    mpeg3toc3.c
+$(OBJDIR)/mpeg3toc.o: 				    mpeg3toc.c
+$(OBJDIR)/mpeg3tocutil.o:                           mpeg3tocutil.c
 $(OBJDIR)/mpeg3vtrack.o: 			    mpeg3vtrack.c
 $(OBJDIR)/audio/ac3.o:  			    audio/ac3.c
 $(OBJDIR)/audio/bit_allocation.o: 		    audio/bit_allocation.c

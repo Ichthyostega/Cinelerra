@@ -8,11 +8,11 @@
 #include "theme.h"
 #include "timebar.inc"
 
-class SUVTheme : public Theme
+class SUV : public Theme
 {
 public:
-	SUVTheme();
-	~SUVTheme();
+	SUV();
+	~SUV();
 
 	void initialize();
 	void draw_mwindow_bg(MWindowGUI *gui);
@@ -28,10 +28,17 @@ public:
 	void get_vwindow_sizes(VWindowGUI *gui);
 	void get_preferences_sizes();
 	void get_recordgui_sizes(RecordGUI *gui, int w, int h);
+	void get_rmonitor_sizes(int do_audio, 
+		int do_video,
+		int do_channel,
+		int do_interlace,
+		int do_avc,
+		int audio_channels);
 
 	void get_new_sizes(NewWindow *gui);
 	void draw_new_bg(NewWindow *gui);
 	void draw_setformat_bg(SetFormatWindow *gui);
+	void get_plugindialog_sizes();
 
 private:
 	void build_icons();
@@ -40,31 +47,8 @@ private:
 	void build_overlays();
 
 
-// MWindow
-	VFrame *mbutton_left;
-	VFrame *mbutton_right;
-	VFrame *clock_bg;
-	VFrame *patchbay_bg;
-	VFrame *tracks_bg;
-	VFrame *zoombar_left;
-	VFrame *zoombar_right;
-	VFrame *statusbar_left;
-	VFrame *statusbar_right;
 
-// CWindow
-	VFrame *cpanel_bg;
-	VFrame *cbuttons_left;
-	VFrame *cbuttons_right;
-	VFrame *cmeter_bg;
 
-// VWindow
-	VFrame *vbuttons_left;
-	VFrame *vbuttons_right;
-	VFrame *vmeter_bg;
-
-	VFrame *preferences_bg;
-	VFrame *new_bg;
-	VFrame *setformat_bg;
 
 // Record windows
 	VFrame *rgui_batch;
@@ -76,16 +60,16 @@ private:
 
 
 
-class SUVThemeMain : public PluginTClient
+class SUVMain : public PluginTClient
 {
 public:
-	SUVThemeMain(PluginServer *server);
-	~SUVThemeMain();
+	SUVMain(PluginServer *server);
+	~SUVMain();
 	
 	char* plugin_title();
 	Theme* new_theme();
 	
-	SUVTheme *theme;
+	SUV *theme;
 };
 
 

@@ -222,9 +222,9 @@ static void init()
 	init_fdct();
 	init_idct();
 	init_motion();
-	init_predict();
-	init_quantizer();
-	init_transform();
+	init_predict_hv();
+	init_quantizer_hv();
+	init_transform_hv();
 
 /* round picture dimensions to nZearest multiple of 16 or 32 */
 	mb_width = (horizontal_size+15)/16;
@@ -783,9 +783,9 @@ INTTOYES(prog_seq));
 	intravlc_tab[0] 		 = 0;  /* intra_vlc_format (I P B)*/
 	intravlc_tab[1] 		 = 0;  /* intra_vlc_format (I P B)*/
 	intravlc_tab[2] 		 = 0;  /* intra_vlc_format (I P B)*/
-	altscan_tab[0]  		 = 0;  /* alternate_scan (I P B) */
-	altscan_tab[1]  		 = 0;  /* alternate_scan (I P B) */
-	altscan_tab[2]  		 = 0;  /* alternate_scan (I P B) */
+	altscan_tab[0]  		 = 0;  /* alternate_scan_hv (I P B) */
+	altscan_tab[1]  		 = 0;  /* alternate_scan_hv (I P B) */
+	altscan_tab[2]  		 = 0;  /* alternate_scan_hv (I P B) */
 	opt_dc_prec         = 0;  /* 8 bits */
 	opt_topfirst        = (fieldpic == 2);
 	opt_repeatfirst     = 0;
@@ -878,7 +878,6 @@ INTTOYES(prog_seq));
 		if(mpeg_file)
 		{
 			fprintf(stderr, "(MPEG to MPEG transcoding for official use only.)\n");
-			mpeg3_set_mmx(mpeg_file, 0);
 		}
 	}
 
@@ -1168,7 +1167,7 @@ static void readquantmat()
 		load_iquant |= 1;
 		for (i=0; i<64; i++)
 		{
-			intra_q[i] = hires_intra_quantizer_matrix[i];
+			intra_q[i] = hires_intra_quantizer_matrix_hv[i];
 		}	
 	}
 	else
@@ -1176,7 +1175,7 @@ static void readquantmat()
 		load_iquant = use_denoise_quant;
 		for (i=0; i<64; i++)
 		{
-			v = quant_hfnoise_filt(default_intra_quantizer_matrix[i], i);
+			v = quant_hfnoise_filt(default_intra_quantizer_matrix_hv[i], i);
 			if (v<1 || v>255)
 				error("value in intra quant matrix invalid (after noise filt adjust)");
 			intra_q[i] = v;
@@ -1191,7 +1190,7 @@ static void readquantmat()
 		{
 			for (i=0; i<64; i++)
 			{
-				inter_q[i] = hires_nonintra_quantizer_matrix[i];
+				inter_q[i] = hires_nonintra_quantizer_matrix_hv[i];
 			}	
 		}
 		else
@@ -1201,7 +1200,7 @@ static void readquantmat()
 			load_niquant |= 1;
 			for (i=0; i<64; i++)
 			{
-				v = quant_hfnoise_filt(default_nonintra_quantizer_matrix[i],i);
+				v = quant_hfnoise_filt(default_nonintra_quantizer_matrix_hv[i],i);
 				if (v<1 || v>255)
 					error("value in non-intra quant matrix invalid (after noise filt adjust)");
 				inter_q[i] = v;

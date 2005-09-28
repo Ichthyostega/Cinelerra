@@ -68,6 +68,7 @@ public:
 			 struct stat *__restrict __buf);
 	char *fgets (char *__restrict __s, int __n, FILE *__restrict __stream);
 	int fileno(FILE *file);
+	int fscanf(FILE *__restrict stream, const char *__restrict format, va_list ap);
 
 // Locking order:
 // 1) RenderFarmFSClient

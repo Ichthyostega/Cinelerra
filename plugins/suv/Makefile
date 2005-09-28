@@ -1,13 +1,17 @@
 include ../../global_config
 
 OBJS = $(OBJDIR)/suv.o
+THEME_DATA := $(OBJDIR)/suv_data.o
 
-OUTPUT_THEME = ../$(OBJDIR)/suv.plugin
+OUTPUT_THEME := ../$(OBJDIR)/suv.plugin
+AVC_DIR := $(shell expr ../../libavc* )
+LIBRAW_DIR := $(shell expr ../../libraw1394* )
 
-$(OUTPUT_THEME): $(OBJS)
-	$(LDLINKER) -o $(OUTPUT_THEME) $(OBJS)
+CFLAGS += -I$(AVC_DIR) -I$(LIBRAW_DIR)
+
+$(OUTPUT_THEME): $(OBJS) $(THEME_DATA)
+	$(LDLINKER) -o $(OUTPUT_THEME) $(OBJS) $(THEME_DATA)
 	strip $(OUTPUT_THEME)
-	../../guicast/$(OBJDIR)/bootstrap $(OUTPUT_THEME) data/*.png
 
 
 
@@ -15,6 +19,10 @@ include ../../plugin_config
 
 $(OBJDIR)/suv.o: suv.C
 
+$(THEME_DATA):
+	cd $(OBJDIR) && \
+	../../../guicast/$(OBJDIR)/bootstrap suv_data.o ../data/*.png
+
 inst:
-	rm -f /usr/lib/cinelerra/suv.plugin
-	cp $(OUTPUT_THEME) /usr/lib/cinelerra
+	rm -f $(PLUGINDIR)/suv.plugin
+	cp $(OUTPUT_THEME) $(PLUGINDIR)

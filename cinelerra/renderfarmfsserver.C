@@ -195,7 +195,7 @@ file, return_value);
 			server->write_socket((char*)datagram, 4, RENDERFARM_TIMEOUT);
 			result = 1;
 if(DEBUG)
-printf("RenderFarmFSServer::handle_request file=%p size=%d num=%d bytes=%d\n", 
+printf("RenderFarmFSServer::handle_request RENDERFARM_FWRITE file=%p size=%d num=%d bytes=%d\n", 
 file, size, num, bytes);
 			break;
 		}
