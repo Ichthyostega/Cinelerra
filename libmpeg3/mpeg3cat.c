@@ -16,6 +16,8 @@
 int main(int argc, char *argv[])
 {
 	char inpath[1024], outpath[1024], newpath[1024];
+	char *inpaths[argc];
+	int total_infiles = 0;
 	mpeg3_t *in;
 	FILE *out;
 	int out_counter = 0;
@@ -78,9 +80,13 @@ int main(int argc, char *argv[])
 				
 				if(argv[i][2] != 0)
 				{
-					stream = argv[i][2] - 48;
+					stream = argv[i][2] - '0';
 				}
 			}
+		}
+		else
+		{
+			inpaths[total_infiles++] = argv[i];
 		}
 	}
 
@@ -96,12 +102,12 @@ int main(int argc, char *argv[])
 	else
 		out = stdout;
 
-	for(current_file = 1; current_file < argc; current_file++)
+	for(current_file = 0; current_file < total_infiles; current_file++)
 	{
-		if(argv[current_file][0] == '-') continue;
+		strcpy(inpath, inpaths[current_file]);
 
-		strcpy(inpath, argv[current_file]);
-		if(!(in = mpeg3_open(inpath)))
+		int error = 0;
+		if(!(in = mpeg3_open(inpath, &error)))
 		{
 			fprintf(stderr, "Skipping %s\n", inpath);
 			continue;
@@ -111,20 +117,28 @@ int main(int argc, char *argv[])
 
 
 
-//fprintf(stderr, "%d %d %d %d\n", in->is_transport_stream, in->is_program_stream, in->is_audio_stream, in->is_video_stream);
+/* output elementary audio stream */
 		if((mpeg3_has_audio(in) && in->is_audio_stream) || 
 			(do_audio && !in->is_audio_stream && !in->is_video_stream))
 		{
 			do_audio = 1;
 /* Add audio stream to end */
+			if(stream >= in->total_astreams)
+			{
+				fprintf(stderr, "No audio stream %d\n", stream);
+				exit(1);
+			}
+
 			mpeg3demux_seek_byte(in->atrack[stream]->demuxer, 0);
 //			mpeg3bits_refill(in->atrack[stream]->audio->astream);
+//printf("mpeg3cat 1\n");
 			while(!mpeg3_read_audio_chunk(in, 
 				buffer, 
 				&output_size, 
 				BUFFER_SIZE,
 				stream))
 			{
+//printf("mpeg3cat 2 0x%x\n", output_size);
 				result = !fwrite(buffer, output_size, 1, out);
 				if(result)
 				{
@@ -132,8 +146,10 @@ int main(int argc, char *argv[])
 					break;
 				}
 			}
+//printf("mpeg3cat 3\n");
 		}
 		else
+/* Output elementary video stream */
 		if((mpeg3_has_video(in) && in->is_video_stream) ||
 			(do_video && !in->is_video_stream && !in->is_audio_stream))
 		{
@@ -144,6 +160,12 @@ int main(int argc, char *argv[])
 			float carry;
 			int i, offset;
 			
+			if(stream >= in->total_vstreams)
+			{
+				fprintf(stderr, "No audio stream %d\n", stream);
+				exit(1);
+			}
+
 			mpeg3demux_seek_byte(in->vtrack[stream]->demuxer, 0);
 			mpeg3bits_refill(in->vtrack[stream]->video->vstream);
 			do_video = 1;
@@ -272,77 +294,80 @@ int main(int argc, char *argv[])
 			}
 		}
 		else
+/* Output program stream */
 		if(in->is_program_stream)
 		{
 			mpeg3_demuxer_t *demuxer = in->vtrack[0]->demuxer;
 			result = 0;
-//fprintf(stderr, "mpeg3cat 1\n");
 
 /* Append program stream with no changes */
 			demuxer->read_all = 1;
 			mpeg3demux_seek_byte(demuxer, 0);
+//			mpeg3demux_seek_byte(demuxer, 83886080);
+
 
 			while(!result)
 			{
-				result = mpeg3_advance_timecode(demuxer, 0);
+				result = mpeg3_seek_phys(demuxer);
 
 
-//fprintf(stderr, "mpeg3cat 1 %d\n", result);
 				if(!result) 
 				{
+					demuxer->data_size = 0;
+					demuxer->video_size = 0;
+					demuxer->audio_size = 0;
 					result = mpeg3demux_read_program(demuxer);
 					if(result)
 						fprintf(stderr, "Hit end of data in %s\n", inpath);
 				}
 
 
-// Decrypt it
+// Read again and decrypt it
+				unsigned char *raw_data = malloc(0x10000);
+				int raw_size = 0;
 				if(!result)
 				{
-					long decryption_offset = demuxer->last_packet_decryption - demuxer->last_packet_start;
 					mpeg3_title_t *title = demuxer->titles[demuxer->current_title];
+					int64_t temp_offset = mpeg3io_tell(title->fs);
+					int64_t decryption_offset = demuxer->last_packet_decryption - demuxer->last_packet_start;
+					raw_size = demuxer->last_packet_end - demuxer->last_packet_start;
+
 					mpeg3io_seek(title->fs, demuxer->last_packet_start);
-					demuxer->raw_size = demuxer->last_packet_end - demuxer->last_packet_start;
-//fprintf(stderr, "mpeg3cat 2 %d %x\n", decryption_offset, demuxer->raw_data[decryption_offset]);
+					mpeg3io_read_data(raw_data, raw_size, title->fs);
+					mpeg3io_seek(title->fs, temp_offset);
 
-/*
- * if(demuxer->raw_size != 0x800)
- * fprintf(stderr, __FUNCTION__ " %llx", demuxer->last_packet_start);
- */
 
-					mpeg3io_read_data(demuxer->raw_data, demuxer->raw_size, title->fs);
 					if(decryption_offset > 0 && 
-						demuxer->raw_data[decryption_offset] & 0x30)
+						decryption_offset < raw_size &&
+						raw_data[decryption_offset] & 0x30)
 					{
-//fprintf(stderr, "mpeg3cat 3\n");
 						if(mpeg3_decrypt_packet(title->fs->css, 
-							demuxer->raw_data,
+							raw_data,
 							0))
 						{
 							fprintf(stderr, "get_ps_pes_packet: Decryption not available\n");
 							return 1;
 						}
-//fprintf(stderr, "mpeg3cat 4\n");
-						demuxer->raw_data[decryption_offset] &= 0xcf;
+						raw_data[decryption_offset] &= 0xcf;
 					}
 				}
 
-//printf("mpeg3cat 3 %d\n", result);
 // Write it
-				if(!result) 
+				if(!result)
 				{
-					result = !fwrite(demuxer->raw_data, 
-							demuxer->raw_size, 
+					result = !fwrite(raw_data, 
+							raw_size, 
 							1, 
 							out);
-					total_written += demuxer->raw_size;
+					total_written += raw_size;
 					if(result) fprintf(stderr, "%s\n", strerror(errno));
 				}
 
-//fprintf(stderr, "%llx %llx\n", mpeg3demux_tell(demuxer), mpeg3demux_tell(demuxer) - total_written);
+				free(raw_data);
 			}
 		}
 		else
+/* No transport stream support, yet */
 		{
 			fprintf(stderr, "Unsupported stream type.\n");
 			mpeg3_close(in);

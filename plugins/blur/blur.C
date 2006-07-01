@@ -1,18 +1,15 @@
 #include "filexml.h"
 #include "blur.h"
 #include "blurwindow.h"
-#include "defaults.h"
+#include "bchash.h"
 #include "keyframe.h"
+#include "language.h"
 #include "picon_png.h"
 #include "vframe.h"
 
 #include <math.h>
 #include <stdint.h>
 #include <string.h>
-#include <libintl.h>
-#define _(String) gettext(String)
-#define gettext_noop(String) String
-#define N_(String) gettext_noop (String)
 
 
 
@@ -102,13 +99,13 @@ BlurMain::~BlurMain()
 	if(temp) delete temp;
 	if(engine)
 	{
-		for(int i = 0; i < (PluginClient::smp + 1); i++)
+		for(int i = 0; i < (get_project_smp() + 1); i++)
 			delete engine[i];
 		delete [] engine;
 	}
 }
 
-char* BlurMain::plugin_title() { return _("Blur"); }
+char* BlurMain::plugin_title() { return N_("Blur"); }
 int BlurMain::is_realtime() { return 1; }
 
 
@@ -142,24 +139,17 @@ int BlurMain::process_realtime(VFrame *input_ptr, VFrame *output_ptr)
 
 		if(!engine)
 		{
-			y_increment = input->get_h() / (smp + 1);
-			y1 = 0;
-
-			engine = new BlurEngine*[(PluginClient::smp + 1)];
-			for(int i = 0; i < (PluginClient::smp + 1); i++)
+			engine = new BlurEngine*[(get_project_smp() + 1)];
+			for(int i = 0; i < (get_project_smp() + 1); i++)
 			{
-				y2 = y1 + y_increment;
-				if(i == (PluginClient::smp + 1) - 1 && 
-					y2 < input->get_h() - 1) 
-					y2 = input->get_h() - 1;
-
-				engine[i] = new BlurEngine(this, y1, y2);
+				engine[i] = new BlurEngine(this, 
+					input->get_h() * i / (get_project_smp() + 1), 
+					input->get_h() * (i + 1) / (get_project_smp() + 1));
 				engine[i]->start();
-				y1 += y_increment;
 			}
 		}
 
-		for(i = 0; i < (PluginClient::smp + 1); i++)
+		for(i = 0; i < (get_project_smp() + 1); i++)
 			engine[i]->reconfigure();
 		need_reconfigure = 0;
 	}
@@ -186,7 +176,6 @@ int BlurMain::process_realtime(VFrame *input_ptr, VFrame *output_ptr)
 		(!config.vertical && !config.horizontal))
 	{
 // Data never processed so copy if necessary
-//printf("BlurMain::process_realtime 2 %d\n", radius);
 		if(input_rows[0] != output_rows[0])
 		{
 			output_ptr->copy_from(input_ptr);
@@ -196,15 +185,14 @@ int BlurMain::process_realtime(VFrame *input_ptr, VFrame *output_ptr)
 	{
 // Process blur
 // TODO
-// Can't blur recursively.  Need to blur to a temp and 
+// Can't blur recursively.  Need to blur vertically to a temp and 
 // horizontally to the output in 2 discrete passes.
-//printf("BlurMain::process_realtime 3 %d\n", (smp + 1));
-		for(i = 0; i < (smp + 1); i++)
+		for(i = 0; i < (get_project_smp() + 1); i++)
 		{
 			engine[i]->start_process_frame(output_ptr, input_ptr);
 		}
 
-		for(i = 0; i < (smp + 1); i++)
+		for(i = 0; i < (get_project_smp() + 1); i++)
 		{
 			engine[i]->wait_process_frame();
 		}
@@ -239,7 +227,7 @@ int BlurMain::load_defaults()
 	sprintf(directory, "%sblur.rc", BCASTDIR);
 
 // load the defaults
-	defaults = new Defaults(directory);
+	defaults = new BC_Hash(directory);
 	defaults->load();
 
 	config.vertical = defaults->get("VERTICAL", config.vertical);
@@ -367,6 +355,7 @@ void BlurEngine::run()
 	int i, j, k, l;
 	int strip_size;
 
+
 	while(1)
 	{
 		input_lock.lock();
@@ -481,9 +470,15 @@ void BlurEngine::run()
 			case BC_YUV888:
 				BLUR(unsigned char, 0xff, 3);
 				break;
+			case BC_RGB_FLOAT:
+				BLUR(float, 1.0, 3);
+				break;
 			case BC_RGBA8888:
 			case BC_YUVA8888:
 				BLUR(unsigned char, 0xff, 4);
+				break;
+			case BC_RGBA_FLOAT:
+				BLUR(float, 1.0, 4);
 				break;
 			case BC_RGB161616:
 			case BC_YUV161616:

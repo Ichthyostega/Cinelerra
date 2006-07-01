@@ -1,17 +1,14 @@
 #include "clip.h"
-#include "defaults.h"
+#include "bchash.h"
 #include "deinterlace.h"
 #include "deinterwindow.h"
 #include "filexml.h"
 #include "keyframe.h"
+#include "language.h"
 #include "picon_png.h"
 #include "vframe.h"
 
 
-#include <libintl.h>
-#define _(String) gettext(String)
-#define gettext_noop(String) String
-#define N_(String) gettext_noop (String)
 
 
 
@@ -31,22 +28,23 @@ REGISTER_PLUGIN(DeInterlaceMain)
 DeInterlaceConfig::DeInterlaceConfig()
 {
 	mode = DEINTERLACE_EVEN;
-	adaptive = 1;
-	threshold = 40;
+//	adaptive = 0;
+//	threshold = 40;
 }
 
 int DeInterlaceConfig::equivalent(DeInterlaceConfig &that)
 {
-	return mode == that.mode &&
-		adaptive == that.adaptive &&
-		threshold == that.threshold;
+	return mode == that.mode;
+//		&&
+//		adaptive == that.adaptive &&
+//		threshold == that.threshold;
 }
 
 void DeInterlaceConfig::copy_from(DeInterlaceConfig &that)
 {
 	mode = that.mode;
-	adaptive = that.adaptive;
-	threshold = that.threshold;
+//	adaptive = that.adaptive;
+//	threshold = that.threshold;
 }
 
 void DeInterlaceConfig::interpolate(DeInterlaceConfig &prev, 
@@ -65,21 +63,21 @@ DeInterlaceMain::DeInterlaceMain(PluginServer *server)
  : PluginVClient(server)
 {
 	PLUGIN_CONSTRUCTOR_MACRO
-	temp = 0;
+//	temp = 0;
 }
 
 DeInterlaceMain::~DeInterlaceMain()
 {
 	PLUGIN_DESTRUCTOR_MACRO
-	if(temp) delete temp;
+//	if(temp) delete temp;
 }
 
-char* DeInterlaceMain::plugin_title() { return _("Deinterlace"); }
+char* DeInterlaceMain::plugin_title() { return N_("Deinterlace"); }
 int DeInterlaceMain::is_realtime() { return 1; }
 
 
 
-#define DEINTERLACE_EVEN_MACRO(type, components, dominance, max) \
+#define DEINTERLACE_EVEN_MACRO(type, components, dominance) \
 { \
 	int w = input->get_w(); \
 	int h = input->get_h(); \
@@ -94,7 +92,7 @@ int DeInterlaceMain::is_realtime() { return 1; }
 	} \
 }
 
-#define DEINTERLACE_AVG_EVEN_MACRO(type, components, dominance, max) \
+#define DEINTERLACE_AVG_EVEN_MACRO(type, temp_type, components, dominance) \
 { \
 	int w = input->get_w(); \
 	int h = input->get_h(); \
@@ -103,7 +101,7 @@ int DeInterlaceMain::is_realtime() { return 1; }
  	type **in_rows = (type**)input->get_rows(); \
 	type **out_rows = (type**)temp->get_rows(); \
 	int max_h = h - 1; \
-	int64_t abs_diff = 0, total = 0; \
+/*	temp_type abs_diff = 0, total = 0; */ \
  \
 	for(int i = 0; i < max_h; i += 2) \
 	{ \
@@ -121,8 +119,8 @@ int DeInterlaceMain::is_realtime() { return 1; }
 		type *input_row3 = in_rows[out_number2]; \
 		type *temp_row1 = out_rows[out_number1]; \
 		type *temp_row2 = out_rows[out_number2]; \
-		int64_t sum = 0; \
-		int64_t accum_r, accum_b, accum_g, accum_a; \
+		temp_type sum = 0; \
+		temp_type accum_r, accum_b, accum_g, accum_a; \
  \
 		memcpy(temp_row1, input_row1, w * components * sizeof(type)); \
 		for(int j = 0; j < w; j++) \
@@ -132,52 +130,52 @@ int DeInterlaceMain::is_realtime() { return 1; }
 			accum_b = (*input_row1++) + (*input_row2++); \
 			if(components == 4) \
 				accum_a = (*input_row1++) + (*input_row2++); \
-			accum_r >>= 1; \
-			accum_g >>= 1; \
-			accum_b >>= 1; \
-			accum_a >>= 1; \
+			accum_r /= 2; \
+			accum_g /= 2; \
+			accum_b /= 2; \
+			accum_a /= 2; \
  \
- 			total += *input_row3; \
-			sum = ((int)*input_row3++) - accum_r; \
-			abs_diff += (sum < 0 ? -sum : sum); \
+/* 			total += *input_row3; */ \
+/*			sum = ((temp_type)*input_row3++) - accum_r; */ \
+/*			abs_diff += (sum < 0 ? -sum : sum); */ \
 			*temp_row2++ = accum_r; \
  \
- 			total += *input_row3; \
-			sum = ((int)*input_row3++) - accum_g; \
-			abs_diff += (sum < 0 ? -sum : sum); \
+/* 			total += *input_row3; */\
+/*			sum = ((temp_type)*input_row3++) - accum_g; */\
+/*			abs_diff += (sum < 0 ? -sum : sum); */\
 			*temp_row2++ = accum_g; \
  \
- 			total += *input_row3; \
-			sum = ((int)*input_row3++) - accum_b; \
-			abs_diff += (sum < 0 ? -sum : sum); \
+/* 			total += *input_row3; */\
+/*			sum = ((temp_type)*input_row3++) - accum_b; */\
+/*			abs_diff += (sum < 0 ? -sum : sum); */\
 			*temp_row2++ = accum_b; \
  \
 			if(components == 4) \
 			{ \
-	 			total += *input_row3; \
-				sum = ((int)*input_row3++) - accum_a; \
-				abs_diff += (sum < 0 ? -sum : sum); \
+/*	 			total += *input_row3; */\
+/*				sum = ((temp_type)*input_row3++) - accum_a; */\
+/*				abs_diff += (sum < 0 ? -sum : sum); */\
 				*temp_row2++ = accum_a; \
 			} \
 		} \
 	} \
  \
-	int64_t threshold = (int64_t)total * config.threshold / THRESHOLD_SCALAR; \
+/*	temp_type threshold = (temp_type)total * config.threshold / THRESHOLD_SCALAR; */\
 /* printf("total=%lld threshold=%lld abs_diff=%lld\n", total, threshold, abs_diff); */ \
- 	if(abs_diff > threshold || !config.adaptive) \
-	{ \
-		output->copy_from(temp); \
-		changed_rows = 240; \
-	} \
-	else \
-	{ \
-		output->copy_from(input); \
-		changed_rows = 0; \
-	} \
+/* 	if(abs_diff > threshold || !config.adaptive) */\
+/*	{ */\
+/*		output->copy_from(temp); */ \
+/*		changed_rows = 240; */ \
+/*	} */\
+/*	else */\
+/*	{ */\
+/*		output->copy_from(input); */\
+/*		changed_rows = 0; */\
+/*	} */\
  \
 }
 
-#define DEINTERLACE_AVG_MACRO(type, components) \
+#define DEINTERLACE_AVG_MACRO(type, temp_type, components) \
 { \
 	int w = input->get_w(); \
 	int h = input->get_h(); \
@@ -192,7 +190,7 @@ int DeInterlaceMain::is_realtime() { return 1; }
  \
 		for(int j = 0; j < w * components; j++) \
 		{ \
-			result = ((uint64_t)input_row1[j] + input_row2[j]) >> 1; \
+			result = ((temp_type)input_row1[j] + input_row2[j]) / 2; \
 			output_row1[j] = result; \
 			output_row2[j] = result; \
 		} \
@@ -229,19 +227,25 @@ void DeInterlaceMain::deinterlace_even(VFrame *input, VFrame *output, int domina
 	{
 		case BC_RGB888:
 		case BC_YUV888:
-			DEINTERLACE_EVEN_MACRO(unsigned char, 3, dominance, 0xff);
+			DEINTERLACE_EVEN_MACRO(unsigned char, 3, dominance);
+			break;
+		case BC_RGB_FLOAT:
+			DEINTERLACE_EVEN_MACRO(float, 3, dominance);
 			break;
 		case BC_RGBA8888:
 		case BC_YUVA8888:
-			DEINTERLACE_EVEN_MACRO(unsigned char, 4, dominance, 0xff);
+			DEINTERLACE_EVEN_MACRO(unsigned char, 4, dominance);
+			break;
+		case BC_RGBA_FLOAT:
+			DEINTERLACE_EVEN_MACRO(float, 4, dominance);
 			break;
 		case BC_RGB161616:
 		case BC_YUV161616:
-			DEINTERLACE_EVEN_MACRO(uint16_t, 3, dominance, 0xffff);
+			DEINTERLACE_EVEN_MACRO(uint16_t, 3, dominance);
 			break;
 		case BC_RGBA16161616:
 		case BC_YUVA16161616:
-			DEINTERLACE_EVEN_MACRO(uint16_t, 4, dominance, 0xffff);
+			DEINTERLACE_EVEN_MACRO(uint16_t, 4, dominance);
 			break;
 	}
 }
@@ -252,19 +256,25 @@ void DeInterlaceMain::deinterlace_avg_even(VFrame *input, VFrame *output, int do
 	{
 		case BC_RGB888:
 		case BC_YUV888:
-			DEINTERLACE_AVG_EVEN_MACRO(unsigned char, 3, dominance, 0xff);
+			DEINTERLACE_AVG_EVEN_MACRO(unsigned char, int64_t, 3, dominance);
+			break;
+		case BC_RGB_FLOAT:
+			DEINTERLACE_AVG_EVEN_MACRO(float, double, 3, dominance);
 			break;
 		case BC_RGBA8888:
 		case BC_YUVA8888:
-			DEINTERLACE_AVG_EVEN_MACRO(unsigned char, 4, dominance, 0xff);
+			DEINTERLACE_AVG_EVEN_MACRO(unsigned char, int64_t, 4, dominance);
+			break;
+		case BC_RGBA_FLOAT:
+			DEINTERLACE_AVG_EVEN_MACRO(float, double, 4, dominance);
 			break;
 		case BC_RGB161616:
 		case BC_YUV161616:
-			DEINTERLACE_AVG_EVEN_MACRO(uint16_t, 3, dominance, 0xffff);
+			DEINTERLACE_AVG_EVEN_MACRO(uint16_t, int64_t, 3, dominance);
 			break;
 		case BC_RGBA16161616:
 		case BC_YUVA16161616:
-			DEINTERLACE_AVG_EVEN_MACRO(uint16_t, 4, dominance, 0xffff);
+			DEINTERLACE_AVG_EVEN_MACRO(uint16_t, int64_t, 4, dominance);
 			break;
 	}
 }
@@ -275,19 +285,25 @@ void DeInterlaceMain::deinterlace_avg(VFrame *input, VFrame *output)
 	{
 		case BC_RGB888:
 		case BC_YUV888:
-			DEINTERLACE_AVG_MACRO(unsigned char, 3);
+			DEINTERLACE_AVG_MACRO(unsigned char, uint64_t, 3);
+			break;
+		case BC_RGB_FLOAT:
+			DEINTERLACE_AVG_MACRO(float, double, 3);
 			break;
 		case BC_RGBA8888:
 		case BC_YUVA8888:
-			DEINTERLACE_AVG_MACRO(unsigned char, 4);
+			DEINTERLACE_AVG_MACRO(unsigned char, uint64_t, 4);
+			break;
+		case BC_RGBA_FLOAT:
+			DEINTERLACE_AVG_MACRO(float, double, 4);
 			break;
 		case BC_RGB161616:
 		case BC_YUV161616:
-			DEINTERLACE_AVG_MACRO(uint16_t, 3);
+			DEINTERLACE_AVG_MACRO(uint16_t, uint64_t, 3);
 			break;
 		case BC_RGBA16161616:
 		case BC_YUVA16161616:
-			DEINTERLACE_AVG_MACRO(uint16_t, 4);
+			DEINTERLACE_AVG_MACRO(uint16_t, uint64_t, 4);
 			break;
 	}
 }
@@ -300,9 +316,15 @@ void DeInterlaceMain::deinterlace_swap(VFrame *input, VFrame *output, int domina
 		case BC_YUV888:
 			DEINTERLACE_SWAP_MACRO(unsigned char, 3, dominance);
 			break;
+		case BC_RGB_FLOAT:
+			DEINTERLACE_SWAP_MACRO(float, 3, dominance);
+			break;
 		case BC_RGBA8888:
 		case BC_YUVA8888:
 			DEINTERLACE_SWAP_MACRO(unsigned char, 4, dominance);
+			break;
+		case BC_RGBA_FLOAT:
+			DEINTERLACE_SWAP_MACRO(float, 4, dominance);
 			break;
 		case BC_RGB161616:
 		case BC_YUV161616:
@@ -316,45 +338,177 @@ void DeInterlaceMain::deinterlace_swap(VFrame *input, VFrame *output, int domina
 }
 
 
-int DeInterlaceMain::process_realtime(VFrame *input, VFrame *output)
+int DeInterlaceMain::process_buffer(VFrame *frame,
+	int64_t start_position,
+	double frame_rate)
 {
-	changed_rows = input->get_h();
+	changed_rows = frame->get_h();
 	load_configuration();
-	if(!temp)
-		temp = new VFrame(0,
-			input->get_w(),
-			input->get_h(),
-			input->get_color_model());
+
+
+	read_frame(frame, 
+		0, 
+		start_position, 
+		frame_rate,
+		get_use_opengl());
+	if(get_use_opengl()) return run_opengl();
+
+// Temp was used for adaptive deinterlacing where it took deinterlacing
+// an entire frame to decide if the deinterlaced output should be used.
+	temp = frame;
+
+// 	if(!temp)
+// 		temp = new VFrame(0,
+// 			frame->get_w(),
+// 			frame->get_h(),
+// 			frame->get_color_model());
 
 	switch(config.mode)
 	{
 		case DEINTERLACE_NONE:
-			output->copy_from(input);
+//			output->copy_from(input);
 			break;
 		case DEINTERLACE_EVEN:
-			deinterlace_even(input, output, 0);
+			deinterlace_even(frame, frame, 0);
 			break;
 		case DEINTERLACE_ODD:
-			deinterlace_even(input, output, 1);
+			deinterlace_even(frame, frame, 1);
 			break;
 		case DEINTERLACE_AVG:
-			deinterlace_avg(input, output);
+			deinterlace_avg(frame, frame);
 			break;
 		case DEINTERLACE_AVG_EVEN:
-			deinterlace_avg_even(input, output, 0);
+			deinterlace_avg_even(frame, frame, 0);
 			break;
 		case DEINTERLACE_AVG_ODD:
-			deinterlace_avg_even(input, output, 1);
+			deinterlace_avg_even(frame, frame, 1);
 			break;
 		case DEINTERLACE_SWAP_ODD:
-			deinterlace_swap(input, output, 1);
+			deinterlace_swap(frame, frame, 1);
 			break;
 		case DEINTERLACE_SWAP_EVEN:
-			deinterlace_swap(input, output, 0);
+			deinterlace_swap(frame, frame, 0);
 			break;
 	}
 	send_render_gui(&changed_rows);
 	return 0;
+}
+
+int DeInterlaceMain::handle_opengl()
+{
+#ifdef HAVE_GL
+	static char *head_frag = 
+		"uniform sampler2D tex;\n"
+		"uniform float double_line_h;\n"
+		"uniform float line_h;\n"
+		"uniform float y_offset;\n"
+		"void main()\n"
+		"{\n"
+		"	vec2 coord = gl_TexCoord[0].st;\n";
+
+	static char *line_double_frag = 
+		"	float line1 = floor((coord.y - y_offset) / double_line_h) * double_line_h + y_offset;\n"
+		"	gl_FragColor =  texture2D(tex, vec2(coord.x, line1));\n";
+
+	static char *line_avg_frag = 
+		"	float line1 = floor((coord.y - 0.0) / double_line_h) * double_line_h + 0.0;\n"
+		"	float line2 = line1 + line_h;\n"
+		"	gl_FragColor = (texture2D(tex, vec2(coord.x, line1)) + \n"
+		"		texture2D(tex, vec2(coord.x, line2))) / 2.0;\n";
+
+	static char *field_avg_frag = 
+		"	float line1 = floor((coord.y - y_offset) / double_line_h) * double_line_h + y_offset;\n"
+		"	float line2 = line1 + double_line_h;\n"
+		"	float frac = (line2 - coord.y) / double_line_h;\n"
+		"	gl_FragColor = mix(texture2D(tex, vec2(coord.x, line2)),\n"
+		"		texture2D(tex, vec2(coord.x, line1)),frac);\n";
+
+	static char *line_swap_frag = 
+		"	float line1 = floor((coord.y - y_offset) / double_line_h) * double_line_h + y_offset;\n"
+// This is the input line for line2, not the denominator of the fraction
+		"	float line2 = line1 + line_h;\n"
+		"	float frac = (coord.y - line1) / double_line_h;\n"
+		"	gl_FragColor = mix(texture2D(tex, vec2(coord.x, line2)),\n"
+		"		texture2D(tex, vec2(coord.x, line1)), frac);\n";
+
+	static char *tail_frag = 
+		"}\n";
+
+	get_output()->to_texture();
+	get_output()->enable_opengl();
+	get_output()->init_screen();
+
+	char *shader_stack[] = { 0, 0, 0 };
+	shader_stack[0] = head_frag;
+
+	float double_line_h = 2.0 / get_output()->get_texture_h();
+	float line_h = 1.0 / get_output()->get_texture_h();
+	float y_offset = 0.0;
+	switch(config.mode)
+	{
+		case DEINTERLACE_EVEN:
+			shader_stack[1] = line_double_frag;
+			break;
+		case DEINTERLACE_ODD:
+			shader_stack[1] = line_double_frag;
+			y_offset += 1.0;
+			break;
+
+		case DEINTERLACE_AVG:
+			shader_stack[1] = line_avg_frag;
+			break;
+
+		case DEINTERLACE_AVG_EVEN:
+			shader_stack[1] = field_avg_frag;
+			break;
+
+		case DEINTERLACE_AVG_ODD:
+			shader_stack[1] = field_avg_frag;
+			y_offset += 1.0;
+			break;
+
+		case DEINTERLACE_SWAP_EVEN:
+			shader_stack[1] = line_swap_frag;
+			break;
+
+		case DEINTERLACE_SWAP_ODD:
+			shader_stack[1] = line_swap_frag;
+			y_offset += 1.0;
+			break;
+	}
+
+	y_offset /= get_output()->get_texture_h();
+
+	shader_stack[2] = tail_frag;
+
+	if(config.mode != DEINTERLACE_NONE)
+	{
+		unsigned int frag = VFrame::make_shader(0, 
+			shader_stack[0], 
+			shader_stack[1], 
+			shader_stack[2],
+			0);
+		if(frag)
+		{
+			glUseProgram(frag);
+			glUniform1i(glGetUniformLocation(frag, "tex"), 0);
+			glUniform1f(glGetUniformLocation(frag, "line_h"), line_h);
+			glUniform1f(glGetUniformLocation(frag, "double_line_h"), double_line_h);
+			glUniform1f(glGetUniformLocation(frag, "y_offset"), y_offset);
+		}
+	}
+
+	get_output()->bind_texture(0);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	get_output()->draw_texture();
+
+	glUseProgram(0);
+	get_output()->set_opengl_state(VFrame::SCREEN);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	
+#endif
 }
 
 void DeInterlaceMain::render_gui(void *data)
@@ -364,7 +518,7 @@ void DeInterlaceMain::render_gui(void *data)
 		thread->window->lock_window();
 		char string[BCTEXTLEN];
 		thread->window->get_status_string(string, *(int*)data);
-		thread->window->status->update(string);
+//		thread->window->status->update(string);
 		thread->window->flush();
 		thread->window->unlock_window();
 	}
@@ -382,11 +536,11 @@ int DeInterlaceMain::load_defaults()
 	char directory[BCTEXTLEN], string[BCTEXTLEN];
 	sprintf(directory, "%sdeinterlace.rc", BCASTDIR);
 	
-	defaults = new Defaults(directory);
+	defaults = new BC_Hash(directory);
 	defaults->load();
 	config.mode = defaults->get("MODE", config.mode);
-	config.adaptive = defaults->get("ADAPTIVE", config.adaptive);
-	config.threshold = defaults->get("THRESHOLD", config.threshold);
+//	config.adaptive = defaults->get("ADAPTIVE", config.adaptive);
+//	config.threshold = defaults->get("THRESHOLD", config.threshold);
 	return 0;
 }
 
@@ -394,8 +548,8 @@ int DeInterlaceMain::load_defaults()
 int DeInterlaceMain::save_defaults()
 {
 	defaults->update("MODE", config.mode);
-	defaults->update("ADAPTIVE", config.adaptive);
-	defaults->update("THRESHOLD", config.threshold);
+//	defaults->update("ADAPTIVE", config.adaptive);
+//	defaults->update("THRESHOLD", config.threshold);
 	defaults->save();
 	return 0;
 }
@@ -406,8 +560,8 @@ void DeInterlaceMain::save_data(KeyFrame *keyframe)
 	output.set_shared_string(keyframe->data, MESSAGESIZE);
 	output.tag.set_title("DEINTERLACE");
 	output.tag.set_property("MODE", config.mode);
-	output.tag.set_property("ADAPTIVE", config.adaptive);
-	output.tag.set_property("THRESHOLD", config.threshold);
+//	output.tag.set_property("ADAPTIVE", config.adaptive);
+//	output.tag.set_property("THRESHOLD", config.threshold);
 	output.append_tag();
 	output.terminate_string();
 }
@@ -422,8 +576,8 @@ void DeInterlaceMain::read_data(KeyFrame *keyframe)
 		if(input.tag.title_is("DEINTERLACE"))
 		{
 			config.mode = input.tag.get_property("MODE", config.mode);
-			config.adaptive = input.tag.get_property("ADAPTIVE", config.adaptive);
-			config.threshold = input.tag.get_property("THRESHOLD", config.threshold);
+//			config.adaptive = input.tag.get_property("ADAPTIVE", config.adaptive);
+//			config.threshold = input.tag.get_property("THRESHOLD", config.threshold);
 		}
 	}
 
@@ -435,9 +589,9 @@ void DeInterlaceMain::update_gui()
 	{
 		load_configuration();
 		thread->window->lock_window();
-		thread->window->set_mode(config.mode, 0);
-		thread->window->adaptive->update(config.adaptive);
-		thread->window->threshold->update(config.threshold);
+		thread->window->set_mode(config.mode, 1);
+//		thread->window->adaptive->update(config.adaptive);
+//		thread->window->threshold->update(config.threshold);
 		thread->window->unlock_window();
 	}
 }

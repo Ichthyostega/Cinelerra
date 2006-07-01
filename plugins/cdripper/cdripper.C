@@ -2,7 +2,7 @@
 #include "bcdisplayinfo.h"
 #include "cdripper.h"
 #include "cdripwindow.h"
-#include "defaults.h"
+#include "bchash.h"
 #include "mainprogress.h"
 #include "mwindow.inc"
 
@@ -34,11 +34,10 @@ CDRipMain::~CDRipMain()
 	delete defaults;
 }
 
-char* CDRipMain::plugin_title() { return _("CD Ripper"); }
-
+char* CDRipMain::plugin_title() { return N_("CD Ripper"); }
 int CDRipMain::is_realtime() { return 0; }
-
 int CDRipMain::is_multichannel() { return 1; }
+
 
 int CDRipMain::load_defaults()
 {
@@ -47,7 +46,7 @@ int CDRipMain::load_defaults()
 	sprintf(directory, "%scdripper.rc", BCASTDIR);
 
 // load the defaults
-	defaults = new Defaults(directory);
+	defaults = new BC_Hash(directory);
 	defaults->load();
 
 	track1 = defaults->get("TRACK1", 1);
@@ -100,7 +99,7 @@ int CDRipMain::get_parameters()
 		if(!result) result2 = get_toc();
 //printf("CDRipMain::get_parameters 5 %d\n", result);
 	}
-	PluginClient::sample_rate = 44100;
+	PluginAClient::sample_rate = 44100;
 	return result;
 }
 
@@ -195,8 +194,14 @@ int CDRipMain::get_toc()
 		window.run_window();
 		result = 1;
 	}
+
+// Clamp to highest track
+	if(track2 > tracks)
+	{
+		track2 = tracks;
+	}
 	
-	if(track2 < track1 || track2 <= 0 || track2 > tracks)
+	if(track2 < track1 || track2 <= 0)
 	{
 		ioctl(cdrom, CDROMSTOP);
 		close(cdrom);

@@ -8,6 +8,7 @@
 #include "clip.h"
 #include "condition.h"
 #include "file.h"
+#include "mutex.h"
 #include "picture.h"
 #include "preferences.h"
 #include "quicktime.h"
@@ -18,6 +19,7 @@
 
 #ifdef HAVE_VIDEO4LINUX2
 
+#include <errno.h>
 #include <unistd.h>
 #include <sys/ioctl.h>
 #include <fcntl.h>
@@ -479,6 +481,7 @@ printf("VDeviceV4L2Thread::run requested %d buffers\n", total_buffers);
 		{
 // The requestbuffers.count changes in the 2.6.5 version of the API
 			allocate_buffers(requestbuffers.count);
+
 printf("VDeviceV4L2Thread::run got %d buffers\n", total_buffers);
 			for(int i = 0; i < total_buffers; i++)
 			{
@@ -532,6 +535,7 @@ printf("VDeviceV4L2Thread::run got %d buffers\n", total_buffers);
 							break;
 					}
 
+//printf("VDeviceV4L2Thread::run color_model=%d\n", color_model);
 					frame->reallocate(data,
 						y_offset,
 						u_offset,
@@ -556,6 +560,7 @@ printf("VDeviceV4L2Thread::run got %d buffers\n", total_buffers);
 		{
 			struct v4l2_buffer buffer;
 			buffer.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
+			buffer.memory = V4L2_MEMORY_MMAP;
 			buffer.index = i;
 			if(ioctl(input_fd, VIDIOC_QBUF, &buffer) < 0)
 			{
@@ -744,7 +749,7 @@ int VDeviceV4L2::get_sources(VideoDevice *device,
 
 	if((input_fd = open(path, O_RDWR)) < 0)
 	{
-		perror("VDeviceV4L::open_input");
+		printf("VDeviceV4L2::open_input %s: %s\n", path, strerror(errno));
 		return 1;
 	}
 	else

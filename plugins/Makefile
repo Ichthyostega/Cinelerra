@@ -6,7 +6,7 @@ include ../global_config
 # motion must come before perspective
 
 DIRS = \
-	1080to480 \
+	1080to540 \
 	720to480 \
 	colors \
 	bandslide \
@@ -18,6 +18,7 @@ DIRS = \
 	aging \
 	cdripper \
 	chromakey \
+	chromakeyhsv \
 	colorbalance \
 	compressor \
 	crossfade \
@@ -27,6 +28,7 @@ DIRS = \
 	delayvideo \
 	denoise \
 	denoisefft \
+	denoiseseltempavg \
 	denoisevideo \
 	despike \
 	diffkey \
@@ -40,10 +42,12 @@ DIRS = \
 	freeverb \
 	freezeframe \
 	gain \
+	gamma \
 	gradient \
 	histogram \
 	holo \
 	huesaturation \
+	interpolate \
 	interpolateaudio \
 	interpolatevideo \
 	invertaudio \
@@ -52,13 +56,16 @@ DIRS = \
 	ivtc \
 	level \
 	linearblur \
-	linearize \
+	liveaudio \
+	livevideo \
 	loopaudio \
 	loopvideo \
 	motion \
+	motionblur \
 	normalize \
 	oilpainting \
 	overlay \
+	overlayaudio \
 	perspective \
 	pitch \
 	polar \
@@ -81,6 +88,7 @@ DIRS = \
 	synthesizer \
 	threshold \
 	timeavg \
+	timefront \
 	timestretch \
 	titler \
 	translate \
@@ -91,7 +99,6 @@ DIRS = \
 	wipe \
 	yuv \
 	zoomblur
-#	defaulttheme \
 
 # Make static table of all plugins
 ifeq ($(DO_STATIC), y)

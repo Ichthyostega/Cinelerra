@@ -36,9 +36,9 @@ public:
 	DeInterlaceOption *avg_even;
 	DeInterlaceOption *avg_odd;
 	DeInterlaceOption *none;
-	DeInterlaceAdaptive *adaptive;
-	DeInterlaceThreshold *threshold;
-	BC_Title *status;
+//	DeInterlaceAdaptive *adaptive;
+//	DeInterlaceThreshold *threshold;
+//	BC_Title *status;
 };
 
 class DeInterlaceOption : public BC_Radial

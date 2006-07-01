@@ -1,6 +1,6 @@
 #include "bcdisplayinfo.h"
 #include "clip.h"
-#include "defaults.h"
+#include "bchash.h"
 #include "filexml.h"
 #include "guicast.h"
 #include "keyframe.h"
@@ -158,7 +158,7 @@ public:
 
 	DecimateThread *thread;
 	DecimateConfig config;
-	Defaults *defaults;
+	BC_Hash *defaults;
 };
 
 
@@ -238,7 +238,7 @@ void DecimateWindow::create_objects()
 	frame_rates.append(new BC_ListBoxItem("60"));
 
 	BC_Title *title;
-	add_subwindow(title = new BC_Title(x, y, "Input frames per second:"));
+	add_subwindow(title = new BC_Title(x, y, _("Input frames per second:")));
 	y += 30;
 	add_subwindow(rate = new DecimateRate(plugin, 
 		this, 
@@ -249,7 +249,7 @@ void DecimateWindow::create_objects()
 		x + rate->get_w() + 5, 
 		y));
 	y += 30;
-	add_subwindow(title = new BC_Title(x, y, "Last frame dropped: "));
+	add_subwindow(title = new BC_Title(x, y, _("Last frame dropped: ")));
 	add_subwindow(last_dropped = new BC_Title(x + title->get_w() + 5, y, ""));
 
 // 	y += 30;
@@ -768,7 +768,7 @@ int Decimate::load_defaults()
 	sprintf(directory, "%sdecimate.rc", BCASTDIR);
 
 // load the defaults
-	defaults = new Defaults(directory);
+	defaults = new BC_Hash(directory);
 	defaults->load();
 
 	config.input_rate = defaults->get("INPUT_RATE", config.input_rate);

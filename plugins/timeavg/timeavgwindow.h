@@ -4,6 +4,11 @@
 
 class TimeAvgThread;
 class TimeAvgWindow;
+class TimeAvgAccum;
+class TimeAvgAvg;
+class TimeAvgOr;
+class TimeAvgParanoid;
+class TimeAvgNoSubtract;
 
 #include "guicast.h"
 #include "mutex.h"
@@ -24,6 +29,11 @@ public:
 	
 	TimeAvgMain *client;
 	TimeAvgSlider *total_frames;
+	TimeAvgAccum *accum;
+	TimeAvgAvg *avg;
+	TimeAvgOr *inclusive_or;
+	TimeAvgParanoid *paranoid;
+	TimeAvgNoSubtract *no_subtract;
 };
 
 class TimeAvgSlider : public BC_ISlider
@@ -36,5 +46,47 @@ public:
 	TimeAvgMain *client;
 };
 
+class TimeAvgAccum : public BC_Radial
+{
+public:
+	TimeAvgAccum(TimeAvgMain *client, TimeAvgWindow *gui, int x, int y);
+	int handle_event();
+	TimeAvgMain *client;
+	TimeAvgWindow *gui;
+};
+
+class TimeAvgAvg : public BC_Radial
+{
+public:
+	TimeAvgAvg(TimeAvgMain *client, TimeAvgWindow *gui, int x, int y);
+	int handle_event();
+	TimeAvgMain *client;
+	TimeAvgWindow *gui;
+};
+
+class TimeAvgOr : public BC_Radial
+{
+public:
+	TimeAvgOr(TimeAvgMain *client, TimeAvgWindow *gui, int x, int y);
+	int handle_event();
+	TimeAvgMain *client;
+	TimeAvgWindow *gui;
+};
+
+class TimeAvgParanoid : public BC_CheckBox
+{
+public:
+	TimeAvgParanoid(TimeAvgMain *client, int x, int y);
+	int handle_event();
+	TimeAvgMain *client;
+};
+
+class TimeAvgNoSubtract : public BC_CheckBox
+{
+public:
+	TimeAvgNoSubtract(TimeAvgMain *client, int x, int y);
+	int handle_event();
+	TimeAvgMain *client;
+};
 
 #endif

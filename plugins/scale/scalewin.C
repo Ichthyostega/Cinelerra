@@ -1,11 +1,7 @@
 #include "bcdisplayinfo.h"
 #include "clip.h"
+#include "language.h"
 #include "scale.h"
-
-#include <libintl.h>
-#define _(String) gettext(String)
-#define gettext_noop(String) String
-#define N_(String) gettext_noop (String)
 
 
 
@@ -80,6 +76,7 @@ ScaleWidth::ScaleWidth(ScaleWin *win,
 //printf("ScaleWidth::ScaleWidth %f\n", client->config.w);
 	this->client = client;
 	this->win = win;
+	set_increment(0.1);
 }
 
 ScaleWidth::~ScaleWidth()
@@ -116,6 +113,7 @@ ScaleHeight::ScaleHeight(ScaleWin *win, ScaleMain *client, int x, int y)
 {
 	this->client = client;
 	this->win = win;
+	set_increment(0.1);
 }
 ScaleHeight::~ScaleHeight()
 {

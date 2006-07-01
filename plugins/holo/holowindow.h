@@ -7,22 +7,12 @@ class HoloThread;
 class HoloWindow;
 
 #include "filexml.h"
-#include "mutex.h"
 #include "holo.h"
+#include "mutex.h"
+#include "pluginclient.h"
 
-class HoloThread : public Thread
-{
-public:
-	HoloThread(HoloMain *client);
-	~HoloThread();
 
-	void run();
-
-// prevent loading data until the GUI is started
- 	Mutex gui_started, completion;
-	HoloMain *client;
-	HoloWindow *window;
-};
+PLUGIN_THREAD_HEADER(HoloMain, HoloThread, HoloWindow)
 
 class HoloWindow : public BC_Window
 {

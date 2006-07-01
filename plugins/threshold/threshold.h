@@ -27,6 +27,7 @@ public:
 
 	float min;
 	float max;
+	int plot;
 };
 
 
@@ -48,6 +49,7 @@ public:
 	void update_gui();
 	void render_gui(void *data);
 	void calculate_histogram(VFrame *frame);
+	int handle_opengl();
 
 	PLUGIN_CLASS_MEMBERS(ThresholdConfig, ThresholdThread);
 	HistogramEngine *engine;

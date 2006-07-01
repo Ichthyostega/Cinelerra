@@ -7,24 +7,13 @@ class TitleThread;
 class TitleWindow;
 class TitleInterlace;
 
-#include "colorpicker.h"
+#include "../colors/colorpicker.h"
 #include "filexml.h"
 #include "mutex.h"
 #include "title.h"
 
-class TitleThread : public Thread
-{
-public:
-	TitleThread(TitleMain *client);
-	~TitleThread();
 
-	void run();
-
-// prevent loading data until the GUI is started
- 	Mutex gui_started, completion;
-	TitleMain *client;
-	TitleWindow *window;
-};
+PLUGIN_THREAD_HEADER(TitleMain, TitleThread, TitleWindow)
 
 
 
@@ -352,7 +341,7 @@ class TitleColorThread : public ColorThread
 {
 public:
 	TitleColorThread(TitleMain *client, TitleWindow *window);
-	int handle_event(int output);
+	virtual int handle_new_color(int output, int alpha);
 	TitleMain *client;
 	TitleWindow *window;
 };

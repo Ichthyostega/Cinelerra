@@ -5,7 +5,7 @@ class RGB601Main;
 
 #define TOTAL_PATTERNS 2
 
-#include "defaults.h"
+#include "bchash.h"
 #include "mutex.h"
 #include "pluginvclient.h"
 #include "rgb601window.h"
@@ -15,7 +15,9 @@ class RGB601Config
 {
 public:
 	RGB601Config();
-// 0 -> none 1 -> RGB->601 2 -> 601->RGB
+// 0 -> none 
+// 1 -> RGB -> 601 
+// 2 -> 601 -> RGB
 	int direction;
 };
 
@@ -26,7 +28,9 @@ public:
 	~RGB601Main();
 
 // required for all realtime plugins
-	int process_realtime(VFrame *input_ptr, VFrame *output_ptr);
+	int process_buffer(VFrame *frame,
+		int64_t start_position,
+		double frame_rate);
 	int is_realtime();
 	char* plugin_title();
 	int show_gui();
@@ -39,13 +43,14 @@ public:
 	int load_defaults();
 	int save_defaults();
 	VFrame* new_picon();
+	int handle_opengl();
 
 	void create_table(VFrame *input_ptr);
 	void process(int *table, VFrame *input_ptr, VFrame *output_ptr);
 	
 	RGB601Thread *thread;
 	RGB601Config config;
-	Defaults *defaults;
+	BC_Hash *defaults;
 	int forward_table[0x10000], reverse_table[0x10000];
 };
 

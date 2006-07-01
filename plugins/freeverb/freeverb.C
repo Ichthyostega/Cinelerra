@@ -1,6 +1,6 @@
 #include "bcdisplayinfo.h"
 #include "clip.h"
-#include "defaults.h"
+#include "bchash.h"
 #include "guicast.h"
 #include "filexml.h"
 #include "picon_png.h"
@@ -11,6 +11,11 @@
 
 #include <math.h>
 #include <string.h>
+
+#include <libintl.h>
+#define _(String) gettext(String)
+#define gettext_noop(String) String
+#define N_(String) gettext_noop (String)
 
 
 
@@ -150,7 +155,7 @@ public:
 	void update_gui();
 
 
-	Defaults *defaults;
+	BC_Hash *defaults;
 	FreeverbThread *thread;
 	FreeverbConfig config;
 	revmodel *engine;
@@ -258,7 +263,7 @@ int FreeverbWidth::handle_event()
 }
 
 FreeverbMode::FreeverbMode(FreeverbEffect *plugin, int x, int y)
- : BC_CheckBox(x, y, (int)plugin->config.mode, "Freeze")
+ : BC_CheckBox(x, y, (int)plugin->config.mode, _("Freeze"))
 {
 	this->plugin = plugin;
 }
@@ -299,27 +304,27 @@ void FreeverbWindow::create_objects()
 {
 	int x1 = 10, x2 = 100, x3 = 135, y1 = 10, y2 = 20, margin = 30;
 
-	add_subwindow(new BC_Title(x1, y2, "Gain:"));
+	add_subwindow(new BC_Title(x1, y2, _("Gain:")));
 	add_subwindow(gain = new FreeverbGain(plugin, x3, y1));
 	y1 += margin;
 	y2 += margin;
-	add_subwindow(new BC_Title(x1, y2, "Roomsize:"));
+	add_subwindow(new BC_Title(x1, y2, _("Roomsize:")));
 	add_subwindow(roomsize = new FreeverbRoomsize(plugin, x2, y1));
 	y1 += margin;
 	y2 += margin;
-	add_subwindow(new BC_Title(x1, y2, "Damp:"));
+	add_subwindow(new BC_Title(x1, y2, _("Damp:")));
 	add_subwindow(damp = new FreeverbDamp(plugin, x3, y1));
 	y1 += margin;
 	y2 += margin;
-	add_subwindow(new BC_Title(x1, y2, "Wet:"));
+	add_subwindow(new BC_Title(x1, y2, _("Wet:")));
 	add_subwindow(wet = new FreeverbWet(plugin, x2, y1));
 	y1 += margin;
 	y2 += margin;
-	add_subwindow(new BC_Title(x1, y2, "Dry:"));
+	add_subwindow(new BC_Title(x1, y2, _("Dry:")));
 	add_subwindow(dry = new FreeverbDry(plugin, x3, y1));
 	y1 += margin;
 	y2 += margin;
-	add_subwindow(new BC_Title(x1, y2, "Width:"));
+	add_subwindow(new BC_Title(x1, y2, _("Width:")));
 	add_subwindow(width = new FreeverbWidth(plugin, x2, y1));
 	y1 += margin;
 	y2 += margin;
@@ -463,21 +468,9 @@ RAISE_WINDOW_MACRO(FreeverbEffect)
 SET_STRING_MACRO(FreeverbEffect)
 
 
-char* FreeverbEffect::plugin_title()
-{
-	return "Freeverb";
-}
-
-
-int FreeverbEffect::is_realtime()
-{
-	return 1;
-}
-
-int FreeverbEffect::is_multichannel()
-{
-	return 1;
-}
+char* FreeverbEffect::plugin_title() { return N_("Freeverb"); }
+int FreeverbEffect::is_realtime() { return 1; }
+int FreeverbEffect::is_multichannel() { return 1; }
 
 
 
@@ -530,7 +523,7 @@ int FreeverbEffect::load_defaults()
 {
 	char directory[BCTEXTLEN], string[BCTEXTLEN];
 	sprintf(directory, "%sfreeverb.rc", BCASTDIR);
-	defaults = new Defaults(directory);
+	defaults = new BC_Hash(directory);
 	defaults->load();
 
 	config.gain = defaults->get("GAIN", config.gain);

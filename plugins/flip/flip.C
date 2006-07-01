@@ -1,18 +1,14 @@
 #include "clip.h"
 #include "colormodels.h"
-#include "defaults.h"
+#include "bchash.h"
 #include "filexml.h"
 #include "flip.h"
 #include "flipwindow.h"
+#include "language.h"
 #include "picon_png.h"
 
 #include <stdint.h>
 #include <string.h>
-
-#include <libintl.h>
-#define _(String) gettext(String)
-#define gettext_noop(String) String
-#define N_(String) gettext_noop (String)
 
 REGISTER_PLUGIN(FlipMain)
 
@@ -69,29 +65,29 @@ FlipMain::~FlipMain()
 	PLUGIN_DESTRUCTOR_MACRO
 }
 
-char* FlipMain::plugin_title() { return _("Flip"); }
+char* FlipMain::plugin_title() { return N_("Flip"); }
 int FlipMain::is_realtime() { return 1; }
 	
 
-#define SWAP_PIXELS(components, in, out) \
+#define SWAP_PIXELS(type, components, in, out) \
 { \
-	in[0] ^= out[0]; \
-	out[0] ^= in[0]; \
-	in[0] ^= out[0]; \
+	type temp = in[0]; \
+	in[0] = out[0]; \
+	out[0] = temp; \
  \
-	in[1] ^= out[1]; \
-	out[1] ^= in[1]; \
-	in[1] ^= out[1]; \
+ 	temp = in[1]; \
+	in[1] = out[1]; \
+	out[1] = temp; \
  \
-	in[2] ^= out[2]; \
-	out[2] ^= in[2]; \
-	in[2] ^= out[2]; \
+ 	temp = in[2]; \
+	in[2] = out[2]; \
+	out[2] = temp; \
  \
 	if(components == 4) \
 	{ \
-		in[3] ^= out[3]; \
-		out[3] ^= in[3]; \
-		in[3] ^= out[3]; \
+ 		temp = in[3]; \
+		in[3] = out[3]; \
+		out[3] = temp; \
 	} \
 }
 
@@ -99,8 +95,8 @@ int FlipMain::is_realtime() { return 1; }
 { \
 	type **input_rows, **output_rows; \
 	type *input_row, *output_row; \
-	input_rows = ((type**)input_ptr->get_rows()); \
-	output_rows = ((type**)output_ptr->get_rows()); \
+	input_rows = ((type**)frame->get_rows()); \
+	output_rows = ((type**)frame->get_rows()); \
  \
 	if(config.flip_vertical) \
 	{ \
@@ -110,7 +106,7 @@ int FlipMain::is_realtime() { return 1; }
 			output_row = output_rows[j]; \
 			for(k = 0; k < w; k++) \
 			{ \
-				SWAP_PIXELS(components, output_row, input_row); \
+				SWAP_PIXELS(type, components, output_row, input_row); \
 				output_row += components; \
 				input_row += components; \
 			} \
@@ -125,7 +121,7 @@ int FlipMain::is_realtime() { return 1; }
 			output_row = output_rows[i] + (w - 1) * components; \
 			for(k = 0; k < w / 2; k++) \
 			{ \
-				SWAP_PIXELS(components, output_row, input_row); \
+				SWAP_PIXELS(type, components, output_row, input_row); \
 				input_row += components; \
 				output_row -= components; \
 			} \
@@ -133,19 +129,41 @@ int FlipMain::is_realtime() { return 1; }
 	} \
 }
 
-int FlipMain::process_realtime(VFrame *input_ptr, VFrame *output_ptr)
+int FlipMain::process_buffer(VFrame *frame,
+		int64_t start_position,
+		double frame_rate)
 {
 	int i, j, k, l;
-	int w = input_ptr->get_w();
-	int h = input_ptr->get_h();
-	int colormodel = input_ptr->get_color_model();
+	int w = frame->get_w();
+	int h = frame->get_h();
+	int colormodel = frame->get_color_model();
 
 	load_configuration();
+
+	read_frame(frame,
+		0,
+		get_source_position(),
+		get_framerate(),
+		get_use_opengl());
+
+
+
+	if(get_use_opengl()) 
+	{
+		if(config.flip_vertical || config.flip_horizontal)
+			return run_opengl();
+		else
+			return 0;
+	}
+
 	switch(colormodel)
 	{
 		case BC_RGB888:
 		case BC_YUV888:
 			FLIP_MACRO(unsigned char, 3);
+			break;
+		case BC_RGB_FLOAT:
+			FLIP_MACRO(float, 3);
 			break;
 		case BC_RGB161616:
 		case BC_YUV161616:
@@ -154,6 +172,9 @@ int FlipMain::process_realtime(VFrame *input_ptr, VFrame *output_ptr)
 		case BC_RGBA8888:
 		case BC_YUVA8888:
 			FLIP_MACRO(unsigned char, 4);
+			break;
+		case BC_RGBA_FLOAT:
+			FLIP_MACRO(float, 4);
 			break;
 		case BC_RGBA16161616:
 		case BC_YUVA16161616:
@@ -244,7 +265,7 @@ int FlipMain::load_defaults()
 	sprintf(directory, "%sflip.rc", BCASTDIR);
 
 // load the defaults
-	defaults = new Defaults(directory);
+	defaults = new BC_Hash(directory);
 	defaults->load();
 
 	config.flip_horizontal = defaults->get("FLIP_HORIZONTAL", config.flip_horizontal);
@@ -259,3 +280,54 @@ int FlipMain::save_defaults()
 	defaults->save();
 	return 0;
 }
+
+int FlipMain::handle_opengl()
+{
+#ifdef HAVE_GL
+	get_output()->to_texture();
+	get_output()->enable_opengl();
+	get_output()->init_screen();
+	get_output()->bind_texture(0);
+
+	if(config.flip_vertical && !config.flip_horizontal)
+	{
+		get_output()->draw_texture(0,
+			0,
+			get_output()->get_w(),
+			get_output()->get_h(),
+			0,
+			get_output()->get_h(),
+			get_output()->get_w(),
+			0);
+	}
+
+	if(config.flip_horizontal && !config.flip_vertical)
+	{
+		get_output()->draw_texture(0,
+			0,
+			get_output()->get_w(),
+			get_output()->get_h(),
+			get_output()->get_w(),
+			0,
+			0,
+			get_output()->get_h());
+	}
+
+	if(config.flip_vertical && config.flip_horizontal)
+	{
+		get_output()->draw_texture(0,
+			0,
+			get_output()->get_w(),
+			get_output()->get_h(),
+			get_output()->get_w(),
+			get_output()->get_h(),
+			0,
+			0);
+	}
+
+	get_output()->set_opengl_state(VFrame::SCREEN);
+#endif
+}
+
+
+

@@ -1,6 +1,5 @@
 include ../global_config
 
-ALSA_DIR := ../alsa-lib-1.0.8
 AVC_DIR := $(shell expr ../libavc1394* )
 DV_DIR := ../quicktime/libdv-0.104
 EXR_DIR := ../OpenEXR-1.2.1/
@@ -45,7 +44,9 @@ OBJS = \
 	$(OBJDIR)/attachmentpoint.o \
 	$(OBJDIR)/audio1394.o \
 	$(OBJDIR)/audioalsa.o \
+	$(OBJDIR)/audiocine.o \
 	$(OBJDIR)/audiodevice.o \
+	$(OBJDIR)/audiodvb.o \
 	$(OBJDIR)/audioesound.o \
 	$(OBJDIR)/audioidevice.o \
 	$(OBJDIR)/audioodevice.o \
@@ -66,6 +67,7 @@ OBJS = \
 	$(OBJDIR)/browsebutton.o \
 	$(OBJDIR)/byteorderpopup.o \
 	$(OBJDIR)/cache.o \
+	$(OBJDIR)/cachebase.o \
 	$(OBJDIR)/canvas.o \
 	$(OBJDIR)/canvastools.o \
 	$(OBJDIR)/channel.o \
@@ -87,8 +89,10 @@ OBJS = \
 	$(OBJDIR)/cwindowtool.o \
 	$(OBJDIR)/dcoffset.o \
 	$(OBJDIR)/device1394input.o \
+	$(OBJDIR)/devicedvbinput.o \
 	$(OBJDIR)/device1394output.o \
 	$(OBJDIR)/deleteallindexes.o \
+	$(OBJDIR)/dvbtune.o \
 	$(OBJDIR)/drivesync.o \
 	$(OBJDIR)/edit.o \
 	$(OBJDIR)/edithandles.o \
@@ -126,6 +130,7 @@ OBJS = \
 	$(OBJDIR)/formatpopup.o \
 	$(OBJDIR)/formattools.o \
 	$(OBJDIR)/framecache.o \
+	$(OBJDIR)/garbage.o \
 	$(OBJDIR)/gwindow.o \
 	$(OBJDIR)/gwindowgui.o \
 	$(OBJDIR)/iec61883input.o \
@@ -150,6 +155,7 @@ OBJS = \
 	$(OBJDIR)/main.o \
 	$(OBJDIR)/mainclock.o \
 	$(OBJDIR)/maincursor.o \
+	$(OBJDIR)/mainerror.o \
 	$(OBJDIR)/mainindexes.o \
 	$(OBJDIR)/mainmenu.o \
 	$(OBJDIR)/mainprogress.o \
@@ -162,7 +168,6 @@ OBJS = \
 	$(OBJDIR)/menuaeffects.o \
 	$(OBJDIR)/menueffects.o \
 	$(OBJDIR)/menuveffects.o \
-	$(OBJDIR)/messages.o \
 	$(OBJDIR)/meterpanel.o \
 	$(OBJDIR)/module.o \
 	$(OBJDIR)/mtimebar.o \
@@ -182,6 +187,7 @@ OBJS = \
 	$(OBJDIR)/performanceprefs.o \
 	$(OBJDIR)/picture.o \
 	$(OBJDIR)/playabletracks.o \
+	$(OBJDIR)/playback3d.o \
 	$(OBJDIR)/playbackconfig.o \
 	$(OBJDIR)/playbackengine.o \
 	$(OBJDIR)/playbackprefs.o \
@@ -197,6 +203,7 @@ OBJS = \
 	$(OBJDIR)/pluginset.o \
 	$(OBJDIR)/pluginserver.o \
 	$(OBJDIR)/plugintclient.o \
+	$(OBJDIR)/plugintoggles.o \
 	$(OBJDIR)/pluginvclient.o \
 	$(OBJDIR)/preferences.o \
 	$(OBJDIR)/preferencesthread.o \
@@ -216,6 +223,7 @@ OBJS = \
 	$(OBJDIR)/recordtransport.o \
 	$(OBJDIR)/recordvideo.o \
 	$(OBJDIR)/recordwindow.o \
+	$(OBJDIR)/removethread.o \
 	$(OBJDIR)/render.o \
 	$(OBJDIR)/renderfarm.o \
 	$(OBJDIR)/renderfarmclient.o \
@@ -223,6 +231,7 @@ OBJS = \
 	$(OBJDIR)/resample.o \
 	$(OBJDIR)/resizetrackthread.o \
 	$(OBJDIR)/resourcepixmap.o \
+	$(OBJDIR)/resourcethread.o \
 	$(OBJDIR)/samplescroll.o \
 	$(OBJDIR)/savefile.o \
 	$(OBJDIR)/setformat.o \
@@ -249,12 +258,14 @@ OBJS = \
 	$(OBJDIR)/transitionhandles.o \
 	$(OBJDIR)/transitionpopup.o \
 	$(OBJDIR)/transportque.o \
+	$(OBJDIR)/tunerserver.o \
 	$(OBJDIR)/undostack.o \
 	$(OBJDIR)/vattachmentpoint.o \
 	$(OBJDIR)/vautomation.o \
 	$(OBJDIR)/vdevice1394.o \
 	$(OBJDIR)/vdevicebase.o \
 	$(OBJDIR)/vdevicebuz.o \
+	$(OBJDIR)/vdevicedvb.o \
 	$(OBJDIR)/vdeviceprefs.o \
 	$(OBJDIR)/vdevicev4l.o \
 	$(OBJDIR)/vdevicev4l2.o \
@@ -282,7 +293,7 @@ OBJS = \
 	$(OBJDIR)/vtracking.o \
 	$(OBJDIR)/vwindow.o \
 	$(OBJDIR)/vwindowgui.o \
-	$(OBJDIR)/workarounds.o \
+	$(OBJDIR)/wavecache.o \
 	$(OBJDIR)/zoombar.o \
 	$(OBJDIR)/zoompanel.o
 
@@ -304,15 +315,9 @@ OUTPUT = $(OBJDIR)/cinelerra
 AVIFILE_DIR := $(shell expr ../avifile* )
 #endif
 
-ifeq ($(HAVE_ALSA), y)
-ALSA_CFLAGS := -DHAVE_ALSA -I$(ALSA_DIR)/include
-ALSA_LIBS := $(ALSA_DIR)/$(OBJDIR)/libasound.a
-endif
-
 
 
 STATICLIBS = \
-	$(ALSA_LIBS) \
 	$(AVC_LIB) \
 	$(RAW_LIB) \
 	$(IEC_LIB) \
@@ -340,11 +345,19 @@ else
 LIBS += -L/usr/X11R6/lib
 endif
 
+ifeq ($(HAVE_GL), y)
+LIBS += -lGL -lGLU
+endif
+
+
+ifeq ($(HAVE_ALSA), y)
+CFLAGS += -DHAVE_ALSA
+LIBS += -lasound
+endif
 
 
 
 LIBS += \
-	$(GLLIBS) \
 	-lX11 \
 	-lXext \
 	-lXv \
@@ -353,7 +366,7 @@ LIBS += \
 	-lXxf86vm \
 	-lpng \
 	-lz \
-	-ldl
+	-ldl \
 
 ifeq ($(HAVE_XFT), y)
 LIBS += -lXft
@@ -377,8 +390,7 @@ CFLAGS += \
 	-I../libmpeg3 \
 	-I$(SNDFILE_DIR)/src \
 	$(ESOUNDCFLAGS) \
-	$(ALSA_CFLAGS) \
-	-I$(FFMPEG_DIR)/libavcodec \
+	-I$(FFMPEG_DIR)/libavcodec -I$(FFMPEG_DIR)/libavutil \
 	-I$(THEORA_DIR)/include
 
 
@@ -522,8 +534,10 @@ $(OBJDIR)/atrack.o: 				  atrack.C
 $(OBJDIR)/attachmentpoint.o: 			  attachmentpoint.C
 $(OBJDIR)/audio1394.o:  			  audio1394.C
 $(OBJDIR)/audioalsa.o:  			  audioalsa.C
+$(OBJDIR)/audiocine.o:                            audiocine.C
 $(OBJDIR)/audioconfig.o: 			  audioconfig.C
 $(OBJDIR)/audiodevice.o: 			  audiodevice.C
+$(OBJDIR)/audiodvb.o: 			    	  audiodvb.C
 $(OBJDIR)/audioesound.o: 			  audioesound.C
 $(OBJDIR)/audioidevice.o: 			  audioidevice.C
 $(OBJDIR)/audioinprefs.o: 			  audioinprefs.C
@@ -546,6 +560,7 @@ $(OBJDIR)/brender.o:                              brender.C
 $(OBJDIR)/browsebutton.o: 			  browsebutton.C
 $(OBJDIR)/byteorderpopup.o: 			  byteorderpopup.C
 $(OBJDIR)/cache.o: 				  cache.C
+$(OBJDIR)/cachebase.o:                            cachebase.C
 $(OBJDIR)/canvas.o: 				  canvas.C
 $(OBJDIR)/canvastools.o: 			  canvastools.C
 $(OBJDIR)/channel.o: 				  channel.C
@@ -572,8 +587,10 @@ $(OBJDIR)/dcoffset.o: 				  dcoffset.C
 $(OBJDIR)/dcraw.o:                                dcraw.c
 $(OBJDIR)/deleteallindexes.o: 			  deleteallindexes.C
 $(OBJDIR)/device1394input.o:                      device1394input.C
+$(OBJDIR)/devicedvbinput.o:                       devicedvbinput.C
 $(OBJDIR)/device1394output.o:                     device1394output.C
 $(OBJDIR)/drivesync.o:  			  drivesync.C
+$(OBJDIR)/dvbtune.o:  			  	  dvbtune.C
 $(OBJDIR)/edit.o: 				  edit.C
 $(OBJDIR)/edithandles.o: 			  edithandles.C
 $(OBJDIR)/editpanel.o:  			  editpanel.C
@@ -610,6 +627,7 @@ $(OBJDIR)/formatpopup.o: 			  formatpopup.C
 $(OBJDIR)/formatpresets.o:                        formatpresets.C
 $(OBJDIR)/formattools.o: 			  formattools.C
 $(OBJDIR)/framecache.o:                           framecache.C
+$(OBJDIR)/garbage.o:                              garbage.C
 $(OBJDIR)/gwindow.o:                              gwindow.C
 $(OBJDIR)/gwindowgui.o:                           gwindowgui.C
 $(OBJDIR)/iec61883input.o:                        iec61883input.C
@@ -634,6 +652,7 @@ $(OBJDIR)/localsession.o: 			  localsession.C
 $(OBJDIR)/main.o:	  			  main.C
 $(OBJDIR)/mainclock.o:  			  mainclock.C
 $(OBJDIR)/maincursor.o: 			  maincursor.C
+$(OBJDIR)/mainerror.o:                            mainerror.C
 $(OBJDIR)/mainindexes.o: 			  mainindexes.C
 $(OBJDIR)/mainmenu.o: 				  mainmenu.C
 $(OBJDIR)/mainprogress.o: 			  mainprogress.C
@@ -667,6 +686,7 @@ $(OBJDIR)/patchgui.o: 				  patchgui.C
 $(OBJDIR)/performanceprefs.o: 			  performanceprefs.C
 $(OBJDIR)/picture.o:                              picture.C
 $(OBJDIR)/playabletracks.o: 			  playabletracks.C
+$(OBJDIR)/playback3d.o:                           playback3d.C
 $(OBJDIR)/playbackconfig.o: 			  playbackconfig.C
 $(OBJDIR)/playbackengine.o: 			  playbackengine.C
 $(OBJDIR)/playbackprefs.o:                        playbackprefs.C
@@ -683,6 +703,7 @@ $(OBJDIR)/pluginprefs.o: 			  pluginprefs.C
 $(OBJDIR)/pluginset.o:  			  pluginset.C
 $(OBJDIR)/pluginserver.o: 			  pluginserver.C
 $(OBJDIR)/plugintclient.o: 			  plugintclient.C
+$(OBJDIR)/plugintoggles.o:                        plugintoggles.C
 $(OBJDIR)/pluginvclient.o: 			  pluginvclient.C
 $(OBJDIR)/preferences.o: 			  preferences.C
 $(OBJDIR)/preferencesthread.o:  		  preferencesthread.C
@@ -705,6 +726,7 @@ $(OBJDIR)/recordthread.o: 			  recordthread.C
 $(OBJDIR)/recordtransport.o: 			  recordtransport.C
 $(OBJDIR)/recordvideo.o: 			  recordvideo.C
 $(OBJDIR)/recordwindow.o: 			  recordwindow.C
+$(OBJDIR)/removethread.o:                         removethread.C
 $(OBJDIR)/render.o: 				  render.C
 $(OBJDIR)/renderengine.o: 			  renderengine.C
 $(OBJDIR)/renderfarm.o: 			  renderfarm.C
@@ -714,6 +736,7 @@ $(OBJDIR)/renderfarmfsserver.o: 		  renderfarmfsserver.C
 $(OBJDIR)/resample.o: 				  resample.C
 $(OBJDIR)/resizetrackthread.o:                    resizetrackthread.C
 $(OBJDIR)/resourcepixmap.o: 			  resourcepixmap.C
+$(OBJDIR)/resourcethread.o:                       resourcethread.C
 $(OBJDIR)/samplescroll.o: 			  samplescroll.C
 $(OBJDIR)/savefile.o: 				  savefile.C
 $(OBJDIR)/setformat.o:                            setformat.C
@@ -743,12 +766,14 @@ $(OBJDIR)/transition.o: 			  transition.C
 $(OBJDIR)/transitionhandles.o:  		  transitionhandles.C
 $(OBJDIR)/transitionpopup.o: 			  transitionpopup.C
 $(OBJDIR)/transportque.o: 			  transportque.C
+$(OBJDIR)/tunerserver.o: 			  tunerserver.C
 $(OBJDIR)/undostack.o:  			  undostack.C
 $(OBJDIR)/vattachmentpoint.o: 			  vattachmentpoint.C
 $(OBJDIR)/vautomation.o: 			  vautomation.C
 $(OBJDIR)/vdevice1394.o: 			  vdevice1394.C
 $(OBJDIR)/vdevicebase.o: 			  vdevicebase.C
 $(OBJDIR)/vdevicebuz.o: 			  vdevicebuz.C
+$(OBJDIR)/vdevicedvb.o:                           vdevicedvb.C
 $(OBJDIR)/vdeviceprefs.o: 			  vdeviceprefs.C
 $(OBJDIR)/vdevicev4l.o: 			  vdevicev4l.C
 $(OBJDIR)/vdevicev4l2.o:                          vdevicev4l2.C
@@ -781,6 +806,6 @@ $(OBJDIR)/vtrack.o: 				  vtrack.C
 $(OBJDIR)/vtracking.o:  			  vtracking.C
 $(OBJDIR)/vwindow.o: 				  vwindow.C
 $(OBJDIR)/vwindowgui.o: 			  vwindowgui.C
-$(OBJDIR)/workarounds.o:                          workarounds.C
+$(OBJDIR)/wavecache.o:                            wavecache.C
 $(OBJDIR)/zoombar.o: 				  zoombar.C
 $(OBJDIR)/zoompanel.o:  			  zoompanel.C

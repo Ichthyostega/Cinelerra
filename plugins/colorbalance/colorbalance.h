@@ -4,9 +4,9 @@
 class ColorBalanceMain;
 
 #include "colorbalancewindow.h"
+#include "condition.h"
 #include "plugincolors.h"
 #include "guicast.h"
-#include "mutex.h"
 #include "pluginvclient.h"
 #include "thread.h"
 
@@ -27,6 +27,7 @@ public:
 		int64_t next_frame, 
 		int64_t current_frame);
 
+// -1000 - 1000
 	float cyan;
 	float magenta;
     float yellow;
@@ -47,9 +48,10 @@ public:
 	ColorBalanceMain *plugin;
 	int row_start, row_end;
 	int last_frame;
-	Mutex input_lock, output_lock;
+	Condition input_lock, output_lock;
 	VFrame *input, *output;
 	YUV yuv;
+	float cyan_f, magenta_f, yellow_f;
 };
 
 class ColorBalanceMain : public PluginVClient
@@ -59,10 +61,13 @@ public:
 	~ColorBalanceMain();
 
 // required for all realtime plugins
-	int process_realtime(VFrame *input_ptr, VFrame *output_ptr);
+	int process_buffer(VFrame *frame,
+		int64_t start_position,
+		double frame_rate);
 	int is_realtime();
 	char* plugin_title();
 	int show_gui();
+	void update_gui();
 	void raise_window();
 	int set_string();
 	int load_configuration();
@@ -71,6 +76,14 @@ public:
 	int load_defaults();
 	int save_defaults();
 	VFrame* new_picon();
+	int handle_opengl();
+
+	void get_aggregation(int *aggregate_interpolate,
+		int *aggregate_gamma);
+
+
+	int64_t calculate_slider(float in);
+	float calculate_transfer(float in);
 
 // parameters needed for processor
 	int reconfigure();
@@ -84,17 +97,13 @@ public:
 	int total_engines;
 
 
-	Defaults *defaults;
+	BC_Hash *defaults;
     int r_lookup_8[0x100];
     int g_lookup_8[0x100];
     int b_lookup_8[0x100];
-    double highlights_add_8[0x100];
-    double highlights_sub_8[0x100];
     int r_lookup_16[0x10000];
     int g_lookup_16[0x10000];
     int b_lookup_16[0x10000];
-    double highlights_add_16[0x10000];
-    double highlights_sub_16[0x10000];
     int redo_buffers;
 	int need_reconfigure;
 };

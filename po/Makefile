@@ -1,11 +1,13 @@
-include Makevars
 
 
 OBJS := \
 	de.mo \
 	es.mo \
+	eu.mo \
 	fr.mo \
+	it.mo \
 	nb.mo \
+	pt_BR.mo \
 	sl.mo
 
 
@@ -25,15 +27,19 @@ install:
 	done
 
 clean:
-	rm -f $(OBJS)
+	rm -f *.mo
 
 $(OBJS):
 	msgfmt -c -o $@ $(subst .mo,.po,$@)
 
-de.mo:   de.po
-es.mo:   es.po
-fr.mo:   fr.po
-nb.mo:   nb.po
-sl.mo:   sl.po
+
+de.mo:	     de.po
+es.mo:	     es.po
+eu.mo:	     eu.po
+fr.mo:	     fr.po
+it.mo:	     it.po
+nb.mo:	     nb.po
+pt_BR.mo:    pt_BR.po
+sl.mo:	     sl.po
 
 

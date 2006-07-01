@@ -181,7 +181,9 @@ static int select_table(mpeg3_layer_t *audio)
 	return 0;
 }
 
-static int step_one(mpeg3_layer_t *audio, unsigned int *bit_alloc, int *scale)
+static int step_one(mpeg3_layer_t *audio, 
+	unsigned int *bit_alloc, 
+	int *scale)
 {
    	int stereo = audio->channels - 1;
     int sblimit = audio->II_sblimit;
@@ -191,20 +193,26 @@ static int step_one(mpeg3_layer_t *audio, unsigned int *bit_alloc, int *scale)
     int i, result = 0;
     unsigned int *scfsi_buf = audio->layer2_scfsi_buf;
     unsigned int *scfsi, *bita;
+	unsigned int *bita_end = bit_alloc + 64;
     int sc, step;
 
     bita = bit_alloc;
     if(stereo)
     {
 /* Stereo */
-    	for(i = jsbound;i ; i--, alloc1 += (1 << step))
+    	for(i = jsbound; 
+			i && bita < bita_end - 2; 
+			i--, alloc1 += (1 << step))
     	{
         	*bita++ = (char)mpeg3bits_getbits(audio->stream, step = alloc1->bits);
         	*bita++ = (char)mpeg3bits_getbits(audio->stream, step);
     	}
-    	for(i = sblimit-jsbound; i; i--, alloc1 += (1 << step))
+    	for(i = sblimit - jsbound; 
+			i && bita < bita_end - 2; 
+			i--, alloc1 += (1 << step))
     	{
-        	bita[0] = (char)mpeg3bits_getbits(audio->stream, step = alloc1->bits);
+        	bita[0] = (char)mpeg3bits_getbits(audio->stream, 
+				step = alloc1->bits);
         	bita[1] = bita[0];
         	bita += 2;
     	}
@@ -379,32 +387,25 @@ int mpeg3audio_dolayer2(mpeg3_layer_t *audio,
 	int output_position = 0;
 
 
-//printf(__FUNCTION__ " 1\n");
 	frame += 4;
 /* Set up bitstream to use buffer */
 	mpeg3bits_use_ptr(audio->stream, frame);
 
-//printf(__FUNCTION__ " 1\n");
 
 
  	if(audio->error_protection)
 		mpeg3bits_getbits(audio->stream, 16);
 
-//printf(__FUNCTION__ " 1\n");
 	select_table(audio);
 
-//printf(__FUNCTION__ " 1\n");
   	audio->jsbound = (audio->mode == MPG_MD_JOINT_STEREO) ?
      	(audio->mode_ext << 2) + 4 : audio->II_sblimit;
 
-//printf(__FUNCTION__ " 1\n");
   	if(channels == 1 || single == 3)
     	single = 0;
 
-//printf(__FUNCTION__ " 1\n");
   	result |= step_one(audio, bit_alloc, scale);
 
-//printf(__FUNCTION__ " 2\n");
 	for(i = 0; i < SCALE_BLOCK && !result; i++)
 	{
     	result |= step_two(audio, bit_alloc, fraction, scale, i >> 2);
@@ -448,7 +449,6 @@ int mpeg3audio_dolayer2(mpeg3_layer_t *audio,
     		}
 		}
 	}
-//printf(__FUNCTION__ " 6 %d\n", output_position);
 
 
   	return output_position;

@@ -4,18 +4,15 @@
 
 #include "bcdisplayinfo.h"
 #include "clip.h"
-#include "defaults.h"
+#include "bchash.h"
 #include "filexml.h"
 #include "keyframe.h"
+#include "language.h"
 #include "loadbalance.h"
 #include "picon_png.h"
 #include "pluginvclient.h"
 #include "vframe.h"
 
-#include <libintl.h>
-#define _(String) gettext(String)
-#define gettext_noop(String) String
-#define N_(String) gettext_noop (String)
 
 
 class LinearBlurMain;
@@ -95,19 +92,31 @@ public:
 PLUGIN_THREAD_HEADER(LinearBlurMain, LinearBlurThread, LinearBlurWindow)
 
 
+// Output coords for a layer of blurring
+// Used for OpenGL only
+class LinearBlurLayer
+{
+public:
+	LinearBlurLayer() {};
+	int x, y;
+};
+
 class LinearBlurMain : public PluginVClient
 {
 public:
 	LinearBlurMain(PluginServer *server);
 	~LinearBlurMain();
 
-	int process_realtime(VFrame *input_ptr, VFrame *output_ptr);
+	int process_buffer(VFrame *frame,
+		int64_t start_position,
+		double frame_rate);
 	int is_realtime();
 	int load_defaults();
 	int save_defaults();
 	void save_data(KeyFrame *keyframe);
 	void read_data(KeyFrame *keyframe);
 	void update_gui();
+	int handle_opengl();
 
 	PLUGIN_CLASS_MEMBERS(LinearBlurConfig, LinearBlurThread)
 
@@ -116,9 +125,11 @@ public:
 	LinearBlurEngine *engine;
 	int **scale_y_table;
 	int **scale_x_table;
+	LinearBlurLayer *layer_table;
 	int table_entries;
 	int need_reconfigure;
-	int *accum;
+// The accumulation buffer is needed because 8 bits isn't precise enough
+	unsigned char *accum;
 };
 
 class LinearBlurPackage : public LoadPackage
@@ -266,7 +277,7 @@ int LinearBlurWindow::create_objects()
 	y += 30;
 	add_subwindow(new BC_Title(x, y, _("Steps:")));
 	y += 20;
-	add_subwindow(steps = new LinearBlurSize(plugin, x, y, &plugin->config.steps, 1, 100));
+	add_subwindow(steps = new LinearBlurSize(plugin, x, y, &plugin->config.steps, 1, 200));
 	y += 30;
 	add_subwindow(r = new LinearBlurToggle(plugin, x, y, &plugin->config.r, _("Red")));
 	y += 30;
@@ -282,12 +293,7 @@ int LinearBlurWindow::create_objects()
 	return 0;
 }
 
-int LinearBlurWindow::close_event()
-{
-// Set result to 1 to indicate a plugin side close
-	set_done(1);
-	return 1;
-}
+WINDOW_CLOSE_EVENT(LinearBlurWindow)
 
 
 
@@ -360,6 +366,7 @@ LinearBlurMain::LinearBlurMain(PluginServer *server)
 	accum = 0;
 	need_reconfigure = 1;
 	temp = 0;
+	layer_table = 0;
 }
 
 LinearBlurMain::~LinearBlurMain()
@@ -371,7 +378,7 @@ LinearBlurMain::~LinearBlurMain()
 	if(temp) delete temp;
 }
 
-char* LinearBlurMain::plugin_title() { return _("Linear Blur"); }
+char* LinearBlurMain::plugin_title() { return N_("Linear Blur"); }
 int LinearBlurMain::is_realtime() { return 1; }
 
 
@@ -400,44 +407,32 @@ void LinearBlurMain::delete_tables()
 			delete [] scale_y_table[i];
 		delete [] scale_y_table;
 	}
+	delete [] layer_table;
+	layer_table = 0;
 	scale_x_table = 0;
 	scale_y_table = 0;
 	table_entries = 0;
 }
 
-int LinearBlurMain::process_realtime(VFrame *input_ptr, VFrame *output_ptr)
+int LinearBlurMain::process_buffer(VFrame *frame,
+							int64_t start_position,
+							double frame_rate)
 {
 	need_reconfigure |= load_configuration();
 
-//printf("LinearBlurMain::process_realtime 1 %d\n", config.radius);
-	if(!engine) engine = new LinearBlurEngine(this,
-		get_project_smp() + 1,
-		get_project_smp() + 1);
-	if(!accum) accum = new int[input_ptr->get_w() * 
-		input_ptr->get_h() *
-		cmodel_components(input_ptr->get_color_model())];
-
-	this->input = input_ptr;
-	this->output = output_ptr;
-
-
-	if(input_ptr->get_rows()[0] == output_ptr->get_rows()[0])
-	{
-		if(!temp) temp = new VFrame(0,
-			input_ptr->get_w(),
-			input_ptr->get_h(),
-			input_ptr->get_color_model());
-		temp->copy_from(input_ptr);
-		this->input = temp;
-	}
+	read_frame(frame,
+		0,
+		get_source_position(),
+		get_framerate(),
+		get_use_opengl());
 
 // Generate tables here.  The same table is used by many packages to render
 // each horizontal stripe.  Need to cover the entire output range in  each
 // table to avoid green borders
 	if(need_reconfigure)
 	{
-		int w = input->get_w();
-		int h = input->get_h();
+		int w = frame->get_w();
+		int h = frame->get_h();
 		int x_offset;
 		int y_offset;
 		int angle = config.angle;
@@ -474,6 +469,7 @@ int LinearBlurMain::process_realtime(VFrame *input_ptr, VFrame *output_ptr)
 		scale_x_table = new int*[config.steps];
 		scale_y_table = new int*[config.steps];
 		table_entries = config.steps;
+		layer_table = new LinearBlurLayer[table_entries];
 
 //printf("LinearBlurMain::process_realtime 1 %d %d %d\n", radius, x_offset, y_offset);
 
@@ -488,22 +484,50 @@ int LinearBlurMain::process_realtime(VFrame *input_ptr, VFrame *output_ptr)
 			scale_y_table[i] = y_table = new int[h];
 			scale_x_table[i] = x_table = new int[w];
 
+			layer_table[i].x = x;
+			layer_table[i].y = y;
 			for(int j = 0; j < h; j++)
 			{
 				y_table[j] = j + y;
+				CLAMP(y_table[j], 0, h - 1);
 			}
 			for(int j = 0; j < w; j++)
 			{
 				x_table[j] = j + x;
+				CLAMP(x_table[j], 0, w - 1);
 			}
 		}
 		need_reconfigure = 0;
 	}
 
-	bzero(accum, input_ptr->get_w() * 
-		input_ptr->get_h() *
-		cmodel_components(input_ptr->get_color_model()) *
-		sizeof(int));
+	if(get_use_opengl()) return run_opengl();
+
+
+	if(!engine) engine = new LinearBlurEngine(this,
+		get_project_smp() + 1,
+		get_project_smp() + 1);
+	if(!accum) accum = new unsigned char[frame->get_w() * 
+		frame->get_h() *
+		cmodel_components(frame->get_color_model()) *
+		MAX(sizeof(int), sizeof(float))];
+
+	this->input = frame;
+	this->output = frame;
+
+
+	if(!temp) temp = new VFrame(0,
+		frame->get_w(),
+		frame->get_h(),
+		frame->get_color_model());
+	temp->copy_from(frame);
+	this->input = temp;
+
+
+	bzero(accum, 
+		frame->get_w() * 
+		frame->get_h() * 
+		cmodel_components(frame->get_color_model()) * 
+		MAX(sizeof(int), sizeof(float)));
 	engine->process_packages();
 	return 0;
 }
@@ -534,7 +558,7 @@ int LinearBlurMain::load_defaults()
 	sprintf(directory, "%slinearblur.rc", BCASTDIR);
 
 // load the defaults
-	defaults = new Defaults(directory);
+	defaults = new BC_Hash(directory);
 	defaults->load();
 
 	config.radius = defaults->get("RADIUS", config.radius);
@@ -610,6 +634,128 @@ void LinearBlurMain::read_data(KeyFrame *keyframe)
 	}
 }
 
+#ifdef HAVE_GL
+static void draw_box(float x1, float y1, float x2, float y2)
+{
+	glBegin(GL_QUADS);
+	glVertex3f(x1, y1, 0.0);
+	glVertex3f(x2, y1, 0.0);
+	glVertex3f(x2, y2, 0.0);
+	glVertex3f(x1, y2, 0.0);
+	glEnd();
+}
+#endif
+
+int LinearBlurMain::handle_opengl()
+{
+#ifdef HAVE_GL
+	get_output()->to_texture();
+	get_output()->enable_opengl();
+	get_output()->init_screen();
+	get_output()->bind_texture(0);
+
+	int is_yuv = cmodel_is_yuv(get_output()->get_color_model());
+	glClearColor(0.0, 0.0, 0.0, 0.0);
+	glClear(GL_COLOR_BUFFER_BIT);
+
+// Draw unselected channels
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_ONE, GL_ONE);
+	glDrawBuffer(GL_BACK);
+	if(!config.r || !config.g || !config.b || !config.a)
+	{
+		glColor4f(config.r ? 0 : 1, 
+			config.g ? 0 : 1, 
+			config.b ? 0 : 1, 
+			config.a ? 0 : 1);
+		get_output()->draw_texture();
+	}
+	glAccum(GL_LOAD, 1.0);
+
+// Blur selected channels
+	float fraction = 1.0 / config.steps;
+	for(int i = 0; i < config.steps; i++)
+	{
+		glClear(GL_COLOR_BUFFER_BIT);
+		glColor4f(config.r ? 1 : 0, 
+			config.g ? 1 : 0, 
+			config.b ? 1 : 0, 
+			config.a ? 1 : 0);
+
+		int w = get_output()->get_w();
+		int h = get_output()->get_h();
+		get_output()->draw_texture(0,
+			0,
+			w,
+			h,
+			layer_table[i].x,
+			get_output()->get_h() - layer_table[i].y,
+			layer_table[i].x + w,
+			get_output()->get_h() - layer_table[i].y - h,
+			1);
+
+
+// Fill YUV black
+		glDisable(GL_TEXTURE_2D);
+		if(is_yuv)
+		{
+			glColor4f(config.r ? 0.0 : 0, 
+				config.g ? 0.5 : 0, 
+				config.b ? 0.5 : 0, 
+				config.a ? 1.0 : 0);
+			float center_x1 = 0.0;
+			float center_x2 = get_output()->get_w();
+			float project_x1 = layer_table[i].x;
+			float project_x2 = layer_table[i].x + get_output()->get_w();
+			float project_y1 = layer_table[i].y;
+			float project_y2 = layer_table[i].y + get_output()->get_h();
+			if(project_x1 > 0)
+			{
+				center_x1 = project_x1;
+				draw_box(0, 0, project_x1, -get_output()->get_h());
+			}
+			if(project_x2 < get_output()->get_w())
+			{
+				center_x2 = project_x2;
+				draw_box(project_x2, 0, get_output()->get_w(), -get_output()->get_h());
+			}
+			if(project_y1 > 0)
+			{
+				draw_box(center_x1, 
+					-get_output()->get_h(), 
+					center_x2, 
+					-get_output()->get_h() + project_y1);
+			}
+			if(project_y2 < get_output()->get_h())
+			{
+				draw_box(center_x1, 
+					-get_output()->get_h() + project_y2, 
+					center_x2, 
+					0);
+			}
+		}
+
+
+
+
+		glAccum(GL_ACCUM, fraction);
+		glEnable(GL_TEXTURE_2D);
+		glColor4f(config.r ? 1 : 0, 
+			config.g ? 1 : 0, 
+			config.b ? 1 : 0, 
+			config.a ? 1 : 0);
+	}
+
+	glDisable(GL_BLEND);
+	glDisable(GL_TEXTURE_2D);
+	glReadBuffer(GL_BACK);
+	glAccum(GL_RETURN, 1.0);
+
+	glColor4f(1, 1, 1, 1);
+	get_output()->set_opengl_state(VFrame::SCREEN);
+#endif
+}
+
 
 
 
@@ -632,66 +778,34 @@ LinearBlurUnit::LinearBlurUnit(LinearBlurEngine *server,
 }
 
 
-#define BLEND_LAYER(COMPONENTS, TYPE, MAX, DO_YUV) \
+#define BLEND_LAYER(COMPONENTS, TYPE, TEMP, MAX, DO_YUV) \
 { \
 	const int chroma_offset = (DO_YUV ? ((MAX + 1) / 2) : 0); \
 	for(int j = pkg->y1; j < pkg->y2; j++) \
 	{ \
-		int *out_row = plugin->accum + COMPONENTS * w * j; \
+		TEMP *out_row = (TEMP*)plugin->accum + COMPONENTS * w * j; \
 		int in_y = y_table[j]; \
  \
 /* Blend image */ \
-		if(in_y >= 0 && in_y < h) \
+		TYPE *in_row = (TYPE*)plugin->input->get_rows()[in_y]; \
+		for(int k = 0; k < w; k++) \
 		{ \
-			TYPE *in_row = (TYPE*)plugin->input->get_rows()[in_y]; \
-			for(int k = 0; k < w; k++) \
-			{ \
-				int in_x = x_table[k]; \
+			int in_x = x_table[k]; \
 /* Blend pixel */ \
-				if(in_x >= 0 && in_x < w) \
-				{ \
-					int in_offset = in_x * COMPONENTS; \
-					*out_row++ += in_row[in_offset]; \
-					if(DO_YUV) \
-					{ \
-						*out_row++ += in_row[in_offset + 1]; \
-						*out_row++ += in_row[in_offset + 2]; \
-					} \
-					else \
-					{ \
-						*out_row++ += (int)in_row[in_offset + 1]; \
-						*out_row++ += (int)in_row[in_offset + 2]; \
-					} \
-					if(COMPONENTS == 4) \
-						*out_row++ += in_row[in_offset + 3]; \
-				} \
-/* Blend nothing */ \
-				else \
-				{ \
-					out_row++; \
-					if(DO_YUV) \
-					{ \
-						*out_row++ += chroma_offset; \
-						*out_row++ += chroma_offset; \
-					} \
-					else \
-					{ \
-						out_row += 2; \
-					} \
-					if(COMPONENTS == 4) out_row++; \
-				} \
-			} \
-		} \
-		else \
-		if(DO_YUV) \
-		{ \
-			for(int k = 0; k < w; k++) \
+			int in_offset = in_x * COMPONENTS; \
+			*out_row++ += in_row[in_offset]; \
+			if(DO_YUV) \
 			{ \
-				out_row++; \
-				*out_row++ += chroma_offset; \
-				*out_row++ += chroma_offset; \
-				if(COMPONENTS == 4) out_row++; \
+				*out_row++ += in_row[in_offset + 1]; \
+				*out_row++ += in_row[in_offset + 2]; \
 			} \
+			else \
+			{ \
+				*out_row++ += in_row[in_offset + 1]; \
+				*out_row++ += in_row[in_offset + 2]; \
+			} \
+			if(COMPONENTS == 4) \
+				*out_row++ += in_row[in_offset + 3]; \
 		} \
 	} \
  \
@@ -700,14 +814,14 @@ LinearBlurUnit::LinearBlurUnit(LinearBlurEngine *server,
 	{ \
 		for(int j = pkg->y1; j < pkg->y2; j++) \
 		{ \
-			int *in_row = plugin->accum + COMPONENTS * w * j; \
+			TEMP *in_row = (TEMP*)plugin->accum + COMPONENTS * w * j; \
 			TYPE *in_backup = (TYPE*)plugin->input->get_rows()[j]; \
 			TYPE *out_row = (TYPE*)plugin->output->get_rows()[j]; \
 			for(int k = 0; k < w; k++) \
 			{ \
 				if(do_r) \
 				{ \
-					*out_row++ = (*in_row++ * fraction) >> 16; \
+					*out_row++ = (*in_row++ * fraction) / 0x10000; \
 					in_backup++; \
 				} \
 				else \
@@ -720,7 +834,7 @@ LinearBlurUnit::LinearBlurUnit(LinearBlurEngine *server,
 				{ \
 					if(do_g) \
 					{ \
-						*out_row++ = ((*in_row++ * fraction) >> 16); \
+						*out_row++ = (*in_row++ * fraction) / 0x10000; \
 						in_backup++; \
 					} \
 					else \
@@ -731,7 +845,7 @@ LinearBlurUnit::LinearBlurUnit(LinearBlurEngine *server,
  \
 					if(do_b) \
 					{ \
-						*out_row++ = ((*in_row++ * fraction) >> 16); \
+						*out_row++ = (*in_row++ * fraction) / 0x10000; \
 						in_backup++; \
 					} \
 					else \
@@ -744,7 +858,7 @@ LinearBlurUnit::LinearBlurUnit(LinearBlurEngine *server,
 				{ \
 					if(do_g) \
 					{ \
-						*out_row++ = (*in_row++ * fraction) >> 16; \
+						*out_row++ = (*in_row++ * fraction) / 0x10000; \
 						in_backup++; \
 					} \
 					else \
@@ -755,7 +869,7 @@ LinearBlurUnit::LinearBlurUnit(LinearBlurEngine *server,
  \
 					if(do_b) \
 					{ \
-						*out_row++ = (*in_row++ * fraction) >> 16; \
+						*out_row++ = (*in_row++ * fraction) / 0x10000; \
 						in_backup++; \
 					} \
 					else \
@@ -769,7 +883,7 @@ LinearBlurUnit::LinearBlurUnit(LinearBlurEngine *server,
 				{ \
 					if(do_a) \
 					{ \
-						*out_row++ = (*in_row++ * fraction) >> 16; \
+						*out_row++ = (*in_row++ * fraction) / 0x10000; \
 						in_backup++; \
 					} \
 					else \
@@ -801,29 +915,35 @@ void LinearBlurUnit::process_package(LoadPackage *package)
 
 		switch(plugin->input->get_color_model())
 		{
+			case BC_RGB_FLOAT:
+				BLEND_LAYER(3, float, float, 1, 0)
+				break;
 			case BC_RGB888:
-				BLEND_LAYER(3, uint8_t, 0xff, 0)
+				BLEND_LAYER(3, uint8_t, int, 0xff, 0)
+				break;
+			case BC_RGBA_FLOAT:
+				BLEND_LAYER(4, float, float, 1, 0)
 				break;
 			case BC_RGBA8888:
-				BLEND_LAYER(4, uint8_t, 0xff, 0)
+				BLEND_LAYER(4, uint8_t, int, 0xff, 0)
 				break;
 			case BC_RGB161616:
-				BLEND_LAYER(3, uint16_t, 0xffff, 0)
+				BLEND_LAYER(3, uint16_t, int, 0xffff, 0)
 				break;
 			case BC_RGBA16161616:
-				BLEND_LAYER(4, uint16_t, 0xffff, 0)
+				BLEND_LAYER(4, uint16_t, int, 0xffff, 0)
 				break;
 			case BC_YUV888:
-				BLEND_LAYER(3, uint8_t, 0xff, 1)
+				BLEND_LAYER(3, uint8_t, int, 0xff, 1)
 				break;
 			case BC_YUVA8888:
-				BLEND_LAYER(4, uint8_t, 0xff, 1)
+				BLEND_LAYER(4, uint8_t, int, 0xff, 1)
 				break;
 			case BC_YUV161616:
-				BLEND_LAYER(3, uint16_t, 0xffff, 1)
+				BLEND_LAYER(3, uint16_t, int, 0xffff, 1)
 				break;
 			case BC_YUVA16161616:
-				BLEND_LAYER(4, uint16_t, 0xffff, 1)
+				BLEND_LAYER(4, uint16_t, int, 0xffff, 1)
 				break;
 		}
 	}
@@ -844,17 +964,11 @@ LinearBlurEngine::LinearBlurEngine(LinearBlurMain *plugin,
 
 void LinearBlurEngine::init_packages()
 {
-	int package_h = (int)((float)plugin->output->get_h() / 
-			total_packages + 1);
-	int y1 = 0;
-	for(int i = 0; i < total_packages; i++)
+	for(int i = 0; i < get_total_packages(); i++)
 	{
-		LinearBlurPackage *package = (LinearBlurPackage*)packages[i];
-		package->y1 = y1;
-		package->y2 = y1 + package_h;
-		package->y1 = MIN(plugin->output->get_h(), package->y1);
-		package->y2 = MIN(plugin->output->get_h(), package->y2);
-		y1 = package->y2;
+		LinearBlurPackage *package = (LinearBlurPackage*)get_package(i);
+		package->y1 = plugin->output->get_h() * i / get_total_packages();
+		package->y2 = plugin->output->get_h() * (i + 1) / get_total_packages();
 	}
 }
 

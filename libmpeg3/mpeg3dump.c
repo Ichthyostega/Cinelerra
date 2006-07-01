@@ -1,6 +1,7 @@
 #include "libmpeg3.h"
 #include "mpeg3protos.h"
 #include <stdlib.h>
+#include <string.h>
 
 #define BUFSIZE 65536
 
@@ -29,7 +30,7 @@ int main(int argc, char *argv[])
 	int decompress_audio = 0, decompress_video = 0;
 	int audio_track = 0;
 /* Print cell offsets */
-	int print_offsets = 1;
+	int print_offsets = 0;
 	int print_pids = 1;
 
 	outfile[0] = 0;
@@ -73,7 +74,8 @@ int main(int argc, char *argv[])
 		}
 	}
 
-	file = mpeg3_open(argv[argc - 1]);
+	int error = 0;
+	file = mpeg3_open(argv[argc - 1], &error);
 	if(outfile[0])
 	{
 		out = fopen(outfile, "wb");
@@ -90,7 +92,6 @@ int main(int argc, char *argv[])
 	{
 
 // Audio streams
-		fprintf(stderr, "have_mmx=%d\n", file->have_mmx);
 		fprintf(stderr, "total_astreams=%d\n", mpeg3_total_astreams(file));
 
 		for(i = 0; i < mpeg3_total_astreams(file); i++)
@@ -149,6 +150,23 @@ int main(int argc, char *argv[])
 			}
 		}
 
+// Subtitle tracks
+		printf("total subtitle tracks: %d\n", mpeg3_subtitle_tracks(file));
+		for(i = 0; i < mpeg3_subtitle_tracks(file); i++)
+		{
+			mpeg3_strack_t *strack = file->strack[i];
+			printf("  stream: 0x%02x total_offsets: %d\n", 
+				strack->id,
+				strack->total_offsets);
+			if(print_offsets)
+			{
+				for(j = 0; j < strack->total_offsets; j++)
+				{
+					printf("%llx ", strack->offsets[j]);
+				}
+				printf("\n");
+			}
+		}
 
 // Titles
 		fprintf(stderr, "total_titles=%d\n", file->demuxer->total_titles);
@@ -157,15 +175,17 @@ int main(int argc, char *argv[])
 			fprintf(stderr, "  Title path=%s total_bytes=%llx cell_table_size=%d\n", 
 				file->demuxer->titles[i]->fs->path,
 				file->demuxer->titles[i]->total_bytes, 
-				file->demuxer->titles[i]->timecode_table_size);
+				file->demuxer->titles[i]->cell_table_size);
 			
 			if(print_offsets)
 			{
-				for(j = 0; j < file->demuxer->titles[i]->timecode_table_size; j++)
-					fprintf(stderr, "    Cell: %llx-%llx program=%d\n", 
-						file->demuxer->titles[i]->timecode_table[j].start_byte, 
-						file->demuxer->titles[i]->timecode_table[j].end_byte,
-						file->demuxer->titles[i]->timecode_table[j].program);
+				for(j = 0; j < file->demuxer->titles[i]->cell_table_size; j++)
+					fprintf(stderr, "    Cell: %llx-%llx %llx-%llx program=%d\n", 
+						file->demuxer->titles[i]->cell_table[j].program_start, 
+						file->demuxer->titles[i]->cell_table[j].program_end,
+						file->demuxer->titles[i]->cell_table[j].title_start, 
+						file->demuxer->titles[i]->cell_table[j].title_end,
+						file->demuxer->titles[i]->cell_table[j].program);
 			}
 		}
 

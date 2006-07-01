@@ -1,5 +1,6 @@
 #include "bcdisplayinfo.h"
 #include "histogramengine.h"
+#include "language.h"
 #include "threshold.h"
 #include "thresholdwindow.h"
 
@@ -68,6 +69,25 @@ int ThresholdMax::handle_event()
 
 
 
+
+
+
+
+ThresholdPlot::ThresholdPlot(ThresholdMain *plugin,
+	int x,
+	int y)
+ : BC_CheckBox(x, y, plugin->config.plot, _("Plot histogram"))
+{
+	this->plugin = plugin;
+}
+
+int ThresholdPlot::handle_event()
+{
+	plugin->config.plot = get_value();
+	
+	plugin->send_configure_change();
+	return 1;
+}
 
 
 
@@ -271,7 +291,7 @@ void ThresholdCanvas::draw()
 
 
 ThresholdWindow::ThresholdWindow(ThresholdMain *plugin, int x, int y)
-: BC_Window(plugin->gui_string, x, y, 440, 300, 440, 300, 0, 1)
+: BC_Window(plugin->gui_string, x, y, 440, 350, 440, 350, 0, 1)
 {
 	this->plugin = plugin;
 }
@@ -282,18 +302,18 @@ ThresholdWindow::~ThresholdWindow()
 
 int ThresholdWindow::create_objects()
 {
-	int x = 10;
+	int x1 = 10, x = 10;
 	int y = 10;
 	add_subwindow(canvas = new ThresholdCanvas(plugin,
 		this,
 		x,
 		y,
 		get_w() - x - 10,
-		get_h() - 50));
+		get_h() - 100));
 	canvas->draw();
 	y += canvas->get_h() + 10;
 
-	add_subwindow(new BC_Title(x, y, "Min:"));
+	add_subwindow(new BC_Title(x, y, _("Min:")));
 	x += 50;
 	min = new ThresholdMin(plugin,
 		this,
@@ -304,7 +324,7 @@ int ThresholdWindow::create_objects()
 	min->set_increment(0.1);
 
 	x += 200;
-	add_subwindow(new BC_Title(x, y, "Max:"));
+	add_subwindow(new BC_Title(x, y, _("Max:")));
 	x += 50;
 	max = new ThresholdMax(plugin,
 		this,
@@ -313,6 +333,11 @@ int ThresholdWindow::create_objects()
 		100);
 	max->create_objects();
 	max->set_increment(0.1);
+
+	y += max->get_h();
+	x = x1;
+
+	add_subwindow(plot = new ThresholdPlot(plugin, x, y));
 
 	show_window(1);
 }

@@ -1,16 +1,12 @@
 #include "bcdisplayinfo.h"
 #include "clip.h"
-#include "defaults.h"
+#include "bchash.h"
 #include "delayvideo.h"
 #include "filexml.h"
+#include "language.h"
 #include "picon_png.h"
 #include "vframe.h"
 
-
-#include <libintl.h>
-#define _(String) gettext(String)
-#define gettext_noop(String) String
-#define N_(String) gettext_noop (String)
 
 
 
@@ -21,13 +17,7 @@
 
 
 
-
-PluginClient* new_plugin(PluginServer *server)
-{
-	return new DelayVideo(server);
-}
-
-
+REGISTER_PLUGIN(DelayVideo)
 
 
 
@@ -86,18 +76,12 @@ void DelayVideoWindow::create_objects()
 	add_subwindow(new BC_Title(x, y, _("Delay seconds:")));
 	y += 20;
 	add_subwindow(slider = new DelayVideoSlider(plugin, x, y));
-	update_gui();
 
 	show_window();
 	flush();
 }
 
-int DelayVideoWindow::close_event()
-{
-// Set result to 1 to indicate a client side close
-	set_done(1);
-	return 1;
-}
+WINDOW_CLOSE_EVENT(DelayVideoWindow)
 
 void DelayVideoWindow::update_gui()
 {
@@ -118,7 +102,7 @@ void DelayVideoWindow::update_gui()
 
 
 DelayVideoSlider::DelayVideoSlider(DelayVideo *plugin, int x, int y)
- : BC_TextBox(x, y, 150, 1, "")
+ : BC_TextBox(x, y, 150, 1, plugin->config.length)
 {
 	this->plugin = plugin;
 }
@@ -140,40 +124,7 @@ int DelayVideoSlider::handle_event()
 
 
 
-
-
-DelayVideoThread::DelayVideoThread(DelayVideo *plugin)
- : Thread()
-{
-	this->plugin = plugin;
-	set_synchronous(0);
-	completion.lock();
-}
-
-
-DelayVideoThread::~DelayVideoThread()
-{
-// Window only deleted here
-	delete window;
-}
-
-	
-void DelayVideoThread::run()
-{
-	BC_DisplayInfo info;
-	window = new DelayVideoWindow(plugin, 
-		info.get_abs_cursor_x() - 105, 
-		info.get_abs_cursor_y() - 60);
-	window->create_objects();
-	int result = window->run_window();
-	completion.unlock();
-// Last command executed in thread
-	if(result) plugin->client_side_close();
-}
-
-
-
-
+PLUGIN_THREAD_OBJECT(DelayVideo, DelayVideoThread, DelayVideoWindow)
 
 
 
@@ -190,14 +141,7 @@ DelayVideo::DelayVideo(PluginServer *server)
 
 DelayVideo::~DelayVideo()
 {
-//printf("DelayVideo::~DelayVideo 1\n");
-	if(thread)
-	{
-		thread->window->set_done(0);
-		thread->completion.lock();
-		delete thread;
-	}
-//printf("DelayVideo::~DelayVideo 1\n");
+	PLUGIN_DESTRUCTOR_MACRO
 
 	if(buffer)
 	{
@@ -209,11 +153,6 @@ DelayVideo::~DelayVideo()
 		delete [] buffer;
 //printf("DelayVideo::~DelayVideo 1\n");
 	}
-
-	save_defaults();
-//printf("DelayVideo::~DelayVideo 1\n");
-	delete defaults;
-//printf("DelayVideo::~DelayVideo 2\n");
 }
 
 void DelayVideo::reset()
@@ -291,10 +230,7 @@ int DelayVideo::is_realtime()
 	return 1;
 }
 
-char* DelayVideo::plugin_title()
-{
-	return _("Delay Video");
-}
+char* DelayVideo::plugin_title() { return N_("Delay Video"); }
 
 SET_STRING_MACRO(DelayVideo)
 
@@ -345,7 +281,7 @@ void DelayVideo::update_gui()
 	{
 		load_configuration();
 		thread->window->lock_window();
-		thread->window->update_gui();
+		thread->window->slider->update(config.length);
 		thread->window->unlock_window();
 	}
 }
@@ -357,7 +293,7 @@ int DelayVideo::load_defaults()
 {
 	char directory[BCTEXTLEN];
 	sprintf(directory, "%sdelayvideo.rc", BCASTDIR);
-	defaults = new Defaults(directory);
+	defaults = new BC_Hash(directory);
 	defaults->load();
 	config.length = defaults->get("LENGTH", (double)1);
 	return 0;

@@ -54,7 +54,7 @@ public:
 	
 	FreezeFrameMain *client;
 	FreezeFrameToggle *enabled;
-	FreezeFrameToggle *line_double;
+//	FreezeFrameToggle *line_double;
 };
 
 PLUGIN_THREAD_HEADER(FreezeFrameMain, FreezeFrameThread, FreezeFrameWindow)
@@ -65,27 +65,25 @@ public:
 	FreezeFrameMain(PluginServer *server);
 	~FreezeFrameMain();
 
-// required for all realtime plugins
-	int process_realtime(VFrame *input_ptr, VFrame *output_ptr);
+	PLUGIN_CLASS_MEMBERS(FreezeFrameConfig, FreezeFrameThread)
+
+	int process_buffer(VFrame *frame,
+		int64_t start_position,
+		double frame_rate);
 	int is_realtime();
-	char* plugin_title();
-	int show_gui();
-	void raise_window();
-	int set_string();
 	void update_gui();
-	int load_configuration();
 	void save_data(KeyFrame *keyframe);
 	void read_data(KeyFrame *keyframe);
 	int load_defaults();
 	int save_defaults();
-	VFrame* new_picon();
 	int is_synthesis();
+	int handle_opengl();
 
-// parameters needed for freezeframe
+
+// Frame to replicate
 	VFrame *first_frame;
-	FreezeFrameConfig config;
-	FreezeFrameThread *thread;
-	Defaults *defaults;
+// Position of frame to replicate
+	int64_t first_frame_position;
 };
 
 

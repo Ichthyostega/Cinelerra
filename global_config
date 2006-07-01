@@ -4,13 +4,25 @@ HAVE_ESOUND := y
 HAVE_AVIFILE := n
 HAVE_FIREWIRE := y
 HAVE_OSS := y
-HAVE_GL := n
-HAVE_V4L2 := n
-
-
-
 
 OBJDIR := $(shell uname --machine)
+
+HVIRTUAL_CONFIG := $(shell sh -c '\
+if [ -e ../hvirtual_config.h ] ; then \
+cat ../hvirtual_config.h; else \
+if [ -e ../../hvirtual_config.h ] ; then \
+cat ../../hvirtual_config.h; \
+fi; \
+fi')
+
+ifneq (,$(findstring HAVE_GL,$(HVIRTUAL_CONFIG)))
+HAVE_GL := y
+else
+HAVE_GL := n
+endif
+
+
+
 
 ifeq ($(origin CFLAGS), environment)
 HAVE_CFLAGS := y
@@ -47,11 +59,8 @@ CFLAGS = -O2 -fomit-frame-pointer -falign-loops=2 -falign-jumps=2 -falign-functi
 endif
 
 ifeq ($(HAVE_GL), y)
-GLLIBS := -lGL
 CFLAGS += -DHAVE_GL
 endif
-
-
 
 
 ifeq ($(HAVE_ESOUND), y)

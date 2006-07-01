@@ -44,7 +44,8 @@ int mpeg3video_clearblock(mpeg3_slice_t *slice, int comp, int size)
 
 /* Compiler error with 2.95 required hard coding the size to 6 */
 
-	memset(slice->block[comp], 0, sizeof(short) * 64 * size);
+	bzero(slice->block[comp], sizeof(short) * 64 * size);
+//	memset(slice->block[comp], 0, sizeof(short) * 64 * size);
 	return 0;
 }
 
@@ -129,11 +130,6 @@ int mpeg3video_getintrablock(mpeg3_slice_t *slice,
 	else                
   		bp[0] = (dc_dct_pred[2] += mpeg3video_getdcchrom(slice_buffer)) << 3;
 
-#ifdef HAVE_MMX
-	if(video->have_mmx)
-  		bp[0] <<= 4;
-#endif
-
   	if(slice->fault) return 1;
 
 /* decode AC coefficients */
@@ -199,18 +195,8 @@ int mpeg3video_getintrablock(mpeg3_slice_t *slice,
 		}
 			
 
-#ifdef HAVE_MMX
-		if(video->have_mmx)
-		{
-    		val = (val * slice->quant_scale * video->intra_quantizer_matrix[j]) << 1;
-    		val = (val - 16) | 16;
-		}
-		else
-#endif
-		{
-    		val = (val * slice->quant_scale * video->intra_quantizer_matrix[j]) >> 3;
-    		val = (val - 1) | 1;
-		}
+    	val = (val * slice->quant_scale * video->intra_quantizer_matrix[j]) >> 3;
+    	val = (val - 1) | 1;
 
     	bp[j] = sign ? -val : val;
 	}
@@ -298,18 +284,8 @@ int mpeg3video_getinterblock(mpeg3_slice_t *slice,
 
     	j = video->mpeg3_zigzag_scan_table[i];
 
-#ifdef HAVE_MMX
-		if(video->have_mmx)
-		{
-    		val = (((val << 1)+1) * slice->quant_scale * video->non_intra_quantizer_matrix[j]);
-    		val = (val - 16) | 16;
-		}
-		else
-#endif
-		{
-    		val = (((val << 1)+1) * slice->quant_scale * video->non_intra_quantizer_matrix[j]) >> 4;
-    		val = (val - 1) | 1;
-		}
+   		val = (((val << 1)+1) * slice->quant_scale * video->non_intra_quantizer_matrix[j]) >> 4;
+   		val = (val - 1) | 1;
 
     	bp[j] = sign ? -val : val;
 	}
@@ -353,12 +329,7 @@ int mpeg3video_getmpg2intrablock(mpeg3_slice_t *slice,
 		val = (dc_dct_pred[2] += mpeg3video_getdcchrom(slice_buffer));
 
   	if(slice->fault) return 0;
-#ifdef HAVE_MMX
-	if(video->have_mmx)
-  		bp[0] = val << (7 - video->dc_prec);
-	else
-#endif
-  		bp[0] = val << (3 - video->dc_prec);
+	bp[0] = val << (3 - video->dc_prec);
 
   	nc = 0;
 
@@ -431,12 +402,7 @@ int mpeg3video_getmpg2intrablock(mpeg3_slice_t *slice,
 
     	j = (video->altscan ? video->mpeg3_alternate_scan_table : video->mpeg3_zigzag_scan_table)[i];
 
-#ifdef HAVE_MMX
-		if(video->have_mmx)
-	    	val = (val * slice->quant_scale * qmat[j]);
-		else
-#endif
-    		val = (val * slice->quant_scale * qmat[j]) >> 4;
+   		val = (val * slice->quant_scale * qmat[j]) >> 4;
 
     	bp[j] = sign ? -val : val;
     	nc++;
@@ -531,12 +497,7 @@ int mpeg3video_getmpg2interblock(mpeg3_slice_t *slice,
 
     	j = (video->altscan ? video->mpeg3_alternate_scan_table : video->mpeg3_zigzag_scan_table)[i];
 
-#ifdef HAVE_MMX
- 		if(video->have_mmx)
-    		val = (((val << 1)+1) * slice->quant_scale * qmat[j]) >> 1;
-		else
-#endif
-     		val = (((val << 1)+1) * slice->quant_scale * qmat[j]) >> 5;
+   		val = (((val << 1)+1) * slice->quant_scale * qmat[j]) >> 5;
 
     	bp[j] = sign ? (-val) : val ;
     	nc++;
@@ -562,6 +523,7 @@ int mpeg3video_get_macroblocks(mpeg3video_t *video, int framenum)
 /* Load every slice into a buffer array */
 	video->total_slice_buffers = 0;
 	current_buffer = 0;
+
 	while(!mpeg3bits_eof(vstream) && 
 		mpeg3bits_showbits32_noptr(vstream) >= MPEG3_SLICE_MIN_START && 
 		mpeg3bits_showbits32_noptr(vstream) <= MPEG3_SLICE_MAX_START &&
@@ -598,10 +560,12 @@ int mpeg3video_get_macroblocks(mpeg3video_t *video, int framenum)
 		slice_buffer->data[slice_buffer->buffer_size++] = 0;
 		slice_buffer->bits_size = 0;
 
-		pthread_mutex_lock(&(slice_buffer->completion_lock)); fflush(stdout);
+		pthread_mutex_lock(&(slice_buffer->completion_lock)); 
 		current_buffer++;
 		video->total_slice_buffers++;
 	}
+
+
 
 /* Run the slice decoders */
 	if(video->total_slice_buffers > 0)
@@ -732,18 +696,24 @@ int mpeg3video_getpicture(mpeg3video_t *video, int framenum)
   			result = mpeg3video_get_macroblocks(video, framenum);
 
 /* Set the frame to display */
-	video->output_src = 0;
+	video->output_src[0] = 0;
+	video->output_src[1] = 0;
+	video->output_src[2] = 0;
 	if(framenum > -1 && !result)
 	{
     	if(video->pict_struct == FRAME_PICTURE || video->secondfield)
 		{
      	  	if(video->pict_type == B_TYPE)
 			{
-				video->output_src = video->auxframe;
+				video->output_src[0] = video->auxframe[0];
+				video->output_src[1] = video->auxframe[1];
+				video->output_src[2] = video->auxframe[2];
 			}
      	  	else
 			{
-				video->output_src = video->oldrefframe;
+				video->output_src[0] = video->oldrefframe[0];
+				video->output_src[1] = video->oldrefframe[1];
+				video->output_src[2] = video->oldrefframe[2];
 			}
     	}
     	else 

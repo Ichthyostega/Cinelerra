@@ -1,8 +1,9 @@
 #include "clip.h"
 #include "confirmsave.h"
-#include "defaults.h"
+#include "bchash.h"
 #include "errorbox.h"
 #include "filexml.h"
+#include "language.h"
 #include "picon_png.h"
 #include "gain.h"
 #include "gainwindow.h"
@@ -10,11 +11,6 @@
 #include "vframe.h"
 
 #include <string.h>
-
-#include <libintl.h>
-#define _(String) gettext(String)
-#define gettext_noop(String) String
-#define N_(String) gettext_noop (String)
 
 
 REGISTER_PLUGIN(Gain)
@@ -65,7 +61,7 @@ Gain::~Gain()
 	PLUGIN_DESTRUCTOR_MACRO
 }
 
-char* Gain::plugin_title() { return _("Gain"); }
+char* Gain::plugin_title() { return N_("Gain"); }
 int Gain::is_realtime() { return 1; }
 
 
@@ -93,14 +89,14 @@ int Gain::process_realtime(int64_t size, double *input_ptr, double *output_ptr)
 
 int Gain::load_defaults()
 {
-	char directory[1024];
+	char directory[BCTEXTLEN];
 
 // set the default directory
 	sprintf(directory, "%sgain.rc", get_defaultdir());
 	
 // load the defaults
 
-	defaults = new Defaults(directory);
+	defaults = new BC_Hash(directory);
 
 	defaults->load();
 

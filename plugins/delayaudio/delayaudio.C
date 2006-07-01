@@ -1,6 +1,6 @@
 #include "bcdisplayinfo.h"
 #include "clip.h"
-#include "defaults.h"
+#include "bchash.h"
 #include "delayaudio.h"
 #include "filexml.h"
 #include "picon_png.h"
@@ -49,21 +49,15 @@ VFrame* DelayAudio::new_picon()
 	return new VFrame(picon_png);
 }
 
-char* DelayAudio::plugin_title()
-{
-	return _("Delay audio");
-}
+char* DelayAudio::plugin_title() { return N_("Delay audio"); }
+int DelayAudio::is_realtime() { return 1; }
+
 
 void DelayAudio::reset()
 {
 	need_reconfigure = 1;
 	buffer = 0;
 	thread = 0;
-}
-
-int DelayAudio::is_realtime()
-{
-	return 1;
 }
 
 void DelayAudio::load_configuration()
@@ -87,7 +81,7 @@ int DelayAudio::load_defaults()
 	char directory[BCTEXTLEN];
 
 	sprintf(directory, "%sdelayaudio.rc", BCASTDIR);
-	defaults = new Defaults(directory);
+	defaults = new BC_Hash(directory);
 	defaults->load();
 	config.length = defaults->get("LENGTH", (double)1);
 	return 0;

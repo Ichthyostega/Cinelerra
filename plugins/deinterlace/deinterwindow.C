@@ -19,9 +19,9 @@ DeInterlaceWindow::DeInterlaceWindow(DeInterlaceMain *client, int x, int y)
  	x, 
 	y, 
 	200, 
-	400, 
+	250, 
 	200, 
-	400, 
+	250, 
 	0, 
 	0,
 	1)
@@ -51,22 +51,21 @@ int DeInterlaceWindow::create_objects()
 	add_tool(swap_even_fields = new DeInterlaceOption(client, this, DEINTERLACE_SWAP_EVEN, x, y, _("Swap even fields")));
 	y += 25;
 	add_tool(avg_even = new DeInterlaceOption(client, this, DEINTERLACE_AVG_EVEN, x, y, _("Average even lines")));
-	draw_line(170, y + 5, 190, y + 5);
-	draw_line(190, y + 5, 190, y + 70);
-	draw_line(150, y + 70, 190, y + 70);
-	y += 25;
-	add_tool(avg_odd = new DeInterlaceOption(client, this, DEINTERLACE_AVG_ODD, x, y, _("Average odd lines")));
-	draw_line(170, y + 5, 190, y + 5);
-	y += 30;
-	add_tool(adaptive = new DeInterlaceAdaptive(client, x, y));
-	add_tool(threshold = new DeInterlaceThreshold(client, x + 100, y));
-	y += 50;
-	char string[BCTEXTLEN];
-	get_status_string(string, 0);
-	add_tool(status = new BC_Title(x, y, string));
-	flash();
+
+// 	draw_line(170, y + 5, 190, y + 5);
+// 	draw_line(190, y + 5, 190, y + 70);
+// 	draw_line(150, y + 70, 190, y + 70);
+ 	y += 25;
+ 	add_tool(avg_odd = new DeInterlaceOption(client, this, DEINTERLACE_AVG_ODD, x, y, _("Average odd lines")));
+// 	draw_line(170, y + 5, 190, y + 5);
+// 	y += 30;
+//	add_tool(adaptive = new DeInterlaceAdaptive(client, x, y));
+//	add_tool(threshold = new DeInterlaceThreshold(client, x + 100, y));
+//	y += 50;
+//	char string[BCTEXTLEN];
+//	get_status_string(string, 0);
+//	add_tool(status = new BC_Title(x, y, string));
 	show_window();
-	flush();
 	return 0;
 }
 
@@ -119,32 +118,32 @@ int DeInterlaceOption::handle_event()
 }
 
 
-DeInterlaceAdaptive::DeInterlaceAdaptive(DeInterlaceMain *client, int x, int y)
- : BC_CheckBox(x, y, client->config.adaptive, _("Adaptive"))
-{
-	this->client = client;
-}
-int DeInterlaceAdaptive::handle_event()
-{
-	client->config.adaptive = get_value();
-	client->send_configure_change();
-	return 1;
-}
-
-
-
-DeInterlaceThreshold::DeInterlaceThreshold(DeInterlaceMain *client, int x, int y)
- : BC_IPot(x, y, client->config.threshold, 0, 100)
-{
-	this->client = client;
-}
-int DeInterlaceThreshold::handle_event()
-{
-	client->config.threshold = get_value();
-	client->send_configure_change();
-	return 1;
-}
-
+// DeInterlaceAdaptive::DeInterlaceAdaptive(DeInterlaceMain *client, int x, int y)
+//  : BC_CheckBox(x, y, client->config.adaptive, _("Adaptive"))
+// {
+// 	this->client = client;
+// }
+// int DeInterlaceAdaptive::handle_event()
+// {
+// 	client->config.adaptive = get_value();
+// 	client->send_configure_change();
+// 	return 1;
+// }
+// 
+// 
+// 
+// DeInterlaceThreshold::DeInterlaceThreshold(DeInterlaceMain *client, int x, int y)
+//  : BC_IPot(x, y, client->config.threshold, 0, 100)
+// {
+// 	this->client = client;
+// }
+// int DeInterlaceThreshold::handle_event()
+// {
+// 	client->config.threshold = get_value();
+// 	client->send_configure_change();
+// 	return 1;
+// }
+// 
 
 
 

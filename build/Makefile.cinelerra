@@ -1,0 +1,96 @@
+# system tests
+
+
+include global_config
+
+DIRS := \
+	doc \
+	libmpeg3 \
+	mpeg2enc \
+	mplexlo \
+	guicast \
+	cinelerra \
+	plugins \
+	po
+
+
+DISTNAME = bcast2000demo.tar
+SOURCENAME = heroinesrc.tar
+DISTOBJS = \
+	$(INSTDIR)/bcast/bcast2000 \
+	$(INSTDIR)/plugins/*.plugin
+
+
+
+all: $(OBJDIR)/soundtest
+ifeq ($(HAVE_FIREWIRE), y)
+	$(MAKE) -C libraw1394*
+	$(MAKE) -C libiec61883*
+	$(MAKE) -C libavc1394*
+endif
+	$(MAKE) -C fftw*
+	$(MAKE) -f build/Makefile.esound
+	$(MAKE) -f build/Makefile.freetype
+	$(MAKE) -f build/Makefile.tiff
+	$(MAKE) -f build/Makefile.toolame
+	$(MAKE) -f build/Makefile.uuid
+	MAKE='make -j1' make -j1 -C mjpegtools*
+	$(MAKE) -C libsndfile*
+	$(MAKE) -C quicktime
+	$(MAKE) -C libtheora*
+	$(MAKE) -f build/Makefile.exr
+	@ for i in $(DIRS) ; \
+	do \
+		 $(MAKE) -C $$i ; \
+	done
+
+$(OBJDIR)/soundtest: $(OBJDIR)/soundtest.o
+	$(CC) -o $(OBJDIR)/soundtest $(OBJDIR)/soundtest.o -lm
+
+backup: clean
+	cd .. && \
+	tar Icvf hvirtual.tar.bz2 hvirtual
+
+clean:
+	find \( -name 'core*' \
+		-o -name '*.lo' \
+		-o -name '*.o' \
+		-o -name '*.la' \
+		-o -name '*.a' \
+		-o -name '*.plugin' \
+		-o -name '*.so' \) -exec rm -f {} \; -prune
+	find \( -name $(OBJDIR) \) -exec rm -rf {} \; -prune
+#	find \( -name .deps \) -exec rm -rf {} \; -prune
+	find \( -name .libs \) -exec rm -rf {} \; -prune
+	make -C doc clean
+	$(MAKE) -i -C libraw1394* clean
+	$(MAKE) -i -C libiec61883* clean
+	$(MAKE) -i -C libavc1394* clean
+	$(MAKE) -i -C fftw* clean
+	MAKE='make -j1' make -j1 -i -C mjpegtools* clean
+	$(MAKE) -i -C libsndfile* clean
+	$(MAKE) -i -C quicktime clean
+	$(MAKE) -i -C libtheora* clean
+
+wc:
+	cat *.C *.h | wc
+	@ for i in $(DIRS) ; \
+	do \
+		 $(MAKE) -C $$i wc; \
+	done
+
+# From make_packages
+install:
+	$(MAKE) -C cinelerra install
+	$(MAKE) -C plugins install
+	$(MAKE) -C libmpeg3 install
+	$(MAKE) -C mplexlo install
+	$(MAKE) -C po install
+	cp $(OBJDIR)/soundtest /usr/bin
+
+COMPILE = $(GCC) -c $(CFLAGS) $? -o $*.o
+
+$(OBJDIR)/soundtest.o: soundtest.c
+	$(COMPILE)
+
+

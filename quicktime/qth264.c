@@ -4,6 +4,7 @@
 #include <pthread.h>
 #include "qtffmpeg.h"
 #include "quicktime.h"
+#include <string.h>
 #include "workarounds.h"
 #include "x264.h"
 
@@ -88,6 +89,7 @@ static int delete_codec(quicktime_video_map_t *vtrack)
 
 	if(codec->temp_frame) free(codec->temp_frame);
 	if(codec->work_buffer) free(codec->work_buffer);
+	if(codec->decoder) quicktime_delete_ffmpeg(codec->decoder);
 
 
 	free(codec);

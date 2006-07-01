@@ -3,19 +3,17 @@
 #include <string.h>
 
 #include "bcdisplayinfo.h"
+#include "bcsignals.h"
 #include "clip.h"
-#include "defaults.h"
+#include "bchash.h"
 #include "filexml.h"
 #include "keyframe.h"
+#include "language.h"
 #include "loadbalance.h"
 #include "picon_png.h"
 #include "pluginvclient.h"
 #include "vframe.h"
 
-#include <libintl.h>
-#define _(String) gettext(String)
-#define gettext_noop(String) String
-#define N_(String) gettext_noop (String)
 
 
 class ZoomBlurMain;
@@ -96,19 +94,31 @@ public:
 PLUGIN_THREAD_HEADER(ZoomBlurMain, ZoomBlurThread, ZoomBlurWindow)
 
 
+// Output coords for a layer of blurring
+// Used for OpenGL only
+class ZoomBlurLayer
+{
+public:
+	ZoomBlurLayer() {};
+	float x1, y1, x2, y2;
+};
+
 class ZoomBlurMain : public PluginVClient
 {
 public:
 	ZoomBlurMain(PluginServer *server);
 	~ZoomBlurMain();
 
-	int process_realtime(VFrame *input_ptr, VFrame *output_ptr);
+	int process_buffer(VFrame *frame,
+		int64_t start_position,
+		double frame_rate);
 	int is_realtime();
 	int load_defaults();
 	int save_defaults();
 	void save_data(KeyFrame *keyframe);
 	void read_data(KeyFrame *keyframe);
 	void update_gui();
+	int handle_opengl();
 
 	PLUGIN_CLASS_MEMBERS(ZoomBlurConfig, ZoomBlurThread)
 
@@ -117,9 +127,11 @@ public:
 	ZoomBlurEngine *engine;
 	int **scale_y_table;
 	int **scale_x_table;
+	ZoomBlurLayer *layer_table;
 	int table_entries;
 	int need_reconfigure;
-	int *accum;
+// The accumulation buffer is needed because 8 bits isn't precise enough
+	unsigned char *accum;
 };
 
 class ZoomBlurPackage : public LoadPackage
@@ -365,6 +377,7 @@ ZoomBlurMain::ZoomBlurMain(PluginServer *server)
 	engine = 0;
 	scale_x_table = 0;
 	scale_y_table = 0;
+	layer_table = 0;
 	table_entries = 0;
 	accum = 0;
 	need_reconfigure = 1;
@@ -380,7 +393,7 @@ ZoomBlurMain::~ZoomBlurMain()
 	if(temp) delete temp;
 }
 
-char* ZoomBlurMain::plugin_title() { return _("Zoom Blur"); }
+char* ZoomBlurMain::plugin_title() { return N_("Zoom Blur"); }
 int ZoomBlurMain::is_realtime() { return 1; }
 
 
@@ -409,43 +422,38 @@ void ZoomBlurMain::delete_tables()
 			delete [] scale_y_table[i];
 		delete [] scale_y_table;
 	}
+
+	delete [] layer_table;
 	scale_x_table = 0;
 	scale_y_table = 0;
+	layer_table = 0;
 	table_entries = 0;
 }
 
-int ZoomBlurMain::process_realtime(VFrame *input_ptr, VFrame *output_ptr)
+int ZoomBlurMain::process_buffer(VFrame *frame,
+		int64_t start_position,
+		double frame_rate)
 {
 	need_reconfigure |= load_configuration();
 
-	if(!engine) engine = new ZoomBlurEngine(this,
-		get_project_smp() + 1,
-		get_project_smp() + 1);
-	if(!accum) accum = new int[input_ptr->get_w() * 
-		input_ptr->get_h() *
-		cmodel_components(input_ptr->get_color_model())];
 
-	this->input = input_ptr;
-	this->output = output_ptr;
+SET_TRACE
+	read_frame(frame,
+		0,
+		get_source_position(),
+		get_framerate(),
+		get_use_opengl());
 
-
-	if(input_ptr->get_rows()[0] == output_ptr->get_rows()[0])
-	{
-		if(!temp) temp = new VFrame(0,
-			input_ptr->get_w(),
-			input_ptr->get_h(),
-			input_ptr->get_color_model());
-		temp->copy_from(input_ptr);
-		this->input = temp;
-	}
+SET_TRACE
 
 // Generate tables here.  The same table is used by many packages to render
 // each horizontal stripe.  Need to cover the entire output range in  each
 // table to avoid green borders
 	if(need_reconfigure)
 	{
-		float w = input->get_w();
-		float h = input->get_h();
+SET_TRACE
+		float w = frame->get_w();
+		float h = frame->get_h();
 		float center_x = (float)config.x / 100 * w;
 		float center_y = (float)config.y / 100 * h;
 		float radius = (float)(100 + config.radius) / 100;
@@ -461,6 +469,7 @@ int ZoomBlurMain::process_realtime(VFrame *input_ptr, VFrame *output_ptr)
 		float max_x2;
 		float max_y2;
 		
+SET_TRACE
 
 // printf("ZoomBlurMain::process_realtime 1 %d %d\n", 
 // config.x,
@@ -481,6 +490,7 @@ int ZoomBlurMain::process_realtime(VFrame *input_ptr, VFrame *output_ptr)
 		max_x2 = w;
 		max_y2 = h;
 
+SET_TRACE
 // printf("ZoomBlurMain::process_realtime 2 w=%f radius=%f center_x=%f\n", 
 // w,
 // radius,
@@ -490,14 +500,15 @@ int ZoomBlurMain::process_realtime(VFrame *input_ptr, VFrame *output_ptr)
 // Dimensions of outermost rectangle
 
 		delete_tables();
-		scale_x_table = new int*[config.steps];
-		scale_y_table = new int*[config.steps];
-		table_entries = config.steps;
+		table_entries = steps;
+		scale_x_table = new int*[steps];
+		scale_y_table = new int*[steps];
+		layer_table = new ZoomBlurLayer[table_entries];
 
-
-		for(int i = 0; i < config.steps; i++)
+SET_TRACE
+		for(int i = 0; i < steps; i++)
 		{
-			float fraction = (float)i / config.steps;
+			float fraction = (float)i / steps;
 			float inv_fraction = 1.0 - fraction;
 			float out_x1 = min_x1 * fraction + max_x1 * inv_fraction;
 			float out_x2 = min_x2 * fraction + max_x2 * inv_fraction;
@@ -514,6 +525,12 @@ int ZoomBlurMain::process_realtime(VFrame *input_ptr, VFrame *output_ptr)
 			int *y_table;
 			scale_y_table[i] = y_table = new int[(int)(h + 1)];
 			scale_x_table[i] = x_table = new int[(int)(w + 1)];
+SET_TRACE
+			layer_table[i].x1 = out_x1;
+			layer_table[i].y1 = out_y1;
+			layer_table[i].x2 = out_x2;
+			layer_table[i].y2 = out_y2;
+SET_TRACE
 
 			for(int j = 0; j < h; j++)
 			{
@@ -525,13 +542,41 @@ int ZoomBlurMain::process_realtime(VFrame *input_ptr, VFrame *output_ptr)
 //printf("ZoomBlurMain::process_realtime %d %d\n", j, x_table[j]);
 			}
 		}
+SET_TRACE
 		need_reconfigure = 0;
 	}
 
-	bzero(accum, input_ptr->get_w() * 
-		input_ptr->get_h() *
-		cmodel_components(input_ptr->get_color_model()) *
-		sizeof(int));
+SET_TRACE
+	if(get_use_opengl()) return run_opengl();
+
+SET_TRACE
+
+
+
+	if(!engine) engine = new ZoomBlurEngine(this,
+		get_project_smp() + 1,
+		get_project_smp() + 1);
+	if(!accum) accum = new unsigned char[frame->get_w() * 
+		frame->get_h() *
+		cmodel_components(frame->get_color_model()) *
+		MAX(sizeof(int), sizeof(float))];
+
+	this->input = frame;
+	this->output = frame;
+
+
+	if(!temp) temp = new VFrame(0,
+		frame->get_w(),
+		frame->get_h(),
+		frame->get_color_model());
+	temp->copy_from(frame);
+	this->input = temp;
+
+	bzero(accum, 
+		frame->get_w() * 
+		frame->get_h() *
+		cmodel_components(frame->get_color_model()) *
+		MAX(sizeof(int), sizeof(float)));
 	engine->process_packages();
 	return 0;
 }
@@ -563,7 +608,7 @@ int ZoomBlurMain::load_defaults()
 	sprintf(directory, "%szoomblur.rc", BCASTDIR);
 
 // load the defaults
-	defaults = new Defaults(directory);
+	defaults = new BC_Hash(directory);
 	defaults->load();
 
 	config.x = defaults->get("X", config.x);
@@ -643,6 +688,128 @@ void ZoomBlurMain::read_data(KeyFrame *keyframe)
 	}
 }
 
+#ifdef HAVE_GL
+static void draw_box(float x1, float y1, float x2, float y2)
+{
+	glBegin(GL_QUADS);
+	glVertex3f(x1, y1, 0.0);
+	glVertex3f(x2, y1, 0.0);
+	glVertex3f(x2, y2, 0.0);
+	glVertex3f(x1, y2, 0.0);
+	glEnd();
+}
+#endif
+
+int ZoomBlurMain::handle_opengl()
+{
+#ifdef HAVE_GL
+	get_output()->to_texture();
+	get_output()->enable_opengl();
+	get_output()->init_screen();
+	get_output()->bind_texture(0);
+
+	int is_yuv = cmodel_is_yuv(get_output()->get_color_model());
+	glClearColor(0.0, 0.0, 0.0, 0.0);
+	glClear(GL_COLOR_BUFFER_BIT);
+
+// Draw unselected channels
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_ONE, GL_ONE);
+	glDrawBuffer(GL_BACK);
+
+	if(!config.r || !config.g || !config.b || !config.a)
+	{
+		glColor4f(config.r ? 0 : 1, 
+			config.g ? 0 : 1, 
+			config.b ? 0 : 1, 
+			config.a ? 0 : 1);
+		get_output()->draw_texture();
+	}
+	glAccum(GL_LOAD, 1.0);
+
+// Blur selected channels
+	float fraction = 1.0 / config.steps;
+	for(int i = 0; i < config.steps; i++)
+	{
+		glClear(GL_COLOR_BUFFER_BIT);
+		glColor4f(config.r ? 1 : 0, 
+			config.g ? 1 : 0, 
+			config.b ? 1 : 0, 
+			config.a ? 1 : 0);
+
+		get_output()->draw_texture(0,
+			0,
+			get_output()->get_w(),
+			get_output()->get_h(),
+			layer_table[i].x1,
+			get_output()->get_h() - layer_table[i].y1,
+			layer_table[i].x2,
+			get_output()->get_h() - layer_table[i].y2,
+			1);
+
+// Fill YUV black
+		glDisable(GL_TEXTURE_2D);
+		if(cmodel_is_yuv(get_output()->get_color_model()))
+		{
+			glColor4f(config.r ? 0.0 : 0, 
+				config.g ? 0.5 : 0, 
+				config.b ? 0.5 : 0, 
+				config.a ? 1.0 : 0);
+			float center_x1 = 0.0;
+			float center_x2 = get_output()->get_w();
+			if(layer_table[i].x1 > 0)
+			{
+				center_x1 = layer_table[i].x1;
+				draw_box(0, 0, layer_table[i].x1, -get_output()->get_h());
+			}
+			if(layer_table[i].x2 < get_output()->get_w())
+			{
+				center_x2 = layer_table[i].x2;
+				draw_box(layer_table[i].x2, 0, get_output()->get_w(), -get_output()->get_h());
+			}
+			if(layer_table[i].y1 > 0)
+			{
+				draw_box(center_x1, 
+					-get_output()->get_h(), 
+					center_x2, 
+					-get_output()->get_h() + layer_table[i].y1);
+			}
+			if(layer_table[i].y2 < get_output()->get_h())
+			{
+				draw_box(center_x1, 
+					-get_output()->get_h() + layer_table[i].y2, 
+					center_x2, 
+					0);
+			}
+		}
+
+
+		glAccum(GL_ACCUM, fraction);
+		glEnable(GL_TEXTURE_2D);
+		glColor4f(config.r ? 1 : 0, 
+			config.g ? 1 : 0, 
+			config.b ? 1 : 0, 
+			config.a ? 1 : 0);
+	}
+
+	glDisable(GL_BLEND);
+	glReadBuffer(GL_BACK);
+	glDisable(GL_TEXTURE_2D);
+	glAccum(GL_RETURN, 1.0);
+
+	glColor4f(1, 1, 1, 1);
+	get_output()->set_opengl_state(VFrame::SCREEN);
+#endif
+}
+
+
+
+
+
+
+
+
+
 
 
 
@@ -665,12 +832,12 @@ ZoomBlurUnit::ZoomBlurUnit(ZoomBlurEngine *server,
 }
 
 
-#define BLEND_LAYER(COMPONENTS, TYPE, MAX, DO_YUV) \
+#define BLEND_LAYER(COMPONENTS, TYPE, TEMP_TYPE, MAX, DO_YUV) \
 { \
 	const int chroma_offset = (DO_YUV ? ((MAX + 1) / 2) : 0); \
 	for(int j = pkg->y1; j < pkg->y2; j++) \
 	{ \
-		int *out_row = plugin->accum + COMPONENTS * w * j; \
+		TEMP_TYPE *out_row = (TEMP_TYPE*)plugin->accum + COMPONENTS * w * j; \
 		int in_y = y_table[j]; \
  \
 /* Blend image */ \
@@ -692,8 +859,8 @@ ZoomBlurUnit::ZoomBlurUnit(ZoomBlurEngine *server,
 					} \
 					else \
 					{ \
-						*out_row++ += (int)in_row[in_offset + 1]; \
-						*out_row++ += (int)in_row[in_offset + 2]; \
+						*out_row++ += (TEMP_TYPE)in_row[in_offset + 1]; \
+						*out_row++ += (TEMP_TYPE)in_row[in_offset + 2]; \
 					} \
 					if(COMPONENTS == 4) \
 						*out_row++ += in_row[in_offset + 3]; \
@@ -728,19 +895,20 @@ ZoomBlurUnit::ZoomBlurUnit(ZoomBlurEngine *server,
 		} \
 	} \
  \
-/* Copy to output */ \
+/* Copy just selected blurred channels to output and combine with original \
+	unblurred channels */ \
 	if(i == plugin->config.steps - 1) \
 	{ \
 		for(int j = pkg->y1; j < pkg->y2; j++) \
 		{ \
-			int *in_row = plugin->accum + COMPONENTS * w * j; \
+			TEMP_TYPE *in_row = (TEMP_TYPE*)plugin->accum + COMPONENTS * w * j; \
 			TYPE *in_backup = (TYPE*)plugin->input->get_rows()[j]; \
 			TYPE *out_row = (TYPE*)plugin->output->get_rows()[j]; \
 			for(int k = 0; k < w; k++) \
 			{ \
 				if(do_r) \
 				{ \
-					*out_row++ = (*in_row++ * fraction) >> 16; \
+					*out_row++ = (*in_row++ * fraction) / 0x10000; \
 					in_backup++; \
 				} \
 				else \
@@ -753,7 +921,7 @@ ZoomBlurUnit::ZoomBlurUnit(ZoomBlurEngine *server,
 				{ \
 					if(do_g) \
 					{ \
-						*out_row++ = ((*in_row++ * fraction) >> 16); \
+						*out_row++ = ((*in_row++ * fraction) / 0x10000); \
 						in_backup++; \
 					} \
 					else \
@@ -764,7 +932,7 @@ ZoomBlurUnit::ZoomBlurUnit(ZoomBlurEngine *server,
  \
 					if(do_b) \
 					{ \
-						*out_row++ = ((*in_row++ * fraction) >> 16); \
+						*out_row++ = ((*in_row++ * fraction) / 0x10000); \
 						in_backup++; \
 					} \
 					else \
@@ -777,7 +945,7 @@ ZoomBlurUnit::ZoomBlurUnit(ZoomBlurEngine *server,
 				{ \
 					if(do_g) \
 					{ \
-						*out_row++ = (*in_row++ * fraction) >> 16; \
+						*out_row++ = (*in_row++ * fraction) / 0x10000; \
 						in_backup++; \
 					} \
 					else \
@@ -788,7 +956,7 @@ ZoomBlurUnit::ZoomBlurUnit(ZoomBlurEngine *server,
  \
 					if(do_b) \
 					{ \
-						*out_row++ = (*in_row++ * fraction) >> 16; \
+						*out_row++ = (*in_row++ * fraction) / 0x10000; \
 						in_backup++; \
 					} \
 					else \
@@ -802,7 +970,7 @@ ZoomBlurUnit::ZoomBlurUnit(ZoomBlurEngine *server,
 				{ \
 					if(do_a) \
 					{ \
-						*out_row++ = (*in_row++ * fraction) >> 16; \
+						*out_row++ = (*in_row++ * fraction) / 0x10000; \
 						in_backup++; \
 					} \
 					else \
@@ -835,28 +1003,34 @@ void ZoomBlurUnit::process_package(LoadPackage *package)
 		switch(plugin->input->get_color_model())
 		{
 			case BC_RGB888:
-				BLEND_LAYER(3, uint8_t, 0xff, 0)
+				BLEND_LAYER(3, uint8_t, int, 0xff, 0)
+				break;
+			case BC_RGB_FLOAT:
+				BLEND_LAYER(3, float, float, 1, 0)
+				break;
+			case BC_RGBA_FLOAT:
+				BLEND_LAYER(4, float, float, 1, 0)
 				break;
 			case BC_RGBA8888:
-				BLEND_LAYER(4, uint8_t, 0xff, 0)
+				BLEND_LAYER(4, uint8_t, int, 0xff, 0)
 				break;
 			case BC_RGB161616:
-				BLEND_LAYER(3, uint16_t, 0xffff, 0)
+				BLEND_LAYER(3, uint16_t, int, 0xffff, 0)
 				break;
 			case BC_RGBA16161616:
-				BLEND_LAYER(4, uint16_t, 0xffff, 0)
+				BLEND_LAYER(4, uint16_t, int, 0xffff, 0)
 				break;
 			case BC_YUV888:
-				BLEND_LAYER(3, uint8_t, 0xff, 1)
+				BLEND_LAYER(3, uint8_t, int, 0xff, 1)
 				break;
 			case BC_YUVA8888:
-				BLEND_LAYER(4, uint8_t, 0xff, 1)
+				BLEND_LAYER(4, uint8_t, int, 0xff, 1)
 				break;
 			case BC_YUV161616:
-				BLEND_LAYER(3, uint16_t, 0xffff, 1)
+				BLEND_LAYER(3, uint16_t, int, 0xffff, 1)
 				break;
 			case BC_YUVA16161616:
-				BLEND_LAYER(4, uint16_t, 0xffff, 1)
+				BLEND_LAYER(4, uint16_t, int, 0xffff, 1)
 				break;
 		}
 	}
@@ -877,17 +1051,11 @@ ZoomBlurEngine::ZoomBlurEngine(ZoomBlurMain *plugin,
 
 void ZoomBlurEngine::init_packages()
 {
-	int package_h = (int)((float)plugin->output->get_h() / 
-			total_packages + 1);
-	int y1 = 0;
-	for(int i = 0; i < total_packages; i++)
+	for(int i = 0; i < get_total_packages(); i++)
 	{
-		ZoomBlurPackage *package = (ZoomBlurPackage*)packages[i];
-		package->y1 = y1;
-		package->y2 = y1 + package_h;
-		package->y1 = MIN(plugin->output->get_h(), package->y1);
-		package->y2 = MIN(plugin->output->get_h(), package->y2);
-		y1 = package->y2;
+		ZoomBlurPackage *package = (ZoomBlurPackage*)get_package(i);
+		package->y1 = plugin->output->get_h() * i / get_total_packages();
+		package->y2 = plugin->output->get_h() * (i + 1) / get_total_packages();
 	}
 }
 

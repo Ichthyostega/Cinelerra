@@ -1,7 +1,8 @@
 #include "bcdisplayinfo.h"
-#include "defaults.h"
+#include "bchash.h"
 #include "edl.inc"
 #include "filexml.h"
+#include "language.h"
 #include "overlayframe.h"
 #include "picon_png.h"
 #include "vframe.h"
@@ -10,11 +11,6 @@
 
 #include <stdint.h>
 #include <string.h>
-
-#include <libintl.h>
-#define _(String) gettext(String)
-#define gettext_noop(String) String
-#define N_(String) gettext_noop (String)
 
 
 REGISTER_PLUGIN(IrisSquareMain)
@@ -136,10 +132,11 @@ IrisSquareMain::~IrisSquareMain()
 	PLUGIN_DESTRUCTOR_MACRO
 }
 
-char* IrisSquareMain::plugin_title() { return _("IrisSquare"); }
+char* IrisSquareMain::plugin_title() { return N_("IrisSquare"); }
 int IrisSquareMain::is_video() { return 1; }
 int IrisSquareMain::is_transition() { return 1; }
 int IrisSquareMain::uses_gui() { return 1; }
+
 SHOW_GUI_MACRO(IrisSquareMain, IrisSquareThread);
 SET_STRING_MACRO(IrisSquareMain)
 RAISE_WINDOW_MACRO(IrisSquareMain)
@@ -157,7 +154,7 @@ int IrisSquareMain::load_defaults()
 	sprintf(directory, "%sirissquare.rc", BCASTDIR);
 
 // load the defaults
-	defaults = new Defaults(directory);
+	defaults = new BC_Hash(directory);
 	defaults->load();
 
 	direction = defaults->get("DIRECTION", direction);
@@ -313,9 +310,15 @@ int IrisSquareMain::process_realtime(VFrame *incoming, VFrame *outgoing)
 
 	switch(incoming->get_color_model())
 	{
+		case BC_RGB_FLOAT:
+			IRISSQUARE(float, 3);
+			break;
 		case BC_RGB888:
 		case BC_YUV888:
 			IRISSQUARE(unsigned char, 3)
+			break;
+		case BC_RGBA_FLOAT:
+			IRISSQUARE(float, 4);
 			break;
 		case BC_RGBA8888:
 		case BC_YUVA8888:

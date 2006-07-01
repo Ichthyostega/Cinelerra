@@ -2,7 +2,9 @@
 #define MPEG3PRIVATE_H
 
 #include <pthread.h>
+
 #include <stdint.h>
+
 #include <stdio.h>
 
 
@@ -11,8 +13,8 @@
 /* Constants */
 
 #define MPEG3_MAJOR   1
-#define MPEG3_MINOR   5
-#define MPEG3_RELEASE 2
+#define MPEG3_MINOR   7
+#define MPEG3_RELEASE 0
 
 #define RENDERFARM_FS_PREFIX "vfs://"
 
@@ -20,12 +22,16 @@
 #define MPEG3_FLOAT32 float
 
 #define MPEG3_TOC_PREFIX                 0x544f4320
+// This decreases with every new version
+#define MPEG3_TOC_VERSION                0x000000fa
 #define MPEG3_ID3_PREFIX                 0x494433
 #define MPEG3_IFO_PREFIX                 0x44564456
 #define MPEG3_IO_SIZE                    0x100000     /* Bytes read by mpeg3io at a time */
+//#define MPEG3_IO_SIZE                    0x800          /* Bytes read by mpeg3io at a time */
 #define MPEG3_RIFF_CODE                  0x52494646
 #define MPEG3_PROC_CPUINFO               "/proc/cpuinfo"
 #define MPEG3_RAW_SIZE                   0x100000     /* Largest possible packet */
+#define MPEG3_BD_PACKET_SIZE             192
 #define MPEG3_TS_PACKET_SIZE             188
 #define MPEG3_DVD_PACKET_SIZE            0x800
 #define MPEG3_SYNC_BYTE                  0x47
@@ -51,13 +57,26 @@
 #define MPEG3_MAX_CPUS                   256
 #define MPEG3_MAX_STREAMS                0x10000
 #define MPEG3_MAX_PACKSIZE               262144
-#define MPEG3_CONTIGUOUS_THRESHOLD       10  /* Positive difference before declaring timecodes discontinuous */
-#define MPEG3_PROGRAM_THRESHOLD          5   /* Minimum number of seconds before interleaving programs */
-#define MPEG3_SEEK_THRESHOLD             16  /* Number of frames difference before absolute seeking */
-#define MPEG3_AUDIO_CHUNKSIZE            0x10000 /* Size of chunk of audio in table of contents */
+/* Maximum number of complete subtitles to buffer in a subtitle track */
+/* or number of incomplete subtitles to buffer in demuxer. */
+#define MPEG3_MAX_SUBTITLES              5
+/* Positive difference before declaring timecodes discontinuous */
+#define MPEG3_CONTIGUOUS_THRESHOLD       10  
+/* Minimum number of seconds before interleaving programs */
+#define MPEG3_PROGRAM_THRESHOLD          5   
+/* Number of frames difference before absolute seeking */
+#define MPEG3_SEEK_THRESHOLD             16  
+/* Size of chunk of audio in table of contents */
+#define MPEG3_AUDIO_CHUNKSIZE            0x10000 
+/* Minimum amount of data required to read an audio packet in streaming mode. */
+#define MPEG3_AUDIO_STREAM_SIZE          0x1000 
+/* Minimum amount of data required to read a video header in streaming mode. */
+#define MPEG3_VIDEO_STREAM_SIZE          0x1000 
 #define MPEG3_LITTLE_ENDIAN              ((*(uint32_t*)"x\0\0\0") & 0x000000ff)
-#define MPEG3_AUDIO_HISTORY              0x100000 /* Number of samples in audio history */
-#define MPEG3_PTS_RANGE                  0x100000 /* Range to scan for pts after percentage seek */
+/* Number of samples in audio history */
+#define MPEG3_AUDIO_HISTORY              0x100000 
+/* Range to scan for pts after byte seek */
+#define MPEG3_PTS_RANGE                  0x100000 
 
 /* Values for audio format */
 #define AUDIO_UNKNOWN 0
@@ -68,24 +87,39 @@
 #define AUDIO_JESUS  5
 
 
-/* Table of contents */
-#define FILE_TYPE_PROGRAM 0x0
-#define FILE_TYPE_TRANSPORT 0x1
-#define FILE_TYPE_AUDIO 0x2
-#define FILE_TYPE_VIDEO 0x3
+/* Table of contents sections */
+#define FILE_TYPE_PROGRAM 0x00000000
+#define FILE_TYPE_TRANSPORT 0x00000001
+#define FILE_TYPE_AUDIO 0x00000002
+#define FILE_TYPE_VIDEO 0x00000003
 
-#define STREAM_AUDIO 0x4
-#define STREAM_VIDEO 0x5
+#define STREAM_AUDIO 0x00000004
+#define STREAM_VIDEO 0x00000005
+#define STREAM_SUBTITLE 0x00000006
 
-#define OFFSETS_AUDIO 0x6
-#define OFFSETS_VIDEO 0x7
+#define OFFSETS_AUDIO 0x00000007
+#define OFFSETS_VIDEO 0x00000008
 
-#define ATRACK_COUNT 0x8
-#define VTRACK_COUNT 0x9
+#define ATRACK_COUNT 0x9
+#define VTRACK_COUNT 0xa
+#define STRACK_COUNT 0xb
 
-#define TITLE_PATH 0x2
+#define TITLE_PATH 0xc
+#define IFO_PALETTE 0xd
+#define FILE_INFO 0xe
 
+// Combine the pid and the stream id into one unit
+#define CUSTOM_ID(pid, stream_id) (((pid << 8) | stream_id) & 0xffff)
+#define CUSTOM_ID_PID(id) (id >> 8)
+#define CUSTOM_ID_STREAMID(id) (id & 0xff)
 
+#ifndef MAX
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+#endif
+
+#ifndef MIN
+#define MIN(a, b) ((a) < (b) ? (a) : (b))
+#endif
 
 
 // CSS
@@ -185,28 +219,85 @@ typedef struct
 // May also get rid of end byte.
 typedef struct
 {
-	int64_t start_byte;
-	double start_time;
-	double absolute_start_time;
-	double absolute_end_time;
-	int64_t end_byte;
-	double end_time;
+/* Starting byte of cell in the title (start_byte) */
+	int64_t title_start;
+/* Ending byte of cell in the title (end_byte) */
+	int64_t title_end;
+/* Starting byte of the cell in the program */
+	int64_t program_start;
+/* Ending byte of the cell in the program */
+	int64_t program_end;
+/* Program the cell belongs to */
 	int program;
-} mpeg3demux_timecode_t;
+} mpeg3_cell_t;
 
 typedef struct
 {
 	void *file;
 	mpeg3_fs_t *fs;
-	int64_t total_bytes;     /* Total bytes in file.  Critical for seeking and length. */
+/* Total bytes in title file.  Critical for seeking and length. */
+	int64_t total_bytes;
+/* Absolute starting byte of the title in the stream */
+	int64_t start_byte;
+/* Absolute ending byte of the title in the stream + 1 */
+	int64_t end_byte;
 /* Timecode table */
-	mpeg3demux_timecode_t *timecode_table;
-	long timecode_table_size;    /* Number of entries */
-	long timecode_table_allocation;    /* Number of available slots */
+	mpeg3_cell_t *cell_table;
+	int cell_table_size;    /* Number of entries */
+	int cell_table_allocation;    /* Number of available slots */
 } mpeg3_title_t;
 
 
 
+
+
+
+
+
+/* Subtitle object. */
+/* Created by the demuxer to store subtitles. */
+
+
+
+
+
+
+
+typedef struct
+{
+/* Raw data of subtitle */
+	unsigned char *data;
+/* number of bytes of data */
+	int size;
+/* Number of stream starting at 0x20 */
+	int id;
+	int done;
+/* Program offset of start of subtitle */
+	int64_t offset;
+
+/* image in YUV 4:2:0 */
+	unsigned char *image_y;
+	unsigned char *image_u;
+	unsigned char *image_v;
+	unsigned char *image_a;
+	int x1;
+	int x2;
+	int y1;
+	int y2;
+	int w;
+	int h;
+/* Force display */
+	int force;
+/* Time after detection of subtitle to display it in 1/100sec */
+	int start_time;
+/* Time after detection of subtitle to hide it in 1/100sec */
+	int stop_time;
+/* Indexes in the main palette */
+	int palette[4];
+	int alpha[4];
+/* The subtitle is being drawn */
+	int active;
+} mpeg3_subtitle_t;
 
 
 
@@ -230,27 +321,60 @@ typedef struct
 {
 /* mpeg3_t */
 	void* file;
-/* One packet. MPEG3_RAW_SIZE allocated since we don't know the packet size */
+/* One unparsed packet.  MPEG3_RAW_SIZE allocated since we don't know the packet size */
 	unsigned char *raw_data;
-	long raw_offset;
+/* Offset in raw_data of read pointer */
+	int raw_offset;
 /* Amount loaded in last raw_data */
 	int raw_size;
-/* One packet payload */
+
+
+/* Elementary stream data when only one stream is to be read. */
+/* Erased in every call to read a packet. */
 	unsigned char *data_buffer;
-	long data_size;
-	long data_position;
-/* Only one is on depending on which track owns the demultiplexer. */
+/* Allocation of data_buffer */
+	int data_allocated;
+/* Position in data_buffer of write pointer */
+	int data_size;
+/* Position in data_buffer of read pointer */
+	int data_position;
+/* Start of the next pes packet in the data buffer for reading.  */
+/* Used for decoding PCM. */
+	int data_start;
+
+/* Elementary stream data when all streams are to be read.  There is no */
+/* read pointer since data is expected to be copied directly to a track. */
+/* Some packets contain audio and video.  Further division into */
+/* stream ID may be needed. */
+	unsigned char *audio_buffer;
+	int audio_allocated;
+	int audio_size;
+	int audio_start;
+	unsigned char *video_buffer;
+	int video_allocated;
+	int video_size;
+	int video_start;
+
+
+/* Subtitle objects */
+	mpeg3_subtitle_t **subtitles;
+	int total_subtitles;
+
+
+
+
+
+/* What type of data to read. */
 	int do_audio;
 	int do_video;
+	int read_all;
+
 /* Direction of reads */
 	int reverse;
 /* Set to 1 when eof or attempt to read before beginning */
 	int error_flag;
 /* Temp variables for returning */
 	unsigned char next_char;
-/* Correction factor for time discontinuity */
-	double time_offset;
-	int read_all;
 /* Info for mpeg3cat */
 	int64_t last_packet_start;
 	int64_t last_packet_end;
@@ -259,7 +383,9 @@ typedef struct
 /* Titles */
 	mpeg3_title_t *titles[MPEG3_MAX_STREAMS];
 	int total_titles;
+/* Title currently being used */
 	int current_title;
+	
 
 /* Tables of every stream ID encountered */
 	int astream_table[MPEG3_MAX_STREAMS];  /* macro of audio format if audio  */
@@ -269,15 +395,24 @@ typedef struct
 	int total_programs;
 	int current_program;
 
-/* Timecode in the current title */
-	int current_timecode;
+/* Cell in the current title currently used */
+	int title_cell;
 
-/* Byte position in the current title */
-	long current_byte;
+/* Byte position in current program. */
+	int64_t program_byte;
+/* Total bytes in all titles */
+	int64_t total_bytes;
+/* The end of the current stream in the current program */
+	int64_t stream_end;
 
 	int transport_error_indicator;
 	int payload_unit_start_indicator;
+/* PID of last packet */
 	int pid;
+/* Stream ID of last packet */
+	unsigned int stream_id;
+/* Custom ID of last packet */
+	unsigned int custom_id;
 	int transport_scrambling_control;
 	int adaptation_field_control;
 	int continuity_counter;
@@ -289,16 +424,27 @@ typedef struct
 	double time;           /* Time in seconds */
 	int audio_pid;
 	int video_pid;
-	int astream;     /* Video stream ID being decoded.  -1 = select first ID in stream */
-	int vstream;     /* Audio stream ID being decoded.  -1 = select first ID in stream */
-	int aformat;      /* format of the audio derived from multiplexing codes */
-	long program_association_tables;
+	int got_audio;
+	int got_video;
+/* if subtitle object was created in last packet */
+	int got_subtitle;
+/* When only one stream is to be read, these store the stream IDs */
+/* Video stream ID being decoded.  -1 = select first ID in stream */
+	int astream;     
+/* Audio stream ID being decoded.  -1 = select first ID in stream */
+	int vstream;
+/* Multiplexed streams have the audio type */
+/* Format of the audio derived from multiplexing codes */
+	int aformat;      
+	int program_association_tables;
 	int table_id;
 	int section_length;
 	int transport_stream_id;
-	long pes_packets;
+	int pes_packets;
 	double pes_audio_time;  /* Presentation Time stamps */
 	double pes_video_time;  /* Presentation Time stamps */
+/* Cause the stream parameters to be dumped in human readable format */
+	int dump;
 } mpeg3_demuxer_t;
 
 
@@ -504,20 +650,26 @@ typedef struct
 
 /* In order of importance */
 	long outscale;
-	long framenum;
+/* Number of current frame being decoded */
+	int framenum;
+	
 /* Size of frame including header */
 	int framesize;
-	float **output;           /* Output from synthesizer in linear floats */
-	long output_size;         /* Number of pcm samples in the buffer */
-	long output_allocated;    /* Allocated number of samples in output */
-	long output_position;     /* Sample position in file of start of output buffer */
+/* Output from synthesizer in linear floats */
+	float **output;           
+/* Number of pcm samples in the buffer */
+	int output_size;         
+/* Allocated number of samples in output */
+	int output_allocated;    
+/* Sample position in file of start of output buffer */
+	int output_position;     
 
 /* Perform a seek to the sample */
 	int sample_seek;
-/* Perform a seek to the percentage */
-	double percentage_seek;
+/* Perform a seek to the absolute byte */
+	int64_t byte_seek;
 /* +/- number of samples of difference between audio and video */
-	long seek_correction;
+	int seek_correction;
 /* Buffer containing current packet */
 	unsigned char packet_buffer[MAXFRAMESIZE];
 /* Position in packet buffer of next byte to read */
@@ -528,6 +680,19 @@ typedef struct
 
 
 
+typedef struct
+{
+/* Buffer of frames for index.  A frame is a high/low pair. */
+	float **index_data;
+/* Number of frames allocated in each index channel. */
+	int index_allocated;
+/* Number of index channels allocated */
+	int index_channels;
+/* Number of high/low pairs in index channel */
+	int index_size;
+/* Downsampling of index buffers when constructing index */
+	int index_zoom;
+} mpeg3_index_t;
 
 
 
@@ -537,16 +702,32 @@ typedef struct
 	int sample_rate;
 	mpeg3_demuxer_t *demuxer;
 	mpeg3audio_t *audio;
-	long current_position;
-	long total_samples;
+	int current_position;
+	int64_t total_samples;
 	int format;               /* format of audio */
+	unsigned int pid;
+/* If we got the header information yet.  Used in streaming mode. */
+	int got_header;
 
 
 
-
-/* Pointer to master table of contents */
+/* Pointer to master table of contents when the TOC is read. */
+/* Pointer to private table when the TOC is being created */
+/* Stores the absolute byte of each audio chunk */
 	int64_t *sample_offsets;
 	int total_sample_offsets;
+	int sample_offsets_allocated;
+/* If this sample offset table must be deleted by the track */
+	int private_offsets;
+/* End of stream in table of contents construction */
+	int64_t audio_eof;
+
+
+
+
+/* Starting byte of previous packet for making TOC */
+	int64_t prev_offset;
+
 } mpeg3_atrack_t;
 
 
@@ -571,11 +752,9 @@ typedef struct
 
 /* zig-zag scan */
 extern unsigned char mpeg3_zig_zag_scan_nommx[64];
-extern unsigned char mpeg3_zig_zag_scan_mmx[64];
 
 /* alternate scan */
 extern unsigned char mpeg3_alternate_scan_nommx[64];
-extern unsigned char mpeg3_alternate_scan_mmx[64];
 
 /* default intra quantization matrix */
 extern unsigned char mpeg3_default_intra_quantizer_matrix[64];
@@ -677,11 +856,29 @@ typedef struct
 
 typedef struct 
 {
-	long hour;
-	long minute;
-	long second;
-	long frame;
+	int hour;
+	int minute;
+	int second;
+	int frame;
 } mpeg3_timecode_t;
+
+
+
+typedef struct
+{
+	unsigned char *y, *u, *v;
+	int y_size;
+	int u_size;
+	int v_size;
+	int64_t frame_number;
+} mpeg3_cacheframe_t;
+
+typedef struct
+{
+	mpeg3_cacheframe_t *frames;
+	int total;
+	int allocation;
+} mpeg3_cache_t;
 
 
 typedef struct
@@ -709,21 +906,21 @@ typedef struct
 	pthread_mutex_t test_lock;
 
 	int blockreadsize;
-	long maxframe;         /* Max value of frame num to read */
-	double percentage_seek;   /* Perform a percentage seek before the next frame is read */
+	int maxframe;         /* Max value of frame num to read */
+	int64_t byte_seek;   /* Perform absolute byte seek before the next frame is read */
 	int frame_seek;        /* Perform a frame seek before the next frame is read */
-	long framenum;         /* Number of the next frame to be decoded */
-	long last_number;       /* Last framenum rendered */
+	int framenum;         /* Number of the next frame to be decoded */
+	int last_number;       /* Last framenum rendered */
 	int found_seqhdr;
-	long bitrate;
+	int bitrate;
 	mpeg3_timecode_t gop_timecode;     /* Timecode for the last GOP header read. */
 	int has_gops; /* Some streams have no GOPs so try sequence start codes instead */
 
 /* These are only available from elementary streams. */
-	long frames_per_gop;       /* Frames per GOP after the first GOP. */
-	long first_gop_frames;     /* Frames in the first GOP. */
-	long first_frame;     /* Number of first frame stored in timecode */
-	long last_frame;      /* Last frame in file */
+	int frames_per_gop;       /* Frames per GOP after the first GOP. */
+	int first_gop_frames;     /* Frames in the first GOP. */
+	int first_frame;     /* Number of first frame stored in timecode */
+	int last_frame;      /* Last frame in file */
 
 /* ================================= Compression variables ===================== */
 /* Malloced frame buffers.  2 refframes are swapped in and out. */
@@ -734,7 +931,7 @@ typedef struct
 	unsigned char *mpeg3_zigzag_scan_table;
 	unsigned char *mpeg3_alternate_scan_table;
 // Source for the next frame presentation
-	unsigned char **output_src;
+	unsigned char *output_src[3];
 /* Pointers to frame buffers. */
 	unsigned char *newframe[3];
 	int horizontal_size, vertical_size, mb_width, mb_height;
@@ -748,8 +945,10 @@ typedef struct
 	int dc_prec, pict_struct, topfirst, frame_pred_dct, conceal_mv;
 	int intravlc;
 	int repeatfirst;
-	int repeat_count;    /* Number of times to repeat the current frame * 100 since floating point is impossible in MMX */
-	int current_repeat;  /* Number of times the current frame has been repeated * 100 */
+/* Number of times to repeat the current frame * 100 since floating point is impossible in MMX */
+	int repeat_count;
+/* Number of times the current frame has been repeated * 100 */
+	int current_repeat;
 	int secondfield;
 	int skip_bframes;
 	int stwc_table_index, llw, llh, hm, hn, vm, vn;
@@ -757,15 +956,17 @@ typedef struct
 	int matrix_coefficients;
 	int framerate_code;
 	double frame_rate;
-	long *cr_to_r, *cr_to_g, *cb_to_g, *cb_to_b;
-	long *cr_to_r_ptr, *cr_to_g_ptr, *cb_to_g_ptr, *cb_to_b_ptr;
-	int have_mmx;
+	int *cr_to_r, *cr_to_g, *cb_to_g, *cb_to_b;
+	int *cr_to_r_ptr, *cr_to_g_ptr, *cb_to_g_ptr, *cb_to_b_ptr;
 	int intra_quantizer_matrix[64], non_intra_quantizer_matrix[64];
 	int chroma_intra_quantizer_matrix[64], chroma_non_intra_quantizer_matrix[64];
 	int mpeg2;
 	int qscale_type, altscan;      /* picture coding extension */
 	int pict_scal;                /* picture spatial scalable extension */
 	int scalable_mode;            /* sequence scalable extension */
+
+/* Subtitling frame */
+	unsigned char *subtitle_frame[3];
 } mpeg3video_t;
 
 
@@ -789,18 +990,67 @@ typedef struct
 	double frame_rate;
 	float aspect_ratio;
 	mpeg3_demuxer_t *demuxer;
+/* Video decoding object */
 	mpeg3video_t *video;
-	long current_position;  /* Number of next frame to be played */
-	long total_frames;     /* Total frames in the file */
+/* Table of current subtitles being overlayed */
+	mpeg3_subtitle_t **subtitles;
+	int total_subtitles;
+	int current_position;  /* Number of next frame to be played */
+	int total_frames;     /* Total frames in the file */
+	unsigned int pid;
 
 
-/* Pointer to master table of contents */
+/* Pointer to master table of contents when the TOC is read. */
+/* Pointer to private table when the TOC is being created */
+/* Stores the absolute byte of each frame */
 	int64_t *frame_offsets;
 	int total_frame_offsets;
+	int frame_offsets_allocated;
 	int64_t *keyframe_numbers;
 	int total_keyframe_numbers;
+	int keyframe_numbers_allocated;
+/* Starting byte of previous packet for making TOC */
+	int64_t prev_offset;
+/* Starting byte of previous packet when the start code was found. */
+/* Used for headers which require multiple packets. */
+	int64_t prev_frame_offset;
+/* End of stream in table of contents construction */
+	int64_t video_eof;
+
+
+	mpeg3_cache_t *frame_cache;
+
+
+
+/* If these tables must be deleted by the track */
+	int private_offsets;
 } mpeg3_vtrack_t;
 
+
+
+
+
+
+
+/* Subtitle track */
+/* Stores the program offsets of subtitle images. */
+/* Only used for seeking off of table of contents for editing. */
+/* Doesn't have its own demuxer but hangs off the video demuxer. */
+
+typedef struct
+{
+/* 0x2X */
+	int id;
+/* Offsets in program of subtitle packets */
+	int64_t *offsets;
+	int total_offsets;
+	int allocated_offsets;
+
+/* Last subtitle objects found in stream. */
+	mpeg3_subtitle_t **subtitles;
+	int total_subtitles;
+	int allocated_subtitles;
+} mpeg3_strack_t;
 
 
 
@@ -810,35 +1060,41 @@ typedef struct
 
 
 // Whole thing
-
-
-
-
-
-
-
-
-
-
 typedef struct
 {
-	mpeg3_fs_t *fs;      /* Store entry path here */
-	mpeg3_demuxer_t *demuxer;        /* Master tables */
+/* Store entry path here */
+	mpeg3_fs_t *fs;
+/* Master title tables copied to all tracks */
+	mpeg3_demuxer_t *demuxer;        
 
 /* Media specific */
 	int total_astreams;
-	int total_vstreams;
 	mpeg3_atrack_t *atrack[MPEG3_MAX_STREAMS];
+	int total_vstreams;
 	mpeg3_vtrack_t *vtrack[MPEG3_MAX_STREAMS];
+	int total_sstreams;
+	mpeg3_strack_t *strack[MPEG3_MAX_STREAMS];
 
-	uint64_t **frame_offsets;
-	uint64_t **sample_offsets;
-	uint64_t **keyframe_numbers;
+/* Table of contents storage */
+	int64_t **frame_offsets;
+	int64_t **sample_offsets;
+	int64_t **keyframe_numbers;
+	int64_t *video_eof;
+	int64_t *audio_eof;
 	int *total_frame_offsets;
 	int *total_sample_offsets;
+	int64_t *total_samples;
 	int *total_keyframe_numbers;
 /* Handles changes in channel count after the start of a stream */
 	int *channel_counts;
+/* Indexes for audio tracks */
+	mpeg3_index_t **indexes;
+	int total_indexes;
+
+
+/* Number of bytes to devote to the index of a single track in the index */
+/* building process. */
+	int64_t index_bytes;
 
 /* Only one of these is set to 1 to specify what kind of stream we have. */
 	int is_transport_stream;
@@ -846,26 +1102,44 @@ typedef struct
 	int is_ifo_file;
 	int is_audio_stream;         /* Elemental stream */
 	int is_video_stream;         /* Elemental stream */
+// Special kind of transport stream
+	int is_bd;
 /* > 0 if known otherwise determine empirically for every packet */
-	long packet_size;
-/* Type and stream for getting current percentage */
+	int packet_size;
+/* Type and stream for getting current absolute byte */
 	int last_type_read;  /* 1 - audio   2 - video */
 	int last_stream_read;
+
+/* Subtitle track to composite if >= 0 */
+	int subtitle_track;
 
 /* Number of program to play */
 	int program;
 	int cpus;
-	int have_mmx;
 
-/* Filesystem is seekable */
+/* Filesystem is seekable.  Also means the file isn't a stream. */
 	int seekable;
 
+/* For building TOC, the output file. */
+	FILE *toc_fd;
+
 /*
- * After percentage seeking is called, this is set to -1.
- * The first operation to seek needs to set it to the pts of the percentage seek.
+ * After byte seeking is called, this is set to -1.
+ * The first operation to seek needs to set it to the pts of the byte seek.
  * Then the next operation to seek needs to match its pts to this value.
  */
-	double percentage_pts;
+	int64_t byte_pts;
+
+/*
+ * The first color palette in the IFO file.  Used for subtitles.
+ * Byte order: YUVX * 16
+ */
+	int have_palette;
+	unsigned char palette[16 * 4];
+
+/* Date of source file index was created from. */
+/* Used to compare DVD source file to table of contents source. */
+	int64_t source_date;
 } mpeg3_t;
 
 

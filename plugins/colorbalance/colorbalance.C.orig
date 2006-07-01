@@ -1,0 +1,680 @@
+#include "filexml.h"
+#include "colorbalance.h"
+#include "defaults.h"
+#include "language.h"
+#include "picon_png.h"
+#include "playback3d.h"
+
+#include <stdio.h>
+#include <string.h>
+
+// 100 corresponds to (1.0 + MAX_COLOR) * input
+#define MAX_COLOR 1.0
+#define SQR(a) ((a) * (a))
+
+REGISTER_PLUGIN(ColorBalanceMain)
+
+
+
+ColorBalanceConfig::ColorBalanceConfig()
+{
+	cyan = 0;
+	magenta = 0;
+	yellow = 0;
+	lock_params = 0;
+    preserve = 0;
+}
+
+int ColorBalanceConfig::equivalent(ColorBalanceConfig &that)
+{
+	return (cyan == that.cyan && 
+		magenta == that.magenta && 
+		yellow == that.yellow && 
+		lock_params == that.lock_params && 
+    	preserve == that.preserve);
+}
+
+void ColorBalanceConfig::copy_from(ColorBalanceConfig &that)
+{
+	cyan = that.cyan;
+	magenta = that.magenta;
+	yellow = that.yellow;
+	lock_params = that.lock_params;
+    preserve = that.preserve;
+}
+
+void ColorBalanceConfig::interpolate(ColorBalanceConfig &prev, 
+	ColorBalanceConfig &next, 
+	int64_t prev_frame, 
+	int64_t next_frame, 
+	int64_t current_frame)
+{
+	double next_scale = (double)(current_frame - prev_frame) / (next_frame - prev_frame);
+	double prev_scale = (double)(next_frame - current_frame) / (next_frame - prev_frame);
+
+	this->cyan = prev.cyan * prev_scale + next.cyan * next_scale;
+	this->magenta = prev.magenta * prev_scale + next.magenta * next_scale;
+	this->yellow = prev.yellow * prev_scale + next.yellow * next_scale;
+	this->preserve = prev.preserve;
+	this->lock_params = prev.lock_params;
+}
+
+
+
+
+
+
+
+
+
+
+ColorBalanceEngine::ColorBalanceEngine(ColorBalanceMain *plugin)
+ : Thread()
+{
+	this->plugin = plugin;
+	last_frame = 0;
+	set_synchronous(1);
+}
+
+ColorBalanceEngine::~ColorBalanceEngine()
+{
+	last_frame = 1;
+	input_lock.unlock();
+	Thread::join();
+}
+
+
+int ColorBalanceEngine::start_process_frame(VFrame *output, VFrame *input, int row_start, int row_end)
+{
+	this->output = output;
+	this->input = input;
+	this->row_start = row_start;
+	this->row_end = row_end;
+	input_lock.unlock();
+	return 0;
+}
+
+
+int ColorBalanceEngine::wait_process_frame()
+{
+	output_lock.lock("ColorBalanceEngine::wait_process_frame");
+	return 0;
+}
+
+void ColorBalanceEngine::run()
+{
+	while(1)
+	{
+		input_lock.lock("ColorBalanceEngine::run");
+		if(last_frame)
+		{
+			output_lock.unlock();
+			return;
+		}
+
+#define PROCESS(yuvtorgb,  \
+	rgbtoyuv,  \
+	r_lookup,  \
+	g_lookup,  \
+	b_lookup,  \
+	type,  \
+	max,  \
+	components,  \
+	do_yuv) \
+{ \
+	int i, j, k; \
+	int y, cb, cr, r, g, b, r_n, g_n, b_n; \
+    float h, s, v, h_old, s_old, r_f, g_f, b_f; \
+	type **input_rows, **output_rows; \
+	input_rows = (type**)input->get_rows(); \
+	output_rows = (type**)output->get_rows(); \
+ \
+	for(j = row_start; j < row_end; j++) \
+	{ \
+		for(k = 0; k < input->get_w() * components; k += components) \
+		{ \
+			if(do_yuv) \
+			{ \
+				y = input_rows[j][k]; \
+				cb = input_rows[j][k + 1]; \
+				cr = input_rows[j][k + 2]; \
+				yuvtorgb(r, g, b, y, cb, cr); \
+			} \
+			else \
+			{ \
+            	r = input_rows[j][k]; \
+            	g = input_rows[j][k + 1]; \
+            	b = input_rows[j][k + 2]; \
+			} \
+ \
+            r_n = plugin->r_lookup[r]; \
+            g_n = plugin->g_lookup[g]; \
+            b_n = plugin->b_lookup[b]; \
+ \
+			if(plugin->config.preserve) \
+            { \
+				HSV::rgb_to_hsv((float)r_n, (float)g_n, (float)b_n, h, s, v); \
+				HSV::rgb_to_hsv((float)r, (float)g, (float)b, h_old, s_old, v); \
+                HSV::hsv_to_rgb(r_f, g_f, b_f, h, s, v); \
+                r = (type)r_f; \
+                g = (type)g_f; \
+                b = (type)b_f; \
+			} \
+            else \
+            { \
+                r = r_n; \
+                g = g_n; \
+                b = b_n; \
+			} \
+ \
+			if(do_yuv) \
+			{ \
+				rgbtoyuv(CLAMP(r, 0, max), CLAMP(g, 0, max), CLAMP(b, 0, max), y, cb, cr); \
+                output_rows[j][k] = y; \
+                output_rows[j][k + 1] = cb; \
+                output_rows[j][k + 2] = cr; \
+			} \
+			else \
+			{ \
+                output_rows[j][k] = CLAMP(r, 0, max); \
+                output_rows[j][k + 1] = CLAMP(g, 0, max); \
+                output_rows[j][k + 2] = CLAMP(b, 0, max); \
+			} \
+		} \
+	} \
+}
+
+#define PROCESS_F(components) \
+{ \
+	int i, j, k; \
+	float y, cb, cr, r, g, b, r_n, g_n, b_n; \
+    float h, s, v, h_old, s_old, r_f, g_f, b_f; \
+	float **input_rows, **output_rows; \
+	input_rows = (float**)input->get_rows(); \
+	output_rows = (float**)output->get_rows(); \
+	cyan_f = plugin->calculate_transfer(plugin->config.cyan); \
+	magenta_f = plugin->calculate_transfer(plugin->config.magenta); \
+	yellow_f = plugin->calculate_transfer(plugin->config.yellow); \
+ \
+	for(j = row_start; j < row_end; j++) \
+	{ \
+		for(k = 0; k < input->get_w() * components; k += components) \
+		{ \
+            r = input_rows[j][k]; \
+            g = input_rows[j][k + 1]; \
+            b = input_rows[j][k + 2]; \
+ \
+            r_n = r * cyan_f; \
+            g_n = g * magenta_f; \
+            b_n = b * yellow_f; \
+ \
+			if(plugin->config.preserve) \
+            { \
+				HSV::rgb_to_hsv(r_n, g_n, b_n, h, s, v); \
+				HSV::rgb_to_hsv(r, g, b, h_old, s_old, v); \
+                HSV::hsv_to_rgb(r_f, g_f, b_f, h, s, v); \
+                r = (float)r_f; \
+                g = (float)g_f; \
+                b = (float)b_f; \
+			} \
+            else \
+            { \
+                r = r_n; \
+                g = g_n; \
+                b = b_n; \
+			} \
+ \
+            output_rows[j][k] = r; \
+            output_rows[j][k + 1] = g; \
+            output_rows[j][k + 2] = b; \
+		} \
+	} \
+}
+
+		switch(input->get_color_model())
+		{
+			case BC_RGB888:
+				PROCESS(yuv.yuv_to_rgb_8, 
+					yuv.rgb_to_yuv_8, 
+					r_lookup_8, 
+					g_lookup_8, 
+					b_lookup_8, 
+					unsigned char, 
+					0xff, 
+					3,
+					0);
+				break;
+
+			case BC_RGB_FLOAT:
+				PROCESS_F(3);
+				break;
+
+			case BC_YUV888:
+				PROCESS(yuv.yuv_to_rgb_8, 
+					yuv.rgb_to_yuv_8, 
+					r_lookup_8, 
+					g_lookup_8, 
+					b_lookup_8, 
+					unsigned char, 
+					0xff, 
+					3,
+					1);
+				break;
+			
+			case BC_RGBA_FLOAT:
+				PROCESS_F(4);
+				break;
+
+			case BC_RGBA8888:
+				PROCESS(yuv.yuv_to_rgb_8, 
+					yuv.rgb_to_yuv_8, 
+					r_lookup_8, 
+					g_lookup_8, 
+					b_lookup_8, 
+					unsigned char, 
+					0xff, 
+					4,
+					0);
+				break;
+
+			case BC_YUVA8888:
+				PROCESS(yuv.yuv_to_rgb_8, 
+					yuv.rgb_to_yuv_8, 
+					r_lookup_8, 
+					g_lookup_8, 
+					b_lookup_8, 
+					unsigned char, 
+					0xff, 
+					4,
+					1);
+				break;
+			
+			case BC_YUV161616:
+				PROCESS(yuv.yuv_to_rgb_16, 
+					yuv.rgb_to_yuv_16, 
+					r_lookup_16, 
+					g_lookup_16, 
+					b_lookup_16, 
+					u_int16_t, 
+					0xffff, 
+					3,
+					1);
+				break;
+
+			case BC_YUVA16161616:
+				PROCESS(yuv.yuv_to_rgb_16, 
+					yuv.rgb_to_yuv_16, 
+					r_lookup_16, 
+					g_lookup_16, 
+					b_lookup_16, 
+					u_int16_t, 
+					0xffff, 
+					4,
+					1);
+				break;
+		}
+
+		
+		
+		output_lock.unlock();
+	}
+}
+
+
+
+
+ColorBalanceMain::ColorBalanceMain(PluginServer *server)
+ : PluginVClient(server)
+{
+	need_reconfigure = 1;
+	engine = 0;
+	PLUGIN_CONSTRUCTOR_MACRO
+}
+
+ColorBalanceMain::~ColorBalanceMain()
+{
+	PLUGIN_DESTRUCTOR_MACRO
+
+
+	if(engine)
+	{
+		for(int i = 0; i < total_engines; i++)
+		{
+			delete engine[i];
+		}
+		delete [] engine;
+	}
+}
+
+char* ColorBalanceMain::plugin_title() { return N_("Color Balance"); }
+int ColorBalanceMain::is_realtime() { return 1; }
+
+
+int ColorBalanceMain::reconfigure()
+{
+	int r_n, g_n, b_n;
+	float r_scale = calculate_transfer(config.cyan);
+	float g_scale = calculate_transfer(config.magenta);
+	float b_scale = calculate_transfer(config.yellow);
+
+
+
+#define RECONFIGURE(r_lookup, g_lookup, b_lookup, max) \
+	for(int i = 0; i <= max; i++) \
+    { \
+	    r_lookup[i] = CLIP((int)(r_scale * i), 0, max); \
+	    g_lookup[i] = CLIP((int)(g_scale * i), 0, max); \
+	    b_lookup[i] = CLIP((int)(b_scale * i), 0, max); \
+    }
+
+	RECONFIGURE(r_lookup_8, g_lookup_8, b_lookup_8, 0xff);
+	RECONFIGURE(r_lookup_16, g_lookup_16, b_lookup_16, 0xffff);
+	
+	return 0;
+}
+
+int64_t ColorBalanceMain::calculate_slider(float in)
+{
+	if(in < 1.0)
+	{
+		return (int64_t)(in * 100 - 100.0);
+	}
+	else
+	if(in > 1.0)
+	{
+		return (int64_t)(100 * (in - 1.0) / MAX_COLOR);
+	}
+	else
+		return 0;
+}
+
+float ColorBalanceMain::calculate_transfer(float in)
+{
+	if(in < 0)
+	{
+		return (100.0 + in) / 100.0;
+	}
+	else
+	if(in > 0)
+	{
+		return 1.0 + in / 100.0 * MAX_COLOR;
+	}
+	else
+		return 1.0;
+}
+
+
+
+
+int ColorBalanceMain::test_boundary(float &value)
+{
+
+	if(value < -100) value = -100;
+    if(value > 100) value = 100;
+	return 0;
+}
+
+int ColorBalanceMain::synchronize_params(ColorBalanceSlider *slider, float difference)
+{
+	if(thread && config.lock_params)
+    {
+	    if(slider != thread->window->cyan)
+        {
+        	config.cyan += difference;
+            test_boundary(config.cyan);
+        	thread->window->cyan->update((int64_t)config.cyan);
+        }
+	    if(slider != thread->window->magenta)
+        {
+        	config.magenta += difference;
+            test_boundary(config.magenta);
+        	thread->window->magenta->update((int64_t)config.magenta);
+        }
+	    if(slider != thread->window->yellow)
+        {
+        	config.yellow += difference;
+            test_boundary(config.yellow);
+        	thread->window->yellow->update((int64_t)config.yellow);
+        }
+    }
+	return 0;
+}
+
+
+
+
+
+
+NEW_PICON_MACRO(ColorBalanceMain)
+LOAD_CONFIGURATION_MACRO(ColorBalanceMain, ColorBalanceConfig)
+SHOW_GUI_MACRO(ColorBalanceMain, ColorBalanceThread)
+RAISE_WINDOW_MACRO(ColorBalanceMain)
+SET_STRING_MACRO(ColorBalanceMain)
+
+
+
+
+
+int ColorBalanceMain::process_buffer(VFrame *frame,
+	int64_t start_position,
+	double frame_rate)
+{
+	need_reconfigure |= load_configuration();
+
+//printf("ColorBalanceMain::process_realtime 1 %d\n", need_reconfigure);
+	if(need_reconfigure)
+	{
+		int i;
+
+		if(!engine)
+		{
+			total_engines = PluginClient::smp > 1 ? 2 : 1;
+			engine = new ColorBalanceEngine*[total_engines];
+			for(int i = 0; i < total_engines; i++)
+			{
+				engine[i] = new ColorBalanceEngine(this);
+				engine[i]->start();
+			}
+		}
+
+		reconfigure();
+		need_reconfigure = 0;
+	}
+
+
+	read_frame(frame,
+		0,
+		get_source_position(),
+		get_framerate(),
+		get_use_opengl());
+
+	if(!EQUIV(config.cyan, 0) || 
+		!EQUIV(config.magenta, 0) || 
+		!EQUIV(config.yellow, 0))
+	{
+		if(get_use_opengl()) return run_opengl();
+	
+		for(int i = 0; i < total_engines; i++)
+		{
+			engine[i]->start_process_frame(frame, 
+				frame, 
+				frame->get_h() * i / total_engines, 
+				frame->get_h() * (i + 1) / total_engines);
+		}
+
+		for(int i = 0; i < total_engines; i++)
+		{
+			engine[i]->wait_process_frame();
+		}
+	}
+
+
+	return 0;
+}
+
+
+void ColorBalanceMain::update_gui()
+{
+	if(thread)
+	{
+		load_configuration();
+		thread->window->lock_window("ColorBalanceMain::update_gui");
+		thread->window->cyan->update((int64_t)config.cyan);
+		thread->window->magenta->update((int64_t)config.magenta);
+		thread->window->yellow->update((int64_t)config.yellow);
+		thread->window->preserve->update(config.preserve);
+		thread->window->lock_params->update(config.lock_params);
+		thread->window->unlock_window();
+	}
+}
+
+
+
+int ColorBalanceMain::load_defaults()
+{
+	char directory[1024], string[1024];
+// set the default directory
+	sprintf(directory, "%scolorbalance.rc", BCASTDIR);
+
+// load the defaults
+	defaults = new BC_Hash(directory);
+	defaults->load();
+
+	config.cyan = defaults->get("CYAN", config.cyan);
+	config.magenta = defaults->get("MAGENTA", config.magenta);
+	config.yellow = defaults->get("YELLOW", config.yellow);
+	config.preserve = defaults->get("PRESERVELUMINOSITY", config.preserve);
+	config.lock_params = defaults->get("LOCKPARAMS", config.lock_params);
+	return 0;
+}
+
+int ColorBalanceMain::save_defaults()
+{
+	defaults->update("CYAN", config.cyan);
+	defaults->update("MAGENTA", config.magenta);
+	defaults->update("YELLOW", config.yellow);
+	defaults->update("PRESERVELUMINOSITY", config.preserve);
+	defaults->update("LOCKPARAMS", config.lock_params);
+	defaults->save();
+	return 0;
+}
+
+void ColorBalanceMain::save_data(KeyFrame *keyframe)
+{
+	FileXML output;
+
+// cause data to be stored directly in text
+	output.set_shared_string(keyframe->data, MESSAGESIZE);
+	output.tag.set_title("COLORBALANCE");
+	output.tag.set_property("CYAN", config.cyan);
+	output.tag.set_property("MAGENTA",  config.magenta);
+	output.tag.set_property("YELLOW",  config.yellow);
+	output.tag.set_property("PRESERVELUMINOSITY",  config.preserve);
+	output.tag.set_property("LOCKPARAMS",  config.lock_params);
+	output.append_tag();
+	output.terminate_string();
+}
+
+void ColorBalanceMain::read_data(KeyFrame *keyframe)
+{
+	FileXML input;
+
+	input.set_shared_string(keyframe->data, strlen(keyframe->data));
+
+	int result = 0;
+
+	while(!result)
+	{
+		result = input.read_tag();
+
+		if(!result)
+		{
+			if(input.tag.title_is("COLORBALANCE"))
+			{
+				config.cyan = input.tag.get_property("CYAN", config.cyan);
+				config.magenta = input.tag.get_property("MAGENTA", config.magenta);
+				config.yellow = input.tag.get_property("YELLOW", config.yellow);
+				config.preserve = input.tag.get_property("PRESERVELUMINOSITY", config.preserve);
+				config.lock_params = input.tag.get_property("LOCKPARAMS", config.lock_params);
+			}
+		}
+	}
+}
+
+
+
+void ColorBalanceMain::handle_opengl()
+{
+#ifdef HAVE_GL
+	static char *rgb_shader = 
+		"uniform sampler2D tex;\n"
+		"uniform vec3 scale;\n"
+		"void main()\n"
+		"{\n"
+		"	gl_FragColor = texture2D(tex, gl_TexCoord[0].st);\n"
+		"	gl_FragColor.rgb *= scale;\n"
+		"}\n";
+
+	static char *yuv_shader = 
+		"uniform sampler2D tex;\n"
+		"uniform vec3 scale;\n"
+		"void main()\n"
+		"{\n"
+		"	gl_FragColor = texture2D(tex, gl_TexCoord[0].st);\n"
+		YUV_TO_RGB_FRAG("gl_FragColor")
+		"	gl_FragColor.rgb *= scale;\n"
+		RGB_TO_YUV_FRAG("gl_FragColor")
+		"}\n";
+
+	static char *yuv_preserve_shader = 
+		"uniform sampler2D tex;\n"
+		"uniform vec3 scale;\n"
+		"void main()\n"
+		"{\n"
+		"	gl_FragColor = texture2D(tex, gl_TexCoord[0].st);\n"
+		"	float y = gl_FragColor.r;\n"
+		YUV_TO_RGB_FRAG("gl_FragColor")
+		"	gl_FragColor.rgb *= scale.rgb;\n"
+		RGB_TO_YUV_FRAG("gl_FragColor")
+		"	gl_FragColor.r = y;\n"
+		"}\n";
+
+	get_output()->to_texture();
+	get_output()->create_pbuffer();
+	get_output()->enable_opengl();
+
+	unsigned int shader = 0;
+	if(cmodel_is_yuv(get_output()->get_color_model()))
+	{
+		if(config.preserve)
+			shader = VFrame::make_shader(0, yuv_preserve_shader, 0);
+		else
+			shader = VFrame::make_shader(0, yuv_shader, 0);
+	}
+	else
+		shader = VFrame::make_shader(0, rgb_shader, 0);
+
+	if(shader > 0)
+	{
+		glUseProgram(shader);
+		glUniform1i(glGetUniformLocation(shader, "tex"), 0);
+		glUniform3f(glGetUniformLocation(shader, "scale"), 
+			calculate_transfer(config.cyan), 
+			calculate_transfer(config.magenta), 
+			calculate_transfer(config.yellow));
+	}
+
+	get_output()->init_screen();
+	get_output()->bind_texture(0);
+	get_output()->draw_texture();
+	glUseProgram(0);
+	get_output()->set_opengl_state(VFrame::SCREEN);
+#endif
+}
+
+
+
+
+
+
+

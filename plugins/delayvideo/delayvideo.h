@@ -3,7 +3,7 @@
 
 
 
-#include "defaults.inc"
+#include "bchash.inc"
 #include "guicast.h"
 #include "mutex.h"
 #include "pluginvclient.h"
@@ -30,7 +30,8 @@ public:
 		int64_t next_frame, 
 		int64_t current_frame);
 
-	double length;
+	// kjb - match defined update() type of float instead of double.
+	float length;
 };
 
 
@@ -61,20 +62,7 @@ public:
 };
 
 
-
-class DelayVideoThread : public Thread
-{
-public:
-	DelayVideoThread(DelayVideo *plugin);
-	~DelayVideoThread();
-	
-	void run();
-
-	DelayVideo *plugin;
-	DelayVideoWindow *window;
-	Mutex completion;
-};
-
+PLUGIN_THREAD_HEADER(DelayVideo, DelayVideoThread, DelayVideoWindow)
 
 
 
@@ -110,7 +98,7 @@ public:
 	DelayVideoConfig config;
 	DelayVideoThread *thread;
 	VFrame **buffer;
-	Defaults *defaults;
+	BC_Hash *defaults;
 	VFrame *input, *output;
 };
 

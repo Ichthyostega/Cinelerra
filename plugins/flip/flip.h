@@ -33,13 +33,16 @@ public:
 	PLUGIN_CLASS_MEMBERS(FlipConfig, FlipThread);
 
 // required for all realtime plugins
-	int process_realtime(VFrame *input_ptr, VFrame *output_ptr);
+	int process_buffer(VFrame *frame,
+		int64_t start_position,
+		double frame_rate);
 	int is_realtime();
 	void update_gui();
 	void save_data(KeyFrame *keyframe);
 	void read_data(KeyFrame *keyframe);
 	int load_defaults();
 	int save_defaults();
+	int handle_opengl();
 };
 
 

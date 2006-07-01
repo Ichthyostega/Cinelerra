@@ -1,6 +1,6 @@
 #include "bcdisplayinfo.h"
 #include "clip.h"
-#include "defaults.h"
+#include "bchash.h"
 #include "filexml.h"
 #include "guicast.h"
 #include "language.h"
@@ -176,7 +176,7 @@ void ReframeRTWindow::create_objects()
 {
 	int x = 10, y = 10;
 
-	add_subwindow(new BC_Title(x, y, "Scale by amount:"));
+	add_subwindow(new BC_Title(x, y, _("Scale by amount:")));
 	y += 20;
 	scale = new ReframeRTScale(plugin, 
 		this,
@@ -235,7 +235,7 @@ ReframeRTStretch::ReframeRTStretch(ReframeRT *plugin,
 	ReframeRTWindow *gui,
 	int x,
 	int y)
- : BC_Radial(x, y, plugin->config.stretch, "Stretch")
+ : BC_Radial(x, y, plugin->config.stretch, _("Stretch"))
 {
 	this->plugin = plugin;
 	this->gui = gui;
@@ -254,7 +254,7 @@ ReframeRTDownsample::ReframeRTDownsample(ReframeRT *plugin,
 	ReframeRTWindow *gui,
 	int x,
 	int y)
- : BC_Radial(x, y, !plugin->config.stretch, "Downsample")
+ : BC_Radial(x, y, !plugin->config.stretch, _("Downsample"))
 {
 	this->plugin = plugin;
 	this->gui = gui;
@@ -304,35 +304,55 @@ int ReframeRT::process_buffer(VFrame *frame,
 		int64_t start_position,
 		double frame_rate)
 {
-	load_configuration();
-
-// Calculate input frame number from the start of the effect, not the timeline.
-	int64_t input_frame = 0;
+	int64_t input_frame = get_source_start();
+	KeyFrame *tmp_keyframe, *next_keyframe = get_prev_keyframe(get_source_start());
+	int64_t tmp_position, next_position;
+	int64_t segment_len;
 	double input_rate = frame_rate;
-	if(config.stretch)
+	int is_current_keyframe;
+
+	// if there are no keyframes, the default keyframe is used, and its position is always 0;
+	// if there are keyframes, the first keyframe can be after the effect start (and it controls settings before it)
+	// so let's calculate using a fake keyframe with the same settings but position == effect start
+	KeyFrame *fake_keyframe = new KeyFrame();
+	fake_keyframe->copy_from(next_keyframe);
+	fake_keyframe->position = local_to_edl(get_source_start());
+	next_keyframe = fake_keyframe;
+
+	// calculate input_frame accounting for all previous keyframes
+	do
 	{
-// Keep same rate but stretch time.
-		int64_t effect_start = get_source_start();
-		int64_t relative_frame = start_position - get_source_start();
-		int64_t scaled_relative = (int64_t)(relative_frame * config.scale);
-		input_frame = scaled_relative + effect_start;
-	}
-	else
-	{
-// Change rate
-		input_rate = frame_rate * config.scale;
-		input_frame = (int64_t)(start_position * input_rate / frame_rate);
-	}
-// printf("ReframeRT::process_buffer %f %d %lld %f\n", 
-// config.scale, 
-// config.stretch,
-// input_frame,
-// input_rate);
+		tmp_keyframe = next_keyframe;
+		next_keyframe = get_next_keyframe(tmp_keyframe->position+1, 0);
+
+		tmp_position = edl_to_local(tmp_keyframe->position);
+		next_position = edl_to_local(next_keyframe->position);
+
+		read_data(tmp_keyframe);
+
+		is_current_keyframe =
+			next_position > start_position // the next keyframe is after the current position
+			|| next_keyframe->position == tmp_keyframe->position // there are no more keyframes
+			|| !next_keyframe->position; // there are no keyframes at all
+
+		if (is_current_keyframe)
+			next_position = start_position;
+
+		segment_len = next_position - tmp_position;
+
+		input_frame += (int64_t)(segment_len * config.scale);
+	} while (!is_current_keyframe);
+
+	// Change rate
+	if (!config.stretch)
+		input_rate *= config.scale;
 
 	read_frame(frame,
 		0,
 		input_frame,
 		input_rate);
+
+	delete fake_keyframe;
 
 	return 0;
 }
@@ -348,7 +368,7 @@ int ReframeRT::load_defaults()
 	sprintf(directory, "%sreframert.rc", BCASTDIR);
 
 // load the defaults
-	defaults = new Defaults(directory);
+	defaults = new BC_Hash(directory);
 	defaults->load();
 
 	config.scale = defaults->get("SCALE", config.scale);

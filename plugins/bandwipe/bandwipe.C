@@ -1,8 +1,9 @@
 #include "bandwipe.h"
 #include "bcdisplayinfo.h"
-#include "defaults.h"
+#include "bchash.h"
 #include "edl.inc"
 #include "filexml.h"
+#include "language.h"
 #include "overlayframe.h"
 #include "picon_png.h"
 #include "vframe.h"
@@ -10,11 +11,6 @@
 
 #include <stdint.h>
 #include <string.h>
-
-#include <libintl.h>
-#define _(String) gettext(String)
-#define gettext_noop(String) String
-#define N_(String) gettext_noop (String)
 
 
 
@@ -174,10 +170,11 @@ BandWipeMain::~BandWipeMain()
 	PLUGIN_DESTRUCTOR_MACRO
 }
 
-char* BandWipeMain::plugin_title() { return _("BandWipe"); }
+char* BandWipeMain::plugin_title() { return N_("BandWipe"); }
 int BandWipeMain::is_video() { return 1; }
 int BandWipeMain::is_transition() { return 1; }
 int BandWipeMain::uses_gui() { return 1; }
+
 SHOW_GUI_MACRO(BandWipeMain, BandWipeThread);
 SET_STRING_MACRO(BandWipeMain)
 RAISE_WINDOW_MACRO(BandWipeMain)
@@ -195,7 +192,7 @@ int BandWipeMain::load_defaults()
 	sprintf(directory, "%sbandwipe.rc", BCASTDIR);
 
 // load the defaults
-	defaults = new Defaults(directory);
+	defaults = new BC_Hash(directory);
 	defaults->load();
 
 	bands = defaults->get("BANDS", bands);
@@ -347,9 +344,15 @@ int BandWipeMain::process_realtime(VFrame *incoming, VFrame *outgoing)
 		case BC_YUV888:
 			BANDWIPE(unsigned char, 3)
 			break;
+		case BC_RGB_FLOAT:
+			BANDWIPE(float, 3);
+			break;
 		case BC_RGBA8888:
 		case BC_YUVA8888:
 			BANDWIPE(unsigned char, 4)
+			break;
+		case BC_RGBA_FLOAT:
+			BANDWIPE(float, 4);
 			break;
 		case BC_RGB161616:
 		case BC_YUV161616:

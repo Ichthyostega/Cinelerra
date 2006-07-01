@@ -1,9 +1,10 @@
 #include "bcdisplayinfo.h"
 #include "clip.h"
-#include "defaults.h"
+#include "bchash.h"
 #include "filexml.h"
 #include "guicast.h"
 #include "keyframe.h"
+#include "language.h"
 #include "loadbalance.h"
 #include "picon_png.h"
 #include "pluginvclient.h"
@@ -14,10 +15,6 @@
 #include <string.h>
 #include <stdint.h>
 
-#include <libintl.h>
-#define _(String) gettext(String)
-#define gettext_noop(String) String
-#define N_(String) gettext_noop (String)
 
 #define SQR(x) ((x) * (x))
 #define WITHIN(a, b, c) ((((a) <= (b)) && ((b) <= (c))) ? 1 : 0)
@@ -127,7 +124,7 @@ public:
 	void update_gui();
 
 	PolarConfig config;
-	Defaults *defaults;
+	BC_Hash *defaults;
 	PolarThread *thread;
 	PolarEngine *engine;
 	VFrame *temp_frame;
@@ -211,11 +208,7 @@ void PolarWindow::create_objects()
 	flush();
 }
 
-int PolarWindow::close_event()
-{
-	set_done(1);
-	return 1;
-}
+WINDOW_CLOSE_EVENT(PolarWindow)
 
 PLUGIN_THREAD_OBJECT(PolarEffect, PolarThread, PolarWindow)
 
@@ -283,15 +276,11 @@ PolarEffect::~PolarEffect()
 }
 
 
-int PolarEffect::is_realtime()
-{
-	return 1;
-}
 
-char* PolarEffect::plugin_title()
-{
-	return _("Polar");
-}
+char* PolarEffect::plugin_title() { return N_("Polar"); }
+int PolarEffect::is_realtime() { return 1; }
+
+
 
 NEW_PICON_MACRO(PolarEffect)
 
@@ -323,7 +312,7 @@ int PolarEffect::load_defaults()
 	sprintf(directory, "%spolar.rc", BCASTDIR);
 
 // load the defaults
-	defaults = new Defaults(directory);
+	defaults = new BC_Hash(directory);
 	defaults->load();
 
 	config.depth = defaults->get("DEPTH", config.depth);
@@ -780,6 +769,12 @@ void PolarUnit::process_package(LoadPackage *package)
 	
 	switch(plugin->input->get_color_model())
 	{
+		case BC_RGB_FLOAT:
+			POLAR_MACRO(float, 1, 3, 0x0)
+			break;
+		case BC_RGBA_FLOAT:
+			POLAR_MACRO(float, 1, 4, 0x0)
+			break;
 		case BC_RGB888:
 			POLAR_MACRO(unsigned char, 0xff, 3, 0x0)
 			break;
@@ -818,18 +813,11 @@ PolarEngine::PolarEngine(PolarEffect *plugin, int cpus)
 
 void PolarEngine::init_packages()
 {
-	int increment = plugin->input->get_h() / LoadServer::total_packages + 1;
-	int y = 0;
-	for(int i = 0; i < LoadServer::total_packages; i++)
+	for(int i = 0; i < LoadServer::get_total_packages(); i++)
 	{
-		PolarPackage *pkg = (PolarPackage*)packages[i];
-		pkg->row1 = y;
-		pkg->row2 = y + increment;
-		y += increment;
-		if(pkg->row2 > plugin->input->get_h())
-		{
-			y = pkg->row2 = plugin->input->get_h();
-		}
+		PolarPackage *pkg = (PolarPackage*)get_package(i);
+		pkg->row1 = plugin->input->get_h() * i / LoadServer::get_total_packages();
+		pkg->row2 = plugin->input->get_h() * (i + 1) / LoadServer::get_total_packages();
 	}
 }
 

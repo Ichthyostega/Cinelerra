@@ -1,6 +1,6 @@
 #include "bcdisplayinfo.h"
 #include "clip.h"
-#include "defaults.h"
+#include "bchash.h"
 #include "filexml.h"
 #include "picon_png.h"
 #include "synthesizer.h"
@@ -55,10 +55,9 @@ VFrame* Synth::new_picon()
 }
 
 
-char* Synth::plugin_title()
-{
-	return _("Synthesizer");
-}
+char* Synth::plugin_title() { return N_("Synthesizer"); }
+int Synth::is_realtime() { return 1; }
+int Synth::is_synthesis() { return 1; }
 
 
 void Synth::reset()
@@ -68,15 +67,6 @@ void Synth::reset()
 	dsp_buffer = 0;
 }
 
-int Synth::is_realtime()
-{
-	return 1;
-}
-
-int Synth::is_synthesis()
-{
-	return 1;
-}
 
 
 
@@ -90,7 +80,7 @@ int Synth::load_defaults()
 	char directory[BCTEXTLEN], string[BCTEXTLEN];
 
 	sprintf(directory, "%ssynthesizer.rc", BCASTDIR);
-	defaults = new Defaults(directory);
+	defaults = new BC_Hash(directory);
 	defaults->load();
 	w = defaults->get("WIDTH", 380);
 	h = defaults->get("HEIGHT", 400);
@@ -1570,7 +1560,7 @@ void SynthOscillatorConfig::reset()
 	freq_factor = 1;
 }
 
-void SynthOscillatorConfig::load_defaults(Defaults *defaults)
+void SynthOscillatorConfig::load_defaults(BC_Hash *defaults)
 {
 	char string[BCTEXTLEN];
 
@@ -1582,7 +1572,7 @@ void SynthOscillatorConfig::load_defaults(Defaults *defaults)
 	freq_factor = defaults->get(string, (float)1);
 }
 
-void SynthOscillatorConfig::save_defaults(Defaults *defaults)
+void SynthOscillatorConfig::save_defaults(BC_Hash *defaults)
 {
 	char string[BCTEXTLEN];
 

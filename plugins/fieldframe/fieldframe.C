@@ -1,19 +1,17 @@
 #include "bcdisplayinfo.h"
-#include "defaults.h"
+#include "bchash.h"
 #include "filexml.h"
 #include "guicast.h"
 #include "keyframe.h"
+#include "language.h"
 #include "mainprogress.h"
 #include "picon_png.h"
 #include "pluginvclient.h"
+#include "transportque.inc"
 #include "vframe.h"
 
 #include <string.h>
 
-#include <libintl.h>
-#define _(String) gettext(String)
-#define gettext_noop(String) String
-#define N_(String) gettext_noop (String)
 
 #define TOP_FIELD_FIRST 0
 #define BOTTOM_FIELD_FIRST 1
@@ -22,11 +20,18 @@ class FieldFrame;
 class FieldFrameWindow;
 
 
+
+
+
+
+
 class FieldFrameConfig
 {
 public:
 	FieldFrameConfig();
+	int equivalent(FieldFrameConfig &src);
 	int field_dominance;
+	int first_frame;
 };
 
 
@@ -51,14 +56,23 @@ public:
 	FieldFrameWindow *gui;
 };
 
-class FieldFrameAvg : public BC_CheckBox
-{
-public:
-	FieldFrameAvg(FieldFrame *plugin, FieldFrameWindow *gui, int x, int y);
-	int handle_event();
-	FieldFrame *plugin;
-	FieldFrameWindow *gui;
-};
+// class FieldFrameFirst : public BC_Radial
+// {
+// public:
+// 	FieldFrameFirst(FieldFrame *plugin, FieldFrameWindow *gui, int x, int y);
+// 	int handle_event();
+// 	FieldFrame *plugin;
+// 	FieldFrameWindow *gui;
+// };
+// 
+// class FieldFrameSecond : public BC_Radial
+// {
+// public:
+// 	FieldFrameSecond(FieldFrame *plugin, FieldFrameWindow *gui, int x, int y);
+// 	int handle_event();
+// 	FieldFrame *plugin;
+// 	FieldFrameWindow *gui;
+// };
 
 class FieldFrameWindow : public BC_Window
 {
@@ -69,9 +83,12 @@ public:
 	FieldFrame *plugin;
 	FieldFrameTop *top;
 	FieldFrameBottom *bottom;
+//	FieldFrameFirst *first;
+//	FieldFrameSecond *second;
 };
 
 
+PLUGIN_THREAD_HEADER(FieldFrame, FieldFrameThread, FieldFrameWindow)
 
 
 class FieldFrame : public PluginVClient
@@ -80,22 +97,21 @@ public:
 	FieldFrame(PluginServer *server);
 	~FieldFrame();
 
-	char* plugin_title();
-	VFrame* new_picon();
-	int get_parameters();
+	PLUGIN_CLASS_MEMBERS(FieldFrameConfig, FieldFrameThread);
+
+	int process_buffer(VFrame *frame,
+		int64_t start_position,
+		double frame_rate);
+	int is_realtime();
 	int load_defaults();
 	int save_defaults();
-	int start_loop();
-	int stop_loop();
-	int process_loop(VFrame *output);
-	double get_framerate();
+	void save_data(KeyFrame *keyframe);
+	void read_data(KeyFrame *keyframe);
+	void update_gui();
+	void apply_field(VFrame *output, VFrame *input, int field);
 
-	int current_field;
-	long input_position;
-	VFrame *prev_frame, *next_frame;
-	FieldFrameConfig config;
-	Defaults *defaults;
-	MainProgressBar *progress;
+
+	VFrame *input;
 };
 
 
@@ -105,6 +121,7 @@ public:
 
 
 
+REGISTER_PLUGIN(FieldFrame)
 
 
 
@@ -112,8 +129,14 @@ public:
 FieldFrameConfig::FieldFrameConfig()
 {
 	field_dominance = TOP_FIELD_FIRST;
+	first_frame = 0;
 }
 
+int FieldFrameConfig::equivalent(FieldFrameConfig &src)
+{
+	return src.field_dominance == field_dominance &&
+		src.first_frame == first_frame;
+}
 
 
 
@@ -127,9 +150,9 @@ FieldFrameWindow::FieldFrameWindow(FieldFrame *plugin, int x, int y)
  	x, 
 	y, 
 	230, 
-	160, 
+	100, 
 	230, 
-	160, 
+	100, 
 	0, 
 	0,
 	1)
@@ -143,19 +166,17 @@ void FieldFrameWindow::create_objects()
 	add_subwindow(top = new FieldFrameTop(plugin, this, x, y));
 	y += 30;
 	add_subwindow(bottom = new FieldFrameBottom(plugin, this, x, y));
-
-	add_subwindow(new BC_OKButton(this));
-	add_subwindow(new BC_CancelButton(this));
+// 	y += 30;
+// 	add_subwindow(first = new FieldFrameFirst(plugin, this, x, y));
+// 	y += 30;
+// 	add_subwindow(second = new FieldFrameSecond(plugin, this, x, y));
 
 	show_window();
 	flush();
 }
 
-int FieldFrameWindow::close_event()
-{
-	set_done(1);
-	return 1;
-}
+WINDOW_CLOSE_EVENT(FieldFrameWindow)
+
 
 
 
@@ -185,6 +206,7 @@ int FieldFrameTop::handle_event()
 {
 	plugin->config.field_dominance = TOP_FIELD_FIRST;
 	gui->bottom->update(0);
+	plugin->send_configure_change();
 	return 1;
 }
 
@@ -209,6 +231,7 @@ int FieldFrameBottom::handle_event()
 {
 	plugin->config.field_dominance = BOTTOM_FIELD_FIRST;
 	gui->top->update(0);
+	plugin->send_configure_change();
 	return 1;
 }
 
@@ -216,6 +239,50 @@ int FieldFrameBottom::handle_event()
 
 
 
+// FieldFrameFirst::FieldFrameFirst(FieldFrame *plugin, 
+// 	FieldFrameWindow *gui, 
+// 	int x, 
+// 	int y)
+//  : BC_Radial(x, 
+// 	y, 
+// 	plugin->config.first_frame == 0,
+// 	_("First frame is first field"))
+// {
+// 	this->plugin = plugin;
+// 	this->gui = gui;
+// }
+// 
+// int FieldFrameFirst::handle_event()
+// {
+// 	plugin->config.first_frame = 0;
+// 	gui->second->update(0);
+// 	plugin->send_configure_change();
+// 	return 1;
+// }
+// 
+// 
+// 
+// 
+// FieldFrameSecond::FieldFrameSecond(FieldFrame *plugin, 
+// 	FieldFrameWindow *gui, 
+// 	int x, 
+// 	int y)
+//  : BC_Radial(x, 
+// 	y, 
+// 	plugin->config.first_frame == 1,
+// 	_("Second frame is first field"))
+// {
+// 	this->plugin = plugin;
+// 	this->gui = gui;
+// }
+// 
+// int FieldFrameSecond::handle_event()
+// {
+// 	plugin->config.first_frame = 1;
+// 	gui->first->update(0);
+// 	plugin->send_configure_change();
+// 	return 1;
+// }
 
 
 
@@ -231,39 +298,51 @@ int FieldFrameBottom::handle_event()
 
 
 
-REGISTER_PLUGIN(FieldFrame)
+
+PLUGIN_THREAD_OBJECT(FieldFrame, FieldFrameThread, FieldFrameWindow)
+
+
+
 
 
 FieldFrame::FieldFrame(PluginServer *server)
  : PluginVClient(server)
 {
-	prev_frame = 0;
-	next_frame = 0;
-	current_field = 0;
-	load_defaults();
+	PLUGIN_CONSTRUCTOR_MACRO
+	input = 0;
 }
 
 
 FieldFrame::~FieldFrame()
 {
-	save_defaults();
-	delete defaults;
+	PLUGIN_DESTRUCTOR_MACRO
 
-	if(prev_frame) delete prev_frame;
-	if(next_frame) delete next_frame;
+	if(input) delete input;
 }
 
-char* FieldFrame::plugin_title()
-{
-	return _("Fields to frames");
-}
+char* FieldFrame::plugin_title() { return N_("Fields to frames"); }
+int FieldFrame::is_realtime() { return 1; }
+
 
 NEW_PICON_MACRO(FieldFrame)
 
-double FieldFrame::get_framerate()
+SHOW_GUI_MACRO(FieldFrame, FieldFrameThread)
+
+RAISE_WINDOW_MACRO(FieldFrame)
+
+SET_STRING_MACRO(FieldFrame);
+
+int FieldFrame::load_configuration()
 {
-	return project_frame_rate / 2;
+	KeyFrame *prev_keyframe;
+	FieldFrameConfig old_config = config;
+
+	prev_keyframe = get_prev_keyframe(get_source_position());
+	read_data(prev_keyframe);
+
+	return !old_config.equivalent(config);
 }
+
 
 int FieldFrame::load_defaults()
 {
@@ -272,100 +351,137 @@ int FieldFrame::load_defaults()
 	sprintf(directory, "%sfieldframe.rc", BCASTDIR);
 
 // load the defaults
-	defaults = new Defaults(directory);
+	defaults = new BC_Hash(directory);
 	defaults->load();
 
 	config.field_dominance = defaults->get("DOMINANCE", config.field_dominance);
+	config.first_frame = defaults->get("FIRST_FRAME", config.first_frame);
 	return 0;
 }
 
 int FieldFrame::save_defaults()
 {
 	defaults->update("DOMINANCE", config.field_dominance);
+	defaults->update("FIRST_FRAME", config.first_frame);
 	defaults->save();
 	return 0;
 }
 
-int FieldFrame::get_parameters()
+void FieldFrame::save_data(KeyFrame *keyframe)
 {
-	BC_DisplayInfo info;
-	FieldFrameWindow window(this, info.get_abs_cursor_x(), info.get_abs_cursor_y());
-	window.create_objects();
-	int result = window.run_window();
-	
-	return result;
+	FileXML output;
+
+// cause data to be stored directly in text
+	output.set_shared_string(keyframe->data, MESSAGESIZE);
+	output.tag.set_title("FIELD_FRAME");
+	output.tag.set_property("DOMINANCE", config.field_dominance);
+	output.tag.set_property("FIRST_FRAME", config.first_frame);
+	output.append_tag();
+	output.terminate_string();
 }
 
-int FieldFrame::start_loop()
+void FieldFrame::read_data(KeyFrame *keyframe)
 {
-	if(PluginClient::interactive)
-	{
-		char string[BCTEXTLEN];
-		sprintf(string, "%s...", plugin_title());
-		progress = start_progress(string, 
-			PluginClient::end - PluginClient::start);
-	}
+	FileXML input;
 
-	input_position = PluginClient::start;
-	return 0;
-}
+	input.set_shared_string(keyframe->data, strlen(keyframe->data));
 
-int FieldFrame::stop_loop()
-{
-	if(PluginClient::interactive)
-	{
-		progress->stop_progress();
-		delete progress;
-	}
-	return 0;
-}
-
-int FieldFrame::process_loop(VFrame *output)
-{
 	int result = 0;
 
-	if(!prev_frame)
+	while(!input.read_tag())
 	{
-		prev_frame = new VFrame(0, output->get_w(), output->get_h(), output->get_color_model());
+		if(input.tag.title_is("FIELD_FRAME"))
+		{
+			config.field_dominance = input.tag.get_property("DOMINANCE", config.field_dominance);
+			config.first_frame = input.tag.get_property("FIRST_FRAME", config.first_frame);
+		}
 	}
-	if(!next_frame)
+}
+
+
+void FieldFrame::update_gui()
+{
+	if(thread)
 	{
-		next_frame = new VFrame(0, output->get_w(), output->get_h(), output->get_color_model());
+		if(load_configuration())
+		{
+			thread->window->lock_window();
+			thread->window->top->update(config.field_dominance == TOP_FIELD_FIRST);
+			thread->window->bottom->update(config.field_dominance == BOTTOM_FIELD_FIRST);
+//			thread->window->first->update(config.first_frame == 0);
+//			thread->window->second->update(config.first_frame == 1);
+			thread->window->unlock_window();
+		}
 	}
+}
 
-	read_frame(prev_frame, input_position);
-	input_position++;
-	read_frame(next_frame, input_position);
-	input_position++;
 
-	unsigned char **input_rows1;
-	unsigned char **input_rows2;
-	if(config.field_dominance == TOP_FIELD_FIRST)
+int FieldFrame::process_buffer(VFrame *frame,
+		int64_t start_position,
+		double frame_rate)
+{
+	int result = 0;
+	load_configuration();
+
+	if(input && !input->equivalent(frame, 0))
 	{
-		input_rows1 = prev_frame->get_rows();
-		input_rows2 = next_frame->get_rows();
+		delete input;
+		input = 0;
 	}
-	else
+
+	if(!input)
 	{
-		input_rows1 = next_frame->get_rows();
-		input_rows2 = prev_frame->get_rows();
+		input = new VFrame(0, 
+			frame->get_w(), 
+			frame->get_h(), 
+			frame->get_color_model());
 	}
 
-	unsigned char **output_rows = output->get_rows();
-	int row_size = VFrame::calculate_bytes_per_pixel(output->get_color_model()) * output->get_w();
-	for(int i = 0; i < output->get_h() - 1; i += 2)
+// Get input frames
+	int64_t field1_position = start_position * 2;
+	int64_t field2_position = start_position * 2 + 1;
+
+	if (get_direction() == PLAY_REVERSE)
 	{
-		memcpy(output_rows[i], input_rows1[i], row_size);
-		memcpy(output_rows[i + 1], input_rows2[i + 1], row_size);
+		field1_position -= 1;
+		field2_position -= 1;
 	}
 
 
-	if(PluginClient::interactive) 
-		result = progress->update(input_position - PluginClient::start);
+// printf("FieldFrame::process_buffer %d %lld %lld\n", 
+// config.field_dominance, 
+// field1_position, 
+// field2_position);
+	read_frame(input, 
+		0, 
+		field1_position,
+		frame_rate * 2);
+	apply_field(frame, 
+		input, 
+		config.field_dominance == TOP_FIELD_FIRST ? 0 : 1);
+	read_frame(input, 
+		0, 
+		field2_position,
+		frame_rate * 2);
+	apply_field(frame, 
+		input, 
+		config.field_dominance == TOP_FIELD_FIRST ? 1 : 0);
 
-	if(input_position >= PluginClient::end) result = 1;
+
+
+
 
 	return result;
 }
 
 
+void FieldFrame::apply_field(VFrame *output, VFrame *input, int field)
+{
+	unsigned char **input_rows = input->get_rows();
+	unsigned char **output_rows = output->get_rows();
+	int row_size = VFrame::calculate_bytes_per_pixel(output->get_color_model()) * output->get_w();
+	for(int i = field; i < output->get_h(); i += 2)
+	{
+		memcpy(output_rows[i], input_rows[i], row_size);
+	}
+}

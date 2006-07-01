@@ -49,6 +49,26 @@ public:
 	HistogramMain *plugin;
 };
 
+class HistogramPlot : public BC_CheckBox
+{
+public:
+	HistogramPlot(HistogramMain *plugin, 
+		int x, 
+		int y);
+	int handle_event();
+	HistogramMain *plugin;
+};
+
+class HistogramSplit : public BC_CheckBox
+{
+public:
+	HistogramSplit(HistogramMain *plugin, 
+		int x, 
+		int y);
+	int handle_event();
+	HistogramMain *plugin;
+};
+
 class HistogramMode : public BC_Radial
 {
 public:
@@ -133,6 +153,13 @@ public:
 	void update_input();
 	void update_output();
 	int keypress_event();
+	void get_point_extents(HistogramPoint *current,
+		int *x1, 
+		int *y1, 
+		int *x2, 
+		int *y2,
+		int *x,
+		int *y);
 
 	HistogramSlider *output;
 	HistogramAuto *automatic;
@@ -151,6 +178,8 @@ public:
 	int title3_x;
 	int title4_x;
 	BC_Pixmap *max_picon, *mid_picon, *min_picon;
+	HistogramPlot *plot;
+	HistogramSplit *split;
 };
 
 

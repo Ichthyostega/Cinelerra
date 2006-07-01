@@ -1,18 +1,14 @@
 #include "bcdisplayinfo.h"
 #include "clip.h"
-#include "defaults.h"
+#include "bchash.h"
 #include "filexml.h"
 #include "guicast.h"
 #include "keyframe.h"
+#include "language.h"
 #include "loadbalance.h"
 #include "picon_png.h"
 #include "pluginvclient.h"
 #include "vframe.h"
-
-#include <libintl.h>
-#define _(String) gettext(String)
-#define gettext_noop(String) String
-#define N_(String) gettext_noop (String)
 
 
 
@@ -148,7 +144,7 @@ public:
 	VFrame *temp_frame;
 	VFrame *input, *output;
 	WhirlConfig config;
-	Defaults *defaults;
+	BC_Hash *defaults;
 	WhirlThread *thread;
 	int need_reconfigure;
 };
@@ -367,15 +363,9 @@ WhirlEffect::~WhirlEffect()
 
 
 
-int WhirlEffect::is_realtime()
-{
-	return 1;
-}
 
-char* WhirlEffect::plugin_title()
-{
-	return _("Whirl");
-}
+char* WhirlEffect::plugin_title() { return N_("Whirl"); }
+int WhirlEffect::is_realtime() { return 1; }
 
 NEW_PICON_MACRO(WhirlEffect)
 
@@ -410,7 +400,7 @@ int WhirlEffect::load_defaults()
 	sprintf(directory, "%swhirl.rc", BCASTDIR);
 
 // load the defaults
-	defaults = new Defaults(directory);
+	defaults = new BC_Hash(directory);
 	defaults->load();
 
 	config.angle = defaults->get("ANGLE", config.angle);
@@ -472,7 +462,8 @@ int WhirlEffect::process_realtime(VFrame *input, VFrame *output)
 	this->input = input;
 	this->output = output;
 
-	if(EQUIV(config.angle, 0) || EQUIV(config.radius, 0))
+	if(EQUIV(config.angle, 0) || 
+		(EQUIV(config.radius, 0) && EQUIV(config.pinch, 0)))
 	{
 		if(input->get_rows()[0] != output->get_rows()[0])
 			output->copy_from(input);
@@ -799,9 +790,15 @@ void WhirlUnit::process_package(LoadPackage *package)
 
 	switch(plugin->input->get_color_model())
 	{
+		case BC_RGB_FLOAT:
+			WHIRL_MACRO(float, 1, 3);
+			break;
 		case BC_RGB888:
 		case BC_YUV888:
 			WHIRL_MACRO(unsigned char, 0xff, 3);
+			break;
+		case BC_RGBA_FLOAT:
+			WHIRL_MACRO(float, 1, 4);
 			break;
 		case BC_RGBA8888:
 		case BC_YUVA8888:
@@ -832,15 +829,11 @@ WhirlEngine::WhirlEngine(WhirlEffect *plugin, int cpus)
 }
 void WhirlEngine::init_packages()
 {
-	int increment = plugin->input->get_h() / LoadServer::total_packages;
-	int y = 0;
-	for(int i = 0; i < LoadServer::total_packages; i++)
+	for(int i = 0; i < LoadServer::get_total_packages(); i++)
 	{
-		WhirlPackage *pkg = (WhirlPackage*)packages[i];
-		pkg->row1 = y;
-		pkg->row2 = y + increment;
-		if(i == LoadServer::total_packages - 1) pkg->row2 = plugin->input->get_h();
-		y += increment;
+		WhirlPackage *pkg = (WhirlPackage*)get_package(i);
+		pkg->row1 = plugin->input->get_h() * i / LoadServer::get_total_packages();
+		pkg->row2 = plugin->input->get_h() * (i + 1) / LoadServer::get_total_packages();
 	}
 	
 }

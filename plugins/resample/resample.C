@@ -1,5 +1,5 @@
 #include "bcdisplayinfo.h"
-#include "defaults.h"
+#include "bchash.h"
 #include "mainprogress.h"
 #include "picon_png.h"
 #include "../../cinelerra/resample.h"
@@ -82,10 +82,7 @@ ResampleEffect::~ResampleEffect()
 	delete defaults;
 }
 
-char* ResampleEffect::plugin_title()
-{
-	return _("Resample");
-}
+char* ResampleEffect::plugin_title() { return N_("Resample"); }
 
 VFrame* ResampleEffect::new_picon()
 {
@@ -115,7 +112,7 @@ int ResampleEffect::load_defaults()
 // set the default directory
 	sprintf(directory, "%sresample.rc", BCASTDIR);
 // load the defaults
-	defaults = new Defaults(directory);
+	defaults = new BC_Hash(directory);
 	defaults->load();
 
 	scale = defaults->get("SCALE", (double)1);
@@ -138,7 +135,7 @@ int ResampleEffect::start_loop()
 		char string[BCTEXTLEN];
 		sprintf(string, "%s...", plugin_title());
 		progress = start_progress(string, 
-			(int64_t)((double)(PluginClient::end - PluginClient::start) * scale));
+			(int64_t)((double)(PluginClient::end - PluginClient::start) / scale));
 	}
 
 	current_position = PluginClient::start;
@@ -163,8 +160,8 @@ int ResampleEffect::process_loop(double *buffer, int64_t &write_length)
 	int result = 0;
 
 // Length to read based on desired output size
-	int64_t size = (int64_t)((double)PluginAClient::in_buffer_size / scale);
-	int64_t predicted_total = (int64_t)((double)(PluginClient::end - PluginClient::start) * scale + 0.5);
+	int64_t size = (int64_t)((double)PluginAClient::in_buffer_size * scale);
+	int64_t predicted_total = (int64_t)((double)(PluginClient::end - PluginClient::start) / scale + 0.5);
 
 	double *input = new double[size];
 
@@ -174,7 +171,7 @@ int ResampleEffect::process_loop(double *buffer, int64_t &write_length)
 	resample->resample_chunk(input, 
 		size, 
 		1000000, 
-		(int)(1000000.0 * scale), 
+		(int)(1000000.0 / scale), 
 		0);
 
 

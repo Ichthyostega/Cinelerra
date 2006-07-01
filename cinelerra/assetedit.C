@@ -1,0 +1,585 @@
+#include "asset.h"
+#include "assetedit.h"
+#include "awindow.h"
+#include "awindowgui.h"
+#include "bcprogressbox.h"
+#include "bitspopup.h"
+#include "cache.h"
+#include "clip.h"
+#include "cplayback.h"
+#include "cwindow.h"
+#include "file.h"
+#include "filempeg.h"
+#include "filesystem.h"
+#include "indexfile.h"
+#include "language.h"
+#include "mainindexes.h"
+#include "mwindow.h"
+#include "mwindowgui.h"
+#include "new.h"
+#include "preferences.h"
+#include "transportque.h"
+
+#include <string.h>
+
+
+
+AssetEdit::AssetEdit(MWindow *mwindow)
+ : Thread()
+{
+	this->mwindow = mwindow;
+	asset = 0;
+	window = 0;
+	set_synchronous(0);
+}
+
+
+AssetEdit::~AssetEdit()
+{
+}
+
+
+void AssetEdit::edit_asset(Asset *asset)
+{
+	if(asset)
+	{
+// Allow more than one window
+		this->asset = asset;
+		Thread::start();
+	}
+}
+
+
+int AssetEdit::set_asset(Asset *asset)
+{
+	this->asset = asset;
+	return 0;
+}
+
+void AssetEdit::run()
+{
+	if(asset)
+	{
+		new_asset = new Asset(asset->path);
+		*new_asset = *asset;
+		int result = 0;
+
+		window = new AssetEditWindow(mwindow, this);
+		window->create_objects();
+		window->raise_window();
+		result = window->run_window();
+
+ 		if(!result)
+ 		{
+ 			if(!asset->equivalent(*new_asset, 1, 1))
+ 			{
+				mwindow->gui->lock_window();
+				mwindow->remove_asset_from_caches(asset);
+// Omit index status from copy since an index rebuild may have been
+// happening when new_asset was created but not be happening anymore.
+				asset->copy_from(new_asset, 0);
+
+				mwindow->gui->update(0,
+					2,
+					0,
+					0,
+					0, 
+					0,
+					0);
+
+// Start index rebuilding
+				if(asset->audio_data)
+				{
+					char source_filename[BCTEXTLEN];
+					char index_filename[BCTEXTLEN];
+					IndexFile::get_index_filename(source_filename, 
+						mwindow->preferences->index_directory,
+						index_filename, 
+						asset->path);
+					remove(index_filename);
+					asset->index_status = INDEX_NOTTESTED;
+					mwindow->mainindexes->add_next_asset(0, asset);
+					mwindow->mainindexes->start_build();
+				}
+				mwindow->gui->unlock_window();
+
+
+				mwindow->awindow->gui->lock_window();
+				mwindow->awindow->gui->update_assets();
+				mwindow->awindow->gui->unlock_window();
+
+				mwindow->restart_brender();
+				mwindow->sync_parameters(CHANGE_ALL);
+ 			}
+ 		}
+
+		Garbage::delete_object(new_asset);
+		delete window;
+		window = 0;
+	}
+}
+
+
+
+
+
+
+
+
+AssetEditWindow::AssetEditWindow(MWindow *mwindow, AssetEdit *asset_edit)
+ : BC_Window(PROGRAM_NAME ": Asset Info", 
+ 	mwindow->gui->get_abs_cursor_x(1) - 400 / 2, 
+	mwindow->gui->get_abs_cursor_y(1) - 500 / 2, 
+	400, 
+	510,
+	400,
+	510,
+	0,
+	0,
+	1)
+{
+	this->mwindow = mwindow;
+	this->asset_edit = asset_edit;
+	this->asset = asset_edit->new_asset;
+	bitspopup = 0;
+	if(asset->format == FILE_PCM)
+		allow_edits = 1;
+	else
+		allow_edits = 0;
+}
+
+
+
+
+
+AssetEditWindow::~AssetEditWindow()
+{
+	if(bitspopup) delete bitspopup;
+}
+
+
+
+
+int AssetEditWindow::create_objects()
+{
+	int y = 10, x = 10, x1 = 10, x2 = 150;
+	char string[BCTEXTLEN];
+	int vmargin;
+	int hmargin1 = 180, hmargin2 = 290;
+	FileSystem fs;
+	BC_Title *title;
+
+	if(allow_edits) 
+		vmargin = 30;
+	else
+		vmargin = 20;
+
+	add_subwindow(path_text = new AssetEditPathText(this, y));
+	add_subwindow(path_button = new AssetEditPath(mwindow, 
+		this, 
+		path_text, 
+		y, 
+		asset->path, 
+		PROGRAM_NAME ": Asset path", _("Select a file for this asset:")));
+	y += 30;
+
+	add_subwindow(new BC_Title(x, y, _("File format:")));
+	x = x2;
+	add_subwindow(new BC_Title(x, y, File::formattostr(mwindow->plugindb, asset->format), MEDIUMFONT, YELLOW));
+	x = x1;
+	y += 20;
+
+	int64_t bytes = 1;
+	int subtitle_tracks = 0;
+	if(asset->format == FILE_MPEG &&
+		asset->video_data)
+	{
+// Get length from TOC
+		FileMPEG::get_info(asset, &bytes, &subtitle_tracks);
+	}
+	else
+	{
+		bytes = fs.get_size(asset->path);
+	}
+	add_subwindow(new BC_Title(x, y, _("Bytes:")));
+	sprintf(string, "%lld", bytes);
+	Units::punctuate(string);
+	
+
+	add_subwindow(new BC_Title(x2, y, string, MEDIUMFONT, YELLOW));
+	y += 20;
+	x = x1;
+
+	double length;
+	if(asset->audio_length > 0)
+		length = (double)asset->audio_length / asset->sample_rate;
+	if(asset->video_length > 0)
+		length = MAX(length, (double)asset->video_length / asset->frame_rate);
+	int64_t bitrate;
+	if(!EQUIV(length, 0))
+		bitrate = (int64_t)(bytes * 8 / length);
+	else
+		bitrate = bytes;
+	add_subwindow(new BC_Title(x, y, _("Bitrate (bits/sec):")));
+	sprintf(string, "%lld", bitrate);
+
+	Units::punctuate(string);
+	add_subwindow(new BC_Title(x2, y, string, MEDIUMFONT, YELLOW));
+
+	y += 30;
+	x = x1;
+
+	if(asset->audio_data)
+	{
+		add_subwindow(new BC_Bar(x, y, get_w() - x * 2));
+		y += 5;
+
+		add_subwindow(new BC_Title(x, y, _("Audio:"), LARGEFONT, RED));
+
+		y += 30;
+
+		if(asset->get_compression_text(1, 0))
+		{
+			add_subwindow(new BC_Title(x, y, _("Compression:")));
+			x = x2;
+			add_subwindow(new BC_Title(x, 
+				y, 
+				asset->get_compression_text(1, 0), 
+				MEDIUMFONT, 
+				YELLOW));
+			y += vmargin;
+			x = x1;
+		}
+
+		add_subwindow(new BC_Title(x, y, _("Channels:")));
+		sprintf(string, "%d", asset->channels);
+
+		x = x2;
+		if(allow_edits)
+		{
+			BC_TumbleTextBox *textbox = new AssetEditChannels(this, string, x, y);
+			textbox->create_objects();
+			y += vmargin;
+		}
+		else
+		{
+			add_subwindow(new BC_Title(x, y, string, MEDIUMFONT, YELLOW));
+			y += 20;
+		}
+
+		x = x1;
+		add_subwindow(new BC_Title(x, y, _("Sample rate:")));
+		sprintf(string, "%d", asset->sample_rate);
+
+		x = x2;
+//		if(allow_edits)
+		if(1)
+		{
+			BC_TextBox *textbox;
+			add_subwindow(textbox = new AssetEditRate(this, string, x, y));
+			x += textbox->get_w();
+			add_subwindow(new SampleRatePulldown(mwindow, textbox, x, y));
+		}
+		else
+		{
+			add_subwindow(new BC_Title(x, y, string, MEDIUMFONT, YELLOW));
+		}
+
+		y += 30;
+		x = x1;
+
+		add_subwindow(new BC_Title(x, y, _("Bits:")));
+		x = x2;
+		if(allow_edits)
+		{
+			bitspopup = new BitsPopup(this, 
+				x, 
+				y, 
+				&asset->bits, 
+				1, 
+				1, 
+				1,
+				0,
+				1);
+			bitspopup->create_objects();
+		}
+		else
+			add_subwindow(new BC_Title(x, y, File::bitstostr(asset->bits), MEDIUMFONT, YELLOW));
+
+
+		x = x1;
+		y += vmargin;
+		add_subwindow(new BC_Title(x, y, _("Header length:")));
+		sprintf(string, "%d", asset->header);
+
+		x = x2;
+		if(allow_edits)
+			add_subwindow(new AssetEditHeader(this, string, x, y));
+		else
+			add_subwindow(new BC_Title(x, y, string, MEDIUMFONT, YELLOW));
+
+		y += vmargin;
+		x = x1;
+
+		add_subwindow(new BC_Title(x, y, _("Byte order:")));
+
+		if(allow_edits)
+		{
+			x = x2;
+
+			add_subwindow(lohi = new AssetEditByteOrderLOHI(this, 
+				asset->byte_order, 
+				x, 
+				y));
+			x += 70;
+			add_subwindow(hilo = new AssetEditByteOrderHILO(this, 
+				!asset->byte_order, 
+				x, 
+				y));
+			y += vmargin;
+		}
+		else
+		{
+			x = x2;
+			if(asset->byte_order)
+				add_subwindow(new BC_Title(x, y, _("Lo-Hi"), MEDIUMFONT, YELLOW));
+			else
+				add_subwindow(new BC_Title(x, y, _("Hi-Lo"), MEDIUMFONT, YELLOW));
+			y += vmargin;
+		}
+
+
+		x = x1;
+		if(allow_edits)
+		{
+//			add_subwindow(new BC_Title(x, y, _("Values are signed:")));
+			add_subwindow(new AssetEditSigned(this, asset->signed_, x, y));
+		}
+		else
+		{
+			if(!asset->signed_ && asset->bits == 8)
+				add_subwindow(new BC_Title(x, y, _("Values are unsigned")));
+			else
+				add_subwindow(new BC_Title(x, y, _("Values are signed")));
+		}
+
+		y += 30;
+	}
+
+	x = x1;
+	if(asset->video_data)
+	{
+		add_subwindow(new BC_Bar(x, y, get_w() - x * 2));
+		y += 5;
+
+		add_subwindow(new BC_Title(x, y, _("Video:"), LARGEFONT, RED));
+
+
+		y += 30;
+		x = x1;
+		if(asset->get_compression_text(0,1))
+		{
+			add_subwindow(new BC_Title(x, y, _("Compression:")));
+			x = x2;
+			add_subwindow(new BC_Title(x, 
+				y, 
+				asset->get_compression_text(0,1), 
+				MEDIUMFONT, 
+				YELLOW));
+			y += vmargin;
+			x = x1;
+		}
+
+		add_subwindow(new BC_Title(x, y, _("Frame rate:")));
+		x = x2;
+		sprintf(string, "%.2f", asset->frame_rate);
+		BC_TextBox *framerate;
+		add_subwindow(framerate = new AssetEditFRate(this, string, x, y));
+		x += 105;
+		add_subwindow(new FrameRatePulldown(mwindow, framerate, x, y));
+		
+		y += 30;
+		x = x1;
+		add_subwindow(new BC_Title(x, y, _("Width:")));
+		x = x2;
+		sprintf(string, "%d", asset->width);
+		add_subwindow(new BC_Title(x, y, string, MEDIUMFONT, YELLOW));
+		
+		y += vmargin;
+		x = x1;
+		add_subwindow(new BC_Title(x, y, _("Height:")));
+		x = x2;
+		sprintf(string, "%d", asset->height);
+		add_subwindow(title = new BC_Title(x, y, string, MEDIUMFONT, YELLOW));
+		y += title->get_h() + 5;
+
+		if(asset->format == FILE_MPEG)
+		{
+			x = x1;
+			add_subwindow(new BC_Title(x, y, _("Subtitle tracks:")));
+			x = x2;
+			sprintf(string, "%d", subtitle_tracks);
+			add_subwindow(title = new BC_Title(x, y, string, MEDIUMFONT, YELLOW));
+			y += title->get_h() + 5;
+		}
+	}
+
+	add_subwindow(new BC_OKButton(this));
+	add_subwindow(new BC_CancelButton(this));
+	show_window();
+	flush();
+	return 0;
+}
+
+AssetEditChannels::AssetEditChannels(AssetEditWindow *fwindow, 
+	char *text, 
+	int x,
+	int y)
+ : BC_TumbleTextBox(fwindow, 
+		(int)atol(text),
+		(int)1,
+		(int)MAXCHANNELS,
+		x, 
+		y, 
+		50)
+{
+	this->fwindow = fwindow;
+}
+
+int AssetEditChannels::handle_event()
+{
+	fwindow->asset->channels = atol(get_text());
+	return 1;
+}
+
+AssetEditRate::AssetEditRate(AssetEditWindow *fwindow, char *text, int x, int y)
+ : BC_TextBox(x, y, 100, 1, text)
+{
+	this->fwindow = fwindow;
+}
+
+int AssetEditRate::handle_event()
+{
+	fwindow->asset->sample_rate = atol(get_text());
+	return 1;
+}
+
+AssetEditFRate::AssetEditFRate(AssetEditWindow *fwindow, char *text, int x, int y)
+ : BC_TextBox(x, y, 100, 1, text)
+{
+	this->fwindow = fwindow;
+}
+
+int AssetEditFRate::handle_event()
+{
+	fwindow->asset->frame_rate = atof(get_text());
+	return 1;
+}
+
+AssetEditHeader::AssetEditHeader(AssetEditWindow *fwindow, char *text, int x, int y)
+ : BC_TextBox(x, y, 100, 1, text)
+{
+	this->fwindow = fwindow;
+}
+
+int AssetEditHeader::handle_event()
+{
+	fwindow->asset->header = atol(get_text());
+	return 1;
+}
+
+AssetEditByteOrderLOHI::AssetEditByteOrderLOHI(AssetEditWindow *fwindow, 
+	int value, 
+	int x,
+	int y)
+ : BC_Radial(x, y, value, _("Lo-Hi"))
+{
+	this->fwindow = fwindow;
+}
+
+int AssetEditByteOrderLOHI::handle_event()
+{
+	fwindow->asset->byte_order = 1;
+	fwindow->hilo->update(0);
+	update(1);
+	return 1;
+}
+
+AssetEditByteOrderHILO::AssetEditByteOrderHILO(AssetEditWindow *fwindow, 
+	int value, 
+	int x, 
+	int y)
+ : BC_Radial(x, y, value, _("Hi-Lo"))
+{
+	this->fwindow = fwindow;
+}
+
+int AssetEditByteOrderHILO::handle_event()
+{
+	fwindow->asset->byte_order = 0;
+	fwindow->lohi->update(0);
+	update(1);
+	return 1;
+}
+
+AssetEditSigned::AssetEditSigned(AssetEditWindow *fwindow, 
+	int value, 
+	int x, 
+	int y)
+ : BC_CheckBox(x, y, value, _("Values are signed"))
+{
+	this->fwindow = fwindow;
+}
+
+int AssetEditSigned::handle_event()
+{
+	fwindow->asset->signed_ = get_value();
+	return 1;
+}
+
+
+
+
+
+
+
+AssetEditPathText::AssetEditPathText(AssetEditWindow *fwindow, int y)
+ : BC_TextBox(5, y, 300, 1, fwindow->asset->path) 
+{
+	this->fwindow = fwindow; 
+}
+AssetEditPathText::~AssetEditPathText() 
+{
+}
+int AssetEditPathText::handle_event() 
+{
+	strcpy(fwindow->asset->path, get_text());
+	return 1;
+}
+
+AssetEditPath::AssetEditPath(MWindow *mwindow, AssetEditWindow *fwindow, BC_TextBox *textbox, int y, char *text, char *window_title, char *window_caption)
+ : BrowseButton(mwindow, fwindow, textbox, 310, y, text, window_title, window_caption, 0) 
+{ 
+	this->fwindow = fwindow; 
+}
+AssetEditPath::~AssetEditPath() {}
+
+
+
+
+
+
+AssetEditFormat::AssetEditFormat(AssetEditWindow *fwindow, char* default_, int y)
+ : FormatPopup(fwindow->mwindow->plugindb, 90, y)
+{ 
+	this->fwindow = fwindow; 
+}
+AssetEditFormat::~AssetEditFormat() 
+{
+}
+int AssetEditFormat::handle_event()
+{
+	fwindow->asset->format = File::strtoformat(fwindow->mwindow->plugindb, get_selection(0, 0)->get_text());
+	return 1;
+}
+

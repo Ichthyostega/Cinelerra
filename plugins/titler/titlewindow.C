@@ -2,40 +2,21 @@
 #include "titlewindow.h"
 
 #include <string.h>
-
 #include <libintl.h>
 #define _(String) gettext(String)
 #define gettext_noop(String) String
 #define N_(String) gettext_noop (String)
 
-TitleThread::TitleThread(TitleMain *client)
- : Thread()
-{
-	this->client = client;
-	set_synchronous(0);
-	gui_started.lock();
-	completion.lock();
-}
 
-TitleThread::~TitleThread()
-{
-// Window always deleted here
-	delete window;
-}
 
-void TitleThread::run()
-{
-	BC_DisplayInfo info;
-	window = new TitleWindow(client, 
-		info.get_abs_cursor_x() - client->window_w / 2, 
-		info.get_abs_cursor_y() - client->window_h / 2);
-	window->create_objects();
-	gui_started.unlock();
-	int result = window->run_window();
-	completion.unlock();
-// Last command executed in thread
-	if(result) client->client_side_close();
-}
+
+
+
+
+
+
+PLUGIN_THREAD_OBJECT(TitleMain, TitleThread, TitleWindow)
+
 
 
 
@@ -249,7 +230,7 @@ int TitleWindow::create_objects()
 	x += 110;
 
 	add_tool(color_button = new TitleColorButton(client, this, x, y + 20));
-	x += 90;
+	x += color_button->get_w();
 	color_x = x;
 	color_y = y + 20;
 	color_thread = new TitleColorThread(client, this);
@@ -772,29 +753,6 @@ int TitleY::handle_event()
 	return 1;
 }
 
-TitleStrokeW::TitleStrokeW(TitleMain *client, 
-	TitleWindow *window, 
-	int x, 
-	int y)
- : BC_TumbleTextBox(window,
- 	(float)client->config.stroke_width,
-	(float)-2048,
-	(float)2048,
-	x, 
-	y, 
-	60)
-{
-	this->client = client;
-	this->window = window;
-}
-int TitleStrokeW::handle_event()
-{
-	client->config.stroke_width = atof(get_text());
-	client->send_configure_change();
-	return 1;
-}
-
-
 TitleSpeed::TitleSpeed(TitleMain *client, TitleWindow *window, int x, int y)
  : BC_TumbleTextBox(window,
  	(float)client->config.pixels_per_second, 
@@ -916,24 +874,9 @@ TitleColorThread::TitleColorThread(TitleMain *client, TitleWindow *window)
 	this->window = window;
 }
 
-int TitleColorThread::handle_event(int output)
+int TitleColorThread::handle_new_color(int output, int alpha)
 {
 	client->config.color = output;
-	window->update_color();
-	window->flush();
-	client->send_configure_change();
-	return 1;
-}
-TitleColorStrokeThread::TitleColorStrokeThread(TitleMain *client, TitleWindow *window)
- : ColorThread()
-{
-	this->client = client;
-	this->window = window;
-}
-
-int TitleColorStrokeThread::handle_event(int output)
-{
-	client->config.color_stroke = output;
 	window->update_color();
 	window->flush();
 	client->send_configure_change();

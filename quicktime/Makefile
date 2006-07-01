@@ -21,9 +21,12 @@ MPEG3_DIR := $(shell expr ../libmpeg3* )
 OBJS := 
 
 
-FFMPEG_DIR := ffmpeg.071405
+# bug fixes for ffmpeg are required
+# Add test to ffmpeg/libavcodec/svq3.c to make sure extradata is
+# nonzero before memcmping it.
+FFMPEG_DIR := $(shell expr ffmpeg*)
 FFMPEG_LIB := $(OBJDIR)/ffmpeg/
-FFMPEG_INCLUDE := $(FFMPEG_DIR)/libavcodec
+FFMPEG_INCLUDE := -I$(FFMPEG_DIR)/libavcodec -I$(FFMPEG_DIR)/libavutil
 
 FAAD_DIR := faad2-2.0
 FAAD_LIB := $(OBJDIR)/faad/
@@ -33,7 +36,7 @@ FAAC_DIR := faac-1.24
 FAAC_LIB := $(OBJDIR)/faac/
 FAAC_INCLUDE := $(FAAC_DIR)/include/
 
-X264_DIR := x264.071405
+X264_DIR := $(shell expr x264*)
 X264_LIB := $(OBJDIR)/x264
 X264_INCLUDE := $(X264_DIR)
 
@@ -149,6 +152,7 @@ OBJS += \
 	$(OBJDIR)/mpeg4.o \
 	$(OBJDIR)/mvhd.o \
 	$(OBJDIR)/plugin.o \
+	$(OBJDIR)/qtcache.o \
 	$(OBJDIR)/qtdv.o \
 	$(OBJDIR)/qtffmpeg.o \
 	$(OBJDIR)/qth264.o \
@@ -191,6 +195,7 @@ UTILS := \
 	$(OBJDIR)/make_streamable \
 	$(OBJDIR)/qtinfo \
 	$(OBJDIR)/dechunk \
+	$(OBJDIR)/yuv2mov \
 	$(OBJDIR)/yuv4toyuv \
 	$(OBJDIR)/recover \
 	$(OBJDIR)/rechunk
@@ -207,7 +212,7 @@ CFLAGS += \
 	-I$(ENCORE_DIR) \
 	-I$(FAAC_INCLUDE) \
 	-I$(FAAD_INCLUDE) \
-	-I$(FFMPEG_INCLUDE) \
+	$(FFMPEG_INCLUDE) \
 	-DENCORE_INCLUDE=\"$(ENCORE_INCLUDE)\" \
 	-I$(X264_INCLUDE) \
 	-I$(DV_INCLUDE) \
@@ -255,7 +260,8 @@ $(FFMPEG_LIB):
 	$(MAKE) -C $(FFMPEG_DIR) && \
 	mkdir -p $(FFMPEG_LIB) && \
 	cd $(FFMPEG_LIB) && \
-	ar x ../../$(FFMPEG_DIR)/libavcodec/libavcodec.a
+	ar x ../../$(FFMPEG_DIR)/libavcodec/libavcodec.a && \
+	ar x ../../$(FFMPEG_DIR)/libavutil/libavutil.a
 
 $(FAAD_LIB):
 	$(MAKE) -C $(FAAD_DIR) && \
@@ -327,6 +333,9 @@ $(OBJDIR)/recover: $(OBJDIR)/recover.o $(OUTPUT)
 $(OBJDIR)/yuv4toyuv: $(OBJDIR)/yuv4toyuv.o $(OUTPUT)
 	$(CC) -o $(OBJDIR)/yuv4toyuv $(OBJDIR)/yuv4toyuv.o $(LIBS)
 
+$(OBJDIR)/yuv2mov: $(OBJDIR)/yuv2mov.o $(OUTPUT)
+	$(CC) -o $(OBJDIR)/yuv2mov $(OBJDIR)/yuv2mov.o $(LIBS)
+
 $(OBJDIR)/qtinfo: $(OBJDIR)/qtinfo.o
 	$(CC) -o $(OBJDIR)/qtinfo $(OBJDIR)/qtinfo.o $(LIBS)
 
@@ -342,7 +351,16 @@ clean:
 		-o -name '*.plugin' \
 		-o -name '*.so' \) -exec rm -f {} \; -prune
 	find \( -name $(OBJDIR) \) -exec rm -rf {} \; -prune
-	find \( -name .deps \) -exec rm -rf {} \; -prune
+#	find \( -name .deps \) -exec rm -rf {} \; -prune
+	make -i -C $(FFMPEG_DIR) clean
+	make -i -C $(FAAD_DIR) clean
+	make -i -C $(FAAC_DIR) clean
+	make -i -C $(FAAD_DIR) clean
+	make -i -C $(X264_DIR) clean
+	make -i -C $(DV_DIR) clean
+	make -i -C $(OGG_DIR) clean
+	make -i -C $(VORBIS_DIR) clean
+	make -i -C $(JPEG_DIR) clean
 
 wc:
 	cat *.c *.h | wc
@@ -359,6 +377,7 @@ $(OBJDIR)/make_streamable.o \
 $(OBJDIR)/dechunk.o \
 $(OBJDIR)/recover.o \
 $(OBJDIR)/yuv4toyuv.o \
+$(OBJDIR)/yuv2mov.o \
 $(OBJDIR)/qtinfo.o \
 $(OBJDIR)/rechunk.o \
 $(OBJS):
@@ -450,6 +469,7 @@ $(OBJDIR)/mpeg4.o:			  mpeg4.c
 $(OBJDIR)/mp4a.o:                         mp4a.c
 $(OBJDIR)/mvhd.o:			  mvhd.c
 $(OBJDIR)/plugin.o:			  plugin.c
+$(OBJDIR)/qtcache.o:                      qtcache.c
 $(OBJDIR)/qtdv.o:			  qtdv.c
 $(OBJDIR)/qtffmpeg.o:                     qtffmpeg.c
 $(OBJDIR)/qth264.o:                       qth264.c
@@ -488,6 +508,7 @@ $(OBJDIR)/wma.o:		          wma.c
 $(OBJDIR)/wmx2.o:		          wmx2.c
 $(OBJDIR)/workarounds.o:		  workarounds.c
 $(OBJDIR)/yuv2.o:			  yuv2.c
+$(OBJDIR)/yuv2mov.o:                      yuv2mov.c
 $(OBJDIR)/yuv4.o:			  yuv4.c
 $(OBJDIR)/yuv4toyuv.o:			  yuv4toyuv.c
 $(OBJDIR)/yv12.o:			  yv12.c

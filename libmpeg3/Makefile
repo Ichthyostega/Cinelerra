@@ -97,6 +97,7 @@ OBJS = \
 	$(OBJDIR)/mpeg3demux.o \
 	$(OBJDIR)/mpeg3ifo.o \
 	$(OBJDIR)/mpeg3io.o \
+	$(OBJDIR)/mpeg3strack.o \
 	$(OBJDIR)/mpeg3title.o \
 	$(OBJDIR)/mpeg3tocutil.o \
 	$(OBJDIR)/mpeg3vtrack.o \
@@ -106,11 +107,13 @@ OBJS = \
 	$(OBJDIR)/video/macroblocks.o \
 	$(OBJDIR)/video/mmxtest.o \
 	$(OBJDIR)/video/motion.o \
+	$(OBJDIR)/video/mpeg3cache.o \
 	$(OBJDIR)/video/mpeg3video.o \
 	$(OBJDIR)/video/output.o \
 	$(OBJDIR)/video/reconstruct.o \
 	$(OBJDIR)/video/seek.o \
 	$(OBJDIR)/video/slice.o \
+	$(OBJDIR)/video/subtitle.o \
 	$(OBJDIR)/video/vlc.o \
 	$(OBJDIR)/workarounds.o
 
@@ -219,6 +222,7 @@ $(OBJDIR)/mpeg3demux.o: 			    mpeg3demux.c
 $(OBJDIR)/mpeg3dump.o: 				    mpeg3dump.c
 $(OBJDIR)/mpeg3ifo.o: 				    mpeg3ifo.c
 $(OBJDIR)/mpeg3io.o: 				    mpeg3io.c
+$(OBJDIR)/mpeg3strack.o:                            mpeg3strack.c
 $(OBJDIR)/mpeg3title.o: 			    mpeg3title.c
 $(OBJDIR)/mpeg3toc3.o:  			    mpeg3toc3.c
 $(OBJDIR)/mpeg3toc.o: 				    mpeg3toc.c
@@ -243,11 +247,13 @@ $(OBJDIR)/video/idct.o: 			    video/idct.c
 $(OBJDIR)/video/macroblocks.o:  		    video/macroblocks.c
 $(OBJDIR)/video/mmxtest.o: 			    video/mmxtest.c
 $(OBJDIR)/video/motion.o: 			    video/motion.c
+$(OBJDIR)/video/mpeg3cache.o: 			    video/mpeg3cache.c
 $(OBJDIR)/video/mpeg3video.o: 			    video/mpeg3video.c
 $(OBJDIR)/video/output.o: 			    video/output.c
 $(OBJDIR)/video/reconstruct.o:  		    video/reconstruct.c
 $(OBJDIR)/video/seek.o: 			    video/seek.c
 $(OBJDIR)/video/slice.o: 			    video/slice.c
+$(OBJDIR)/video/subtitle.o:                         video/subtitle.c
 $(OBJDIR)/video/vlc.o:  			    video/vlc.c
 $(OBJDIR)/workarounds.o:  			    workarounds.c
 

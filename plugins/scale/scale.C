@@ -1,15 +1,12 @@
 #include "clip.h"
 #include "filexml.h"
+#include "language.h"
 #include "picon_png.h"
 #include "scale.h"
 #include "scalewin.h"
 
 #include <string.h>
 
-#include <libintl.h>
-#define _(String) gettext(String)
-#define gettext_noop(String) String
-#define N_(String) gettext_noop (String)
 
 REGISTER_PLUGIN(ScaleMain)
 
@@ -59,7 +56,6 @@ void ScaleConfig::interpolate(ScaleConfig &prev,
 ScaleMain::ScaleMain(PluginServer *server)
  : PluginVClient(server)
 {
-	temp_frame = 0;
 	overlayer = 0;
 	PLUGIN_CONSTRUCTOR_MACRO
 }
@@ -68,13 +64,11 @@ ScaleMain::~ScaleMain()
 {
 	PLUGIN_DESTRUCTOR_MACRO
 
-	if(temp_frame) delete temp_frame;
-	temp_frame = 0;
 	if(overlayer) delete overlayer;
 	overlayer = 0;
 }
 
-char* ScaleMain::plugin_title() { return _("Scale"); }
+char* ScaleMain::plugin_title() { return N_("Scale"); }
 int ScaleMain::is_realtime() { return 1; }
 
 NEW_PICON_MACRO(ScaleMain)
@@ -86,7 +80,7 @@ int ScaleMain::load_defaults()
 	sprintf(directory, "%sscale.rc", BCASTDIR);
 
 // load the defaults
-	defaults = new Defaults(directory);
+	defaults = new BC_Hash(directory);
 	defaults->load();
 
 	config.w = defaults->get("WIDTH", config.w);
@@ -164,27 +158,34 @@ void ScaleMain::read_data(KeyFrame *keyframe)
 
 
 
-int ScaleMain::process_realtime(VFrame *input_ptr, VFrame *output_ptr)
+int ScaleMain::process_buffer(VFrame *frame,
+	int64_t start_position,
+	double frame_rate)
 {
 	VFrame *input, *output;
 	
-	input = input_ptr;
-	output = output_ptr;
+	input = frame;
+	output = frame;
 
 	load_configuration();
 
-//printf("ScaleMain::process_realtime 1 %p\n", input);
-	if(input->get_rows()[0] == output->get_rows()[0])
-	{
-		if(!temp_frame) 
-			temp_frame = new VFrame(0, 
-				input_ptr->get_w(), 
-				input_ptr->get_h(),
-				input->get_color_model());
-		temp_frame->copy_from(input);
-		input = temp_frame;
-	}
-//printf("ScaleMain::process_realtime 2 %p\n", input);
+	read_frame(frame, 
+		0, 
+		start_position, 
+		frame_rate,
+		get_use_opengl());
+
+// No scaling
+	if(config.w == 1 && config.h == 1)
+		return 0;
+
+	if(get_use_opengl()) return run_opengl();
+
+	VFrame *temp_frame = new_temp(frame->get_w(), 
+			frame->get_h(),
+			frame->get_color_model());
+	temp_frame->copy_from(frame);
+	input = temp_frame;
 
 	if(!overlayer)
 	{
@@ -192,61 +193,18 @@ int ScaleMain::process_realtime(VFrame *input_ptr, VFrame *output_ptr)
 	}
 
 
-	if(config.w == 1 && config.h == 1)
-	{
-// No scaling
-		if(input->get_rows()[0] != output->get_rows()[0])
-		{
-			output->copy_from(input);
-		}
-	}
-	else
-	{
 // Perform scaling
-		float center_x, center_y;
-		float in_x1, in_x2, in_y1, in_y2, out_x1, out_x2, out_y1, out_y2;
-
-		center_x = (float)input_ptr->get_w() / 2;
-		center_y = (float)input_ptr->get_h() / 2;
-		in_x1 = 0;
-		in_x2 = input_ptr->get_w();
-		in_y1 = 0;
-		in_y2 = input_ptr->get_h();
-		out_x1 = (float)center_x - (float)input_ptr->get_w() * config.w / 2;
-		out_x2 = (float)center_x + (float)input_ptr->get_w() * config.w / 2;
-		out_y1 = (float)center_y - (float)input_ptr->get_h() * config.h / 2;
-		out_y2 = (float)center_y + (float)input_ptr->get_h() * config.h / 2;
-
-
-//printf("ScaleMain::process_realtime %f = %d / 2\n", center_x, input_ptr->get_w());
-//printf("ScaleMain::process_realtime %f = %f + %d * %f / 2\n", 
-//	out_x1, center_x, input_ptr->get_w(), config.w);
-
-		if(out_x1 < 0)
-		{
-			in_x1 += -out_x1 / config.w;
-			out_x1 = 0;
-		}
-
-		if(out_x2 > input_ptr->get_w())
-		{
-			in_x2 -= (out_x2 - input_ptr->get_w()) / config.w;
-			out_x2 = input_ptr->get_w();
-		}
-
-		if(out_y1 < 0)
-		{
-			in_y1 += -out_y1 / config.h;
-			out_y1 = 0;
-		}
-
-		if(out_y2 > input_ptr->get_h())
-		{
-			in_y2 -= (out_y2 - input_ptr->get_h()) / config.h;
-			out_y2 = input_ptr->get_h();
-		}
-
-		output->clear_frame();
+	float in_x1, in_x2, in_y1, in_y2, out_x1, out_x2, out_y1, out_y2;
+	calculate_transfer(output,
+		in_x1, 
+		in_x2, 
+		in_y1, 
+		in_y2, 
+		out_x1, 
+		out_x2, 
+		out_y1, 
+		out_y2);
+	output->clear_frame();
 
 // printf("ScaleMain::process_realtime 3 output=%p input=%p config.w=%f config.h=%f"
 // 	"%f %f %f %f -> %f %f %f %f\n", 
@@ -262,21 +220,101 @@ int ScaleMain::process_realtime(VFrame *input_ptr, VFrame *output_ptr)
 // 	out_y1, 
 // 	out_x2, 
 // 	out_y2);
-		overlayer->overlay(output, 
-			input,
-			in_x1, 
-			in_y1, 
-			in_x2, 
-			in_y2,
-			out_x1, 
-			out_y1, 
-			out_x2, 
-			out_y2, 
-			1,
-			TRANSFER_REPLACE,
-			get_interpolation_type());
+	overlayer->overlay(output, 
+		input,
+		in_x1, 
+		in_y1, 
+		in_x2, 
+		in_y2,
+		out_x1, 
+		out_y1, 
+		out_x2, 
+		out_y2, 
+		1,
+		TRANSFER_REPLACE,
+		get_interpolation_type());
 
+	return 0;
+}
+
+void ScaleMain::calculate_transfer(VFrame *frame,
+	float &in_x1, 
+	float &in_x2, 
+	float &in_y1, 
+	float &in_y2, 
+	float &out_x1, 
+	float &out_x2, 
+	float &out_y1, 
+	float &out_y2)
+{
+	float center_x, center_y;
+	center_x = (float)frame->get_w() / 2;
+	center_y = (float)frame->get_h() / 2;
+	in_x1 = 0;
+	in_x2 = frame->get_w();
+	in_y1 = 0;
+	in_y2 = frame->get_h();
+	out_x1 = (float)center_x - (float)frame->get_w() * config.w / 2;
+	out_x2 = (float)center_x + (float)frame->get_w() * config.w / 2;
+	out_y1 = (float)center_y - (float)frame->get_h() * config.h / 2;
+	out_y2 = (float)center_y + (float)frame->get_h() * config.h / 2;
+
+
+
+	if(out_x1 < 0)
+	{
+		in_x1 += -out_x1 / config.w;
+		out_x1 = 0;
 	}
+
+	if(out_x2 > frame->get_w())
+	{
+		in_x2 -= (out_x2 - frame->get_w()) / config.w;
+		out_x2 = frame->get_w();
+	}
+
+	if(out_y1 < 0)
+	{
+		in_y1 += -out_y1 / config.h;
+		out_y1 = 0;
+	}
+
+	if(out_y2 > frame->get_h())
+	{
+		in_y2 -= (out_y2 - frame->get_h()) / config.h;
+		out_y2 = frame->get_h();
+	}
+}
+
+int ScaleMain::handle_opengl()
+{
+#ifdef HAVE_GL
+	float in_x1, in_x2, in_y1, in_y2, out_x1, out_x2, out_y1, out_y2;
+	calculate_transfer(get_output(),
+		in_x1, 
+		in_x2, 
+		in_y1, 
+		in_y2, 
+		out_x1, 
+		out_x2, 
+		out_y1, 
+		out_y2);
+
+	get_output()->to_texture();
+	get_output()->enable_opengl();
+	get_output()->init_screen();
+	get_output()->clear_pbuffer();
+	get_output()->bind_texture(0);
+	get_output()->draw_texture(in_x1, 
+		in_y1, 
+		in_x2, 
+		in_y2, 
+		out_x1, 
+		out_y1, 
+		out_x2, 
+		out_y2);
+	get_output()->set_opengl_state(VFrame::SCREEN);
+#endif
 }
 
 

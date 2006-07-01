@@ -1,6 +1,6 @@
 #include "bcdisplayinfo.h"
 #include "clip.h"
-#include "defaults.h"
+#include "bchash.h"
 #include "filexml.h"
 #include "guicast.h"
 #include "keyframe.h"
@@ -193,7 +193,7 @@ void InterpolateVideoWindow::create_objects()
 	int x = 10, y = 10;
 
 	BC_Title *title;
-	add_subwindow(title = new BC_Title(x, y, "Input frames per second:"));
+	add_subwindow(title = new BC_Title(x, y, _("Input frames per second:")));
 	y += 30;
 	add_subwindow(rate = new InterpolateVideoRate(plugin, 
 		this, 
@@ -302,7 +302,7 @@ InterpolateVideoKeyframes::InterpolateVideoKeyframes(InterpolateVideo *plugin,
  : BC_CheckBox(x, 
  	y, 
 	plugin->config.use_keyframes, 
-	"Use keyframes as input")
+	_("Use keyframes as input"))
 {
 	this->plugin = plugin;
 	this->gui = gui;
@@ -627,7 +627,7 @@ int InterpolateVideo::load_defaults()
 	sprintf(directory, "%sinterpolatevideo.rc", BCASTDIR);
 
 // load the defaults
-	defaults = new Defaults(directory);
+	defaults = new BC_Hash(directory);
 	defaults->load();
 
 	config.input_rate = defaults->get("INPUT_RATE", config.input_rate);

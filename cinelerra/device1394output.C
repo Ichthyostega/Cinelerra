@@ -122,6 +122,7 @@ Device1394Output::~Device1394Output()
 	if(temp_frame) delete temp_frame;
 	if(temp_frame2) delete temp_frame2;
 	if(video_encoder) dv_delete(video_encoder);
+	if(position_presented) delete [] position_presented;
 	if(audio_encoder) dv_delete(audio_encoder);
 	if(buffer_lock) delete buffer_lock;
 	if(position_lock) delete position_lock;
@@ -151,6 +152,7 @@ void Device1394Output::reset()
 	temp_frame2 = 0;
 	audio_position = 0;
 	interrupted = 0;
+	position_presented = 0;
 	have_video = 0;
 	adevice = 0;
 	vdevice = 0;
@@ -176,6 +178,13 @@ int Device1394Output::open(char *path,
 	this->bits = bits;
 	this->samplerate = samplerate;
 	this->total_buffers = length;
+	if (get_dv1394())
+	{
+// dv1394 syt is given in frames and limited to 2 or 3, default is 3
+// Needs to be accurate to calculate presentation time
+		if (syt < 2 || syt > 3)
+			syt = 3;
+	}
 	this->syt = syt;
 
 // Set PAL mode based on frame height
@@ -241,6 +250,11 @@ int Device1394Output::open(char *path,
               		MAP_SHARED,
               		output_fd,
               		0);
+
+				if(position_presented) delete [] position_presented;
+				position_presented = new long[length];
+				for (int i = 0; i < length; i++)
+					position_presented[i] = 0;
 			}
 			else
 			{
@@ -373,6 +387,18 @@ void Device1394Output::run()
 					(audio_samples - samples_written) * bits * channels / 8);
 				audio_samples -= samples_written;
 				position_lock->lock("Device1394Output::run");
+
+				if (get_dv1394())
+				{
+// When this frame is being uploaded to the 1394 device,
+// the frame actually playing on the device will be the one
+// uploaded syt frames before.
+					position_presented[status.first_clear_frame] = 
+						audio_position - syt * samples_per_frame;
+					if (position_presented[status.first_clear_frame] < 0)
+						position_presented[status.first_clear_frame] = 0;
+				}
+
 				audio_position += samples_written;
 				position_lock->unlock();
 
@@ -741,6 +767,12 @@ long Device1394Output::get_audio_position()
 {
 	position_lock->lock("Device1394Output::get_audio_position");
 	long result = audio_position;
+	if (get_dv1394())
+	{
+// Take delay between placing in buffer and presentation 
+// on device into account for dv1394
+		result = position_presented[status.active_frame];
+	}
 	position_lock->unlock();
 	return result;
 }

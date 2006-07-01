@@ -7,7 +7,7 @@ class BlurEngine;
 #define MAXRADIUS 100
 
 #include "blurwindow.inc"
-#include "defaults.inc"
+#include "bchash.inc"
 #include "mutex.h"
 #include "pluginvclient.h"
 #include "thread.h"
@@ -87,7 +87,7 @@ public:
 	int blur_strip4(int &size);
 
 	int color_model;
-	int vmax;
+	float vmax;
 	pixel_f *val_p, *val_m, *vp, *vm;
 	pixel_f *sp_p, *sp_m;
     float n_p[5], n_m[5];

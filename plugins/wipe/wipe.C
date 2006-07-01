@@ -1,7 +1,8 @@
 #include "bcdisplayinfo.h"
-#include "defaults.h"
+#include "bchash.h"
 #include "edl.inc"
 #include "filexml.h"
+#include "language.h"
 #include "overlayframe.h"
 #include "picon_png.h"
 #include "vframe.h"
@@ -11,10 +12,6 @@
 #include <stdint.h>
 #include <string.h>
 
-#include <libintl.h>
-#define _(String) gettext(String)
-#define gettext_noop(String) String
-#define N_(String) gettext_noop (String)
 
 REGISTER_PLUGIN(WipeMain)
 
@@ -135,10 +132,11 @@ WipeMain::~WipeMain()
 	PLUGIN_DESTRUCTOR_MACRO
 }
 
-char* WipeMain::plugin_title() { return _("Wipe"); }
+char* WipeMain::plugin_title() { return N_("Wipe"); }
 int WipeMain::is_video() { return 1; }
 int WipeMain::is_transition() { return 1; }
 int WipeMain::uses_gui() { return 1; }
+
 SHOW_GUI_MACRO(WipeMain, WipeThread);
 SET_STRING_MACRO(WipeMain)
 RAISE_WINDOW_MACRO(WipeMain)
@@ -156,7 +154,7 @@ int WipeMain::load_defaults()
 	sprintf(directory, "%swipe.rc", BCASTDIR);
 
 // load the defaults
-	defaults = new Defaults(directory);
+	defaults = new BC_Hash(directory);
 	defaults->load();
 
 	direction = defaults->get("DIRECTION", direction);
@@ -261,9 +259,15 @@ int WipeMain::process_realtime(VFrame *incoming, VFrame *outgoing)
 
 	switch(incoming->get_color_model())
 	{
+		case BC_RGB_FLOAT:
+			WIPE(float, 3)
+			break;
 		case BC_RGB888:
 		case BC_YUV888:
 			WIPE(unsigned char, 3)
+			break;
+		case BC_RGBA_FLOAT:
+			WIPE(float, 4)
 			break;
 		case BC_RGBA8888:
 		case BC_YUVA8888:

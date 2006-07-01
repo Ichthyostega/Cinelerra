@@ -1,0 +1,36 @@
+#ifndef AUDIODEVICE_INC
+#define AUDIODEVICE_INC
+
+class AudioDevice;
+class AudioLowLevel;
+
+#define TOTAL_BUFFERS 2
+#define INPUT_BUFFER_BYTES 0x400000
+
+// Supported devices
+enum
+{
+	AUDIO_OSS,
+	AUDIO_OSS_ENVY24,
+	AUDIO_ESOUND,
+	AUDIO_NAS,
+	AUDIO_ALSA,
+	AUDIO_1394,
+	AUDIO_DV1394,
+	AUDIO_IEC61883,
+	AUDIO_DVB,
+	AUDIO_CINE
+};
+
+#define AUDIO_OSS_TITLE "OSS"
+#define AUDIO_OSS_ENVY24_TITLE "OSS Envy24"
+#define AUDIO_ESOUND_TITLE "ESound"
+#define AUDIO_NAS_TITLE "NAS"
+#define AUDIO_ALSA_TITLE "ALSA"
+#define AUDIO_1394_TITLE "RAW 1394"
+#define AUDIO_DV1394_TITLE "DV 1394"
+#define AUDIO_IEC61883_TITLE "IEC 61883"
+#define AUDIO_DVB_TITLE "DVB"
+#define AUDIO_CINE_TITLE "Render Node"
+
+#endif

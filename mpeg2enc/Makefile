@@ -23,6 +23,8 @@ ASMOBJ = \
 	$(OBJDIR)/mblock_sub44_sads.o \
 	$(OBJDIR)/quantize_x86.o
 
+#	$(OBJDIR)/mblock_sub44_sads.o \
+
 endif
 
 OBJ = $(OBJDIR)/mpeg2enc.o \
@@ -119,7 +121,7 @@ $(OBJDIR)/predcomp_mmx.o:		    predcomp_mmx.s
 $(OBJDIR)/quant_mmx.o:	    		    quant_mmx.s
 $(OBJDIR)/fdct_mmx.o:			    fdct_mmx.s
 
-$(OBJDIR)/mblock_sub44_sads.o: 	 	    mblock_sub44_sads.c
+#$(OBJDIR)/mblock_sub44_sads.o: 	 	    mblock_sub44_sads.c
 $(OBJDIR)/quantize_x86.o:		    quantize_x86.c
 
    	 

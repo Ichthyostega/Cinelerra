@@ -1,6 +1,6 @@
 #include "bcdisplayinfo.h"
 #include "clip.h"
-#include "defaults.h"
+#include "bchash.h"
 #include "filexml.h"
 #include "denoise.h"
 #include "picon_png.h"
@@ -114,16 +114,8 @@ void DenoiseEffect::reset()
 	iterations = 1;
 }
 
-char* DenoiseEffect::plugin_title()
-{
-	return _("Denoise");
-}
-
-
-int DenoiseEffect::is_realtime()
-{
-	return 1;
-}
+char* DenoiseEffect::plugin_title() { return N_("Denoise"); }
+int DenoiseEffect::is_realtime() { return 1; }
 
 
 
@@ -164,7 +156,7 @@ int DenoiseEffect::load_defaults()
 {
 	char directory[BCTEXTLEN], string[BCTEXTLEN];
 	sprintf(directory, "%sdenoise.rc", BCASTDIR);
-	defaults = new Defaults(directory);
+	defaults = new BC_Hash(directory);
 	defaults->load();
 	
 	config.level = defaults->get("LEVEL", config.level);

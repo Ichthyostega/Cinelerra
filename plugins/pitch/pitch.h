@@ -3,12 +3,13 @@
 
 
 
-#include "defaults.inc"
+#include "bchash.inc"
 #include "fourier.h"
 #include "guicast.h"
 #include "mutex.h"
 #include "pluginaclient.h"
 #include "vframe.inc"
+
 
 class PitchEffect;
 
@@ -31,16 +32,8 @@ public:
 	PitchEffect *plugin;
 };
 
-class PitchThread : public Thread
-{
-public:
-	PitchThread(PitchEffect *plugin);
-	~PitchThread();
-	void run();
-	Mutex completion;
-	PitchWindow *window;
-	PitchEffect *plugin;
-};
+PLUGIN_THREAD_HEADER(PitchEffect, PitchThread, PitchWindow)
+
 
 class PitchConfig
 {
@@ -64,8 +57,19 @@ class PitchFFT : public CrossfadeFFT
 {
 public:
 	PitchFFT(PitchEffect *plugin);
+	~PitchFFT();
 	int signal_process();
+	int read_samples(int64_t output_sample, 
+		int samples, 
+		double *buffer);
 	PitchEffect *plugin;
+	
+	double *last_phase;
+	double *new_freq;
+	double *new_magn;
+	double *sum_phase;
+	double *anal_freq;
+	double *anal_magn;
 };
 
 class PitchEffect : public PluginAClient
@@ -79,7 +83,10 @@ public:
 	int is_realtime();
 	void read_data(KeyFrame *keyframe);
 	void save_data(KeyFrame *keyframe);
-	int process_realtime(int64_t size, double *input_ptr, double *output_ptr);
+	int process_buffer(int64_t size, 
+		double *buffer,
+		int64_t start_position,
+		int sample_rate);
 	int show_gui();
 	void raise_window();
 	int set_string();
@@ -94,7 +101,7 @@ public:
 	void update_gui();
 
 
-	Defaults *defaults;
+	BC_Hash *defaults;
 	PitchThread *thread;
 	PitchFFT *fft;
 	PitchConfig config;

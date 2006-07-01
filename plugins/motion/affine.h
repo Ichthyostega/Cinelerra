@@ -96,6 +96,8 @@ public:
 	void set_pivot(int x, int y);
 	void unset_pivot();
 	void unset_viewport();
+// To use OpenGL for the processing, set to 1
+	void set_opengl(int value);
 	void init_packages();
 	LoadClient* new_client();
 	LoadPackage* new_package();
@@ -105,7 +107,8 @@ public:
 	{
 		PERSPECTIVE,
 		SHEER,
-		STRETCH
+		STRETCH,
+		ROTATE
 	};
 	float x1, y1, x2, y2, x3, y3, x4, y4;
 	int x, y, w, h;
@@ -113,6 +116,7 @@ public:
 	int user_pivot;
 	int user_viewport;
 	int forward;
+	int use_opengl;
 };
 
 

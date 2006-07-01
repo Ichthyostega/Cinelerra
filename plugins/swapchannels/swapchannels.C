@@ -1,7 +1,8 @@
 #include "bcdisplayinfo.h"
 #include "clip.h"
-#include "defaults.h"
+#include "bchash.h"
 #include "filexml.h"
+#include "language.h"
 #include "picon_png.h"
 #include "swapchannels.h"
 #include "vframe.h"
@@ -10,11 +11,6 @@
 
 #include <stdint.h>
 #include <string.h>
-
-#include <libintl.h>
-#define _(String) gettext(String)
-#define gettext_noop(String) String
-#define N_(String) gettext_noop (String)
 
 
 
@@ -109,12 +105,9 @@ void SwapWindow::create_objects()
 	flush();
 }
 
-int SwapWindow::close_event()
-{
-// Set result to 1 to indicate a client side close
-	set_done(1);
-	return 1;
-}
+WINDOW_CLOSE_EVENT(SwapWindow)
+
+
 
 
 
@@ -199,20 +192,11 @@ void SwapMain::reset()
 	temp = 0;
 }
 
-int SwapMain::is_realtime() 
-{
-	return 1;
-}
 
-char* SwapMain::plugin_title() 
-{
-	return _("Swap channels");
-}
+char* SwapMain::plugin_title()  { return N_("Swap channels"); }
+int SwapMain::is_synthesis() { return 1; }
+int SwapMain::is_realtime()  { return 1; }
 
-int SwapMain::is_synthesis()
-{
-	return 1;
-}
 
 SHOW_GUI_MACRO(SwapMain, SwapThread)
 NEW_PICON_MACRO(SwapMain)
@@ -226,7 +210,7 @@ int SwapMain::load_defaults()
 	sprintf(directory, "%sswapchannels.rc", BCASTDIR);
 
 // load the defaults
-	defaults = new Defaults(directory);
+	defaults = new BC_Hash(directory);
 	defaults->load();
 
 	config.red = defaults->get("RED", config.red);
@@ -406,6 +390,12 @@ int SwapMain::process_realtime(VFrame *input_ptr, VFrame *output_ptr)
 
 	switch(input_ptr->get_color_model())
 	{
+		case BC_RGB_FLOAT:
+			SWAP_CHANNELS(float, 1, 3);
+			break;
+		case BC_RGBA_FLOAT:
+			SWAP_CHANNELS(float, 1, 4);
+			break;
 		case BC_RGB888:
 		case BC_YUV888:
 			SWAP_CHANNELS(unsigned char, 0xff, 3);

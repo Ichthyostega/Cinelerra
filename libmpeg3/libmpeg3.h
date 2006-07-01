@@ -29,7 +29,10 @@ extern "C" {
 #define MPEG3_YUV422P 13
 
 
-
+/* Error codes for the error_return variable */
+#define MPEG3_UNDEFINED_ERROR 1
+#define MPEG3_INVALID_TOC_VERSION 2
+#define MPEG3_TOC_DATE_MISMATCH 3
 
 /* Get version information */
 int mpeg3_major();
@@ -40,12 +43,14 @@ int mpeg3_release();
 /* Check for file compatibility.  Return 1 if compatible. */
 int mpeg3_check_sig(char *path);
 
-/* Open the MPEG3 stream. */
-mpeg3_t* mpeg3_open(char *path);
+/* Open the MPEG stream. */
+/* An error code is put into *error_return if it fails and error_return is nonzero. */
+mpeg3_t* mpeg3_open(char *path, int *error_return);
 
-/* Open the MPEG3 stream and copy the tables from an already open stream. */
-/* Eliminates the initial timecode search. */
-mpeg3_t* mpeg3_open_copy(char *path, mpeg3_t *old_file);
+/* Open the MPEG stream and copy the tables from an already open stream. */
+/* Eliminates some initial scanning and is used for opening audio streams. */
+/* An error code is put into *error_return if it fails and error_return is nonzero. */
+mpeg3_t* mpeg3_open_copy(char *path, mpeg3_t *old_file, int *error_return);
 int mpeg3_close(mpeg3_t *file);
 
 
@@ -53,7 +58,6 @@ int mpeg3_close(mpeg3_t *file);
 
 /* Performance */
 int mpeg3_set_cpus(mpeg3_t *file, int cpus);
-int mpeg3_set_mmx(mpeg3_t *file, int use_mmx);
 
 /* Query the MPEG3 stream about audio. */
 int mpeg3_has_audio(mpeg3_t *file);
@@ -104,27 +108,32 @@ int mpeg3_video_height(mpeg3_t *file, int stream);
 float mpeg3_aspect_ratio(mpeg3_t *file, int stream); /* aspect ratio.  0 if none */
 double mpeg3_frame_rate(mpeg3_t *file, int stream);  /* Frames/sec */
 
+
 /* Total length.   */
-/* For DVD files, this is 1 indicating only percentage seeking is available. */
+/* This is meaningless except for TOC files. */
 long mpeg3_video_frames(mpeg3_t *file, int stream);
 int mpeg3_set_frame(mpeg3_t *file, long frame, int stream); /* Seek to a frame */
 int mpeg3_skip_frames();
 long mpeg3_get_frame(mpeg3_t *file, int stream);            /* Tell current position */
 
-/* Seek all the tracks based on a percentage of the total bytes in the  */
-/* file or the total */
-/* time in a toc if one exists.  Percentage is a 0 to 1 double. */
-/* This eliminates the need for tocs and 64 bit longs but doesn't  */
+/* Total bytes.  Used for absolute byte seeking. */
+int64_t mpeg3_get_bytes(mpeg3_t *file);
+
+/* Seek all the tracks to the absolute byte in the  */
+/* file.  This eliminates the need for tocs but doesn't  */
 /* give frame accuracy. */
-int mpeg3_seek_percentage(mpeg3_t *file, double percentage);
-double mpeg3_tell_percentage(mpeg3_t *file);
+int mpeg3_seek_byte(mpeg3_t *file, int64_t byte);
+int64_t mpeg3_tell_byte(mpeg3_t *file);
+
 
 /* To synchronize audio and video in percentage seeking mode, these must */
 /* be called after percentage seeking the video file and before */
 /* percentage seeking the audio file.  Then when the audio file is percentage */
 /* seeked it will search for the nearest pts to file->percentage_pts. */
-double mpeg3_get_percentage_pts(mpeg3_t *file);
-void mpeg3_set_percentage_pts(mpeg3_t *file, double pts);
+/*
+ * double mpeg3_get_percentage_pts(mpeg3_t *file);
+ * void mpeg3_set_percentage_pts(mpeg3_t *file, double pts);
+ */
 
 int mpeg3_previous_frame(mpeg3_t *file, int stream);
 int mpeg3_end_of_audio(mpeg3_t *file, int stream);
@@ -191,6 +200,69 @@ int mpeg3_read_video_chunk(mpeg3_t *file,
 /* Master control */
 int mpeg3_total_programs();
 int mpeg3_set_program(int program);
+
+/* Memory used by video caches. */
+int64_t mpeg3_memory_usage(mpeg3_t *file);
+
+
+
+
+
+
+
+/* subtitle functions */
+/* get number of subtitle tracks */
+int mpeg3_subtitle_tracks(mpeg3_t *file);
+/* Enable overlay of a subtitle track. */
+/* track - the number of the subtitle track starting from 0 */
+/* The same subtitle track is overlayed for all video tracks. */
+/* Pass -1 to disable subtitles. */
+void mpeg3_show_subtitle(mpeg3_t *file, int track);
+
+
+
+
+
+
+
+
+/* Table of contents generation */
+/* Begin constructing table of contents */
+mpeg3_t* mpeg3_start_toc(char *path, char *toc_path, int64_t *total_bytes);
+/* Set the maximum number of bytes per index track */
+void mpeg3_set_index_bytes(mpeg3_t *file, int64_t bytes);
+/* Process one packet */
+int mpeg3_do_toc(mpeg3_t *file, int64_t *bytes_processed);
+/* Write table of contents */
+void mpeg3_stop_toc(mpeg3_t *file);
+
+/* Get modification date of source file from table of contents. */
+/* Used to compare DVD source file to table of contents source. */
+int64_t mpeg3_get_source_date(mpeg3_t *file);
+/* Get modification date of source file from source file. */
+int64_t mpeg3_calculate_source_date(char *path);
+
+
+
+
+
+
+/* Table of contents queries */
+/* Return number of tracks in the table of contents */
+int mpeg3_index_tracks(mpeg3_t *file);
+/* Return number of channels in track */
+int mpeg3_index_channels(mpeg3_t *file, int track);
+/* Return zoom factor of index */
+int mpeg3_index_zoom(mpeg3_t *file);
+/* Number of high/low pairs in a channel of the track */
+int mpeg3_index_size(mpeg3_t *file, int track);
+/* Get data for one index channel */
+float* mpeg3_index_data(mpeg3_t *file, int track, int channel);
+/* Returns 1 if the file has a table of contents */
+int mpeg3_has_toc(mpeg3_t *file);
+/* Return the path of the title number or 0 if no more titles. */
+char* mpeg3_title_path(mpeg3_t *file, int number);
+
 
 #ifdef __cplusplus
 }

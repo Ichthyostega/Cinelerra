@@ -1,14 +1,10 @@
 #include "bcdisplayinfo.h"
-#include "defaults.h"
+#include "bchash.h"
+#include "language.h"
 #include "mainprogress.h"
 #include "picon_png.h"
 #include "reframe.h"
 
-
-#include <libintl.h>
-#define _(String) gettext(String)
-#define gettext_noop(String) String
-#define N_(String) gettext_noop (String)
 
 
 
@@ -37,7 +33,7 @@ ReFrame::~ReFrame()
 	delete defaults;
 }
 
-char* ReFrame::plugin_title() { return _("Reframe"); }
+char* ReFrame::plugin_title() { return N_("Reframe"); }
 
 NEW_PICON_MACRO(ReFrame) 
 
@@ -51,7 +47,7 @@ int ReFrame::load_defaults()
 
 // load the defaults
 
-	defaults = new Defaults(directory);
+	defaults = new BC_Hash(directory);
 
 	defaults->load();
 
@@ -183,12 +179,6 @@ void ReFrameWindow::create_objects()
 	flush();
 }
 
-int ReFrameWindow::close_event()
-{
-	set_done(1);
-	return 1;
-}
-
-
+WINDOW_CLOSE_EVENT(ReFrameWindow)
 
 

@@ -248,10 +248,10 @@ int FileEXR::get_best_colormodel(Asset *asset, int driver)
 		return BC_RGB_FLOAT;
 }
 
-int FileEXR::get_memory_usage()
+int64_t FileEXR::get_memory_usage()
 {
-	int result = FileList::get_memory_usage();
-	if(temp_y) result += asset->width * asset->height * 3 / 2;
+	int64_t result = FileList::get_memory_usage();
+	if(temp_y) result += (int64_t)asset->width * asset->height * 3 / 2;
 	return result;
 }
 
@@ -425,6 +425,7 @@ int FileEXR::read_frame(VFrame *frame, VFrame *data)
 			}
 		}
 	}
+	return 0;
 }
 
 
@@ -432,7 +433,6 @@ int FileEXR::read_frame(VFrame *frame, VFrame *data)
 
 int FileEXR::write_frame(VFrame *frame, VFrame *data, FrameWriterUnit *unit)
 {
-//printf("FileEXR::write_frame 1\n");
 	EXRUnit *exr_unit = (EXRUnit*)unit;
 	int result = 0;
 
@@ -510,7 +510,7 @@ int FileEXR::write_frame(VFrame *frame, VFrame *data, FrameWriterUnit *unit)
 				sizeof(float) * components * output_frame->get_w()));
 	file.setFrameBuffer(framebuffer);
 	file.writePixels(asset->height);
-//printf("FileEXR::write_frame 10\n");
+	return 0;
 }
 
 FrameWriterUnit* FileEXR::new_writer_unit(FrameWriter *writer)

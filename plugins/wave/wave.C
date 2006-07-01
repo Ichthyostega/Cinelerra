@@ -1,9 +1,10 @@
 #include "bcdisplayinfo.h"
 #include "clip.h"
-#include "defaults.h"
+#include "bchash.h"
 #include "filexml.h"
 #include "guicast.h"
 #include "keyframe.h"
+#include "language.h"
 #include "loadbalance.h"
 #include "picon_png.h"
 #include "pluginvclient.h"
@@ -13,10 +14,6 @@
 #include <stdint.h>
 #include <string.h>
 
-#include <libintl.h>
-#define _(String) gettext(String)
-#define gettext_noop(String) String
-#define N_(String) gettext_noop (String)
 
 
 
@@ -186,7 +183,7 @@ public:
 	WaveConfig config;
 	VFrame *temp_frame;
 	VFrame *input, *output;
-	Defaults *defaults;
+	BC_Hash *defaults;
 	WaveThread *thread;
 	WaveServer *engine;
 };
@@ -453,15 +450,8 @@ WaveEffect::~WaveEffect()
 }
 
 
-int WaveEffect::is_realtime()
-{
-	return 1;
-}
-
-char* WaveEffect::plugin_title()
-{
-	return _("Wave");
-}
+char* WaveEffect::plugin_title() { return N_("Wave"); }
+int WaveEffect::is_realtime() { return 1; }
 
 NEW_PICON_MACRO(WaveEffect)
 
@@ -496,7 +486,7 @@ int WaveEffect::load_defaults()
 	sprintf(directory, "%swave.rc", BCASTDIR);
 
 // load the defaults
-	defaults = new Defaults(directory);
+	defaults = new BC_Hash(directory);
 	defaults->load();
 
 	config.mode = defaults->get("MODE", config.mode);
@@ -805,6 +795,9 @@ void WaveUnit::process_package(LoadPackage *package)
 		case BC_RGB888:
 			WAVE(unsigned char, 3, 0x0);
 			break;
+		case BC_RGB_FLOAT:
+			WAVE(float, 3, 0x0);
+			break;
 		case BC_YUV888:
 			WAVE(unsigned char, 3, 0x80);
 			break;
@@ -813,6 +806,9 @@ void WaveUnit::process_package(LoadPackage *package)
 			break;
 		case BC_YUV161616:
 			WAVE(uint16_t, 3, 0x8000);
+			break;
+		case BC_RGBA_FLOAT:
+			WAVE(unsigned char, 4, 0x0);
 			break;
 		case BC_RGBA8888:
 			WAVE(unsigned char, 4, 0x0);
@@ -846,22 +842,11 @@ WaveServer::WaveServer(WaveEffect *plugin, int cpus)
 
 void WaveServer::init_packages()
 {
-	int increment = plugin->input->get_h() / LoadServer::total_packages + 1;
-	int y = 0;
-	for(int i = 0; i < LoadServer::total_packages; i++)
+	for(int i = 0; i < LoadServer::get_total_packages(); i++)
 	{
-		WavePackage *pkg = (WavePackage*)packages[i];
-		pkg->row1 = y;
-		pkg->row2 = y + increment;
-		y += increment;
-		if(pkg->row2 > plugin->input->get_h())
-		{
-			y = pkg->row2 = plugin->input->get_h();
-		}
-		if(pkg->row1 > plugin->input->get_h())
-		{
-			y = pkg->row2 = plugin->input->get_h();
-		}
+		WavePackage *pkg = (WavePackage*)get_package(i);
+		pkg->row1 = plugin->input->get_h() * i / LoadServer::get_total_packages();
+		pkg->row2 = plugin->input->get_h() * (i + 1) / LoadServer::get_total_packages();
 	}
 }
 

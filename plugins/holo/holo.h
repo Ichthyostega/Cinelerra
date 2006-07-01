@@ -4,12 +4,13 @@
 class HoloMain;
 class HoloEngine;
 
-#include "defaults.h"
+#include "bchash.h"
 #include "effecttv.h"
+#include "holowindow.h"
 #include "loadbalance.h"
 #include "mutex.h"
+#include "plugincolors.inc"
 #include "pluginvclient.h"
-#include "holowindow.h"
 
 #include <stdint.h>
 
@@ -86,13 +87,14 @@ public:
 	HoloServer *holo_server;
 	HoloConfig config;
 
-	Defaults *defaults;
+	BC_Hash *defaults;
 	VFrame *input_ptr, *output_ptr;
 	int do_reconfigure;
 	EffectTV *effecttv;
 
 	unsigned int noisepattern[256];
 	VFrame *bgimage, *tmp;
+	YUV *yuv;
 	int total;
 };
 

@@ -1,11 +1,6 @@
 #include "bcdisplayinfo.h"
 #include "colorbalancewindow.h"
-
-
-#include <libintl.h>
-#define _(String) gettext(String)
-#define gettext_noop(String) String
-#define N_(String) gettext_noop (String)
+#include "language.h"
 
 
 
@@ -22,9 +17,9 @@ ColorBalanceWindow::ColorBalanceWindow(ColorBalanceMain *client, int x, int y)
  : BC_Window(client->gui_string, x,
  	y,
 	330, 
-	160, 
+	250, 
 	330, 
-	160, 
+	250, 
 	0, 
 	0)
 { 
@@ -37,56 +32,63 @@ ColorBalanceWindow::~ColorBalanceWindow()
 
 int ColorBalanceWindow::create_objects()
 {
-//printf("ColorBalanceWindow::create_objects 1\n");
 	int x = 10, y = 10;
 	add_tool(new BC_Title(x, y, _("Color Balance")));
 	y += 25;
-//printf("ColorBalanceWindow::create_objects 1\n");
 	add_tool(new BC_Title(x, y, _("Cyan")));
 	add_tool(cyan = new ColorBalanceSlider(client, &(client->config.cyan), x + 70, y));
 	add_tool(new BC_Title(x + 270, y, _("Red")));
 	y += 25;
-//printf("ColorBalanceWindow::create_objects 1\n");
 	add_tool(new BC_Title(x, y, _("Magenta")));
 	add_tool(magenta = new ColorBalanceSlider(client, &(client->config.magenta), x + 70, y));
 	add_tool(new BC_Title(x + 270, y, _("Green")));
 	y += 25;
-//printf("ColorBalanceWindow::create_objects 1\n");
 	add_tool(new BC_Title(x, y, _("Yellow")));
 	add_tool(yellow = new ColorBalanceSlider(client, &(client->config.yellow), x + 70, y));
 	add_tool(new BC_Title(x + 270, y, _("Blue")));
 	y += 25;
-//printf("ColorBalanceWindow::create_objects 1\n");
 	add_tool(preserve = new ColorBalancePreserve(client, x + 70, y));
-	y += 25;
-//printf("ColorBalanceWindow::create_objects 1\n");
+	y += preserve->get_h() + 10;
 	add_tool(lock_params = new ColorBalanceLock(client, x + 70, y));
-//printf("ColorBalanceWindow::create_objects 1\n");
+	y += lock_params->get_h() + 10;
+	add_tool(new ColorBalanceWhite(client, this, x, y));
+	y += lock_params->get_h() + 10;
+	add_tool(new ColorBalanceReset(client, this, x, y));
+
 	show_window();
-//printf("ColorBalanceWindow::create_objects 2\n");
 	flush();
 	return 0;
 }
 
+void ColorBalanceWindow::update()
+{
+	cyan->update((int64_t)client->config.cyan);
+	magenta->update((int64_t)client->config.magenta);
+	yellow->update((int64_t)client->config.yellow);
+}
+
 WINDOW_CLOSE_EVENT(ColorBalanceWindow)
 
-ColorBalanceSlider::ColorBalanceSlider(ColorBalanceMain *client, float *output, int x, int y)
+ColorBalanceSlider::ColorBalanceSlider(ColorBalanceMain *client, 
+	float *output, int x, int y)
  : BC_ISlider(x, 
  	y, 
 	0, 
 	200, 
 	200,
-	-100, 
-	100, 
+	-1000, 
+	1000, 
 	(int)*output)
 {
 	this->client = client;
 	this->output = output;
     old_value = *output;
 }
+
 ColorBalanceSlider::~ColorBalanceSlider()
 {
 }
+
 int ColorBalanceSlider::handle_event()
 {
 	float difference = get_value() - *output;
@@ -95,6 +97,16 @@ int ColorBalanceSlider::handle_event()
 	client->send_configure_change();
 	return 1;
 }
+
+char* ColorBalanceSlider::get_caption()
+{
+	float fraction = client->calculate_transfer(*output);
+	sprintf(string, "%0.4f", fraction);
+	return string;
+}
+
+
+
 
 ColorBalancePreserve::ColorBalancePreserve(ColorBalanceMain *client, int x, int y)
  : BC_CheckBox(x, 
@@ -133,3 +145,72 @@ int ColorBalanceLock::handle_event()
 	client->send_configure_change();
 	return 1;
 }
+
+
+ColorBalanceWhite::ColorBalanceWhite(ColorBalanceMain *plugin, 
+	ColorBalanceWindow *gui,
+	int x, 
+	int y)
+ : BC_GenericButton(x, y, _("White balance"))
+{
+	this->plugin = plugin;
+	this->gui = gui;
+}
+
+int ColorBalanceWhite::handle_event()
+{
+// Get colorpicker value
+	float red = plugin->get_red();
+	float green = plugin->get_green();
+	float blue = plugin->get_blue();
+// // Get maximum value
+// 	float max = MAX(red, green);
+// 	max  = MAX(max, blue);
+// // Get factors required to normalize other values to maximum
+// 	float r_factor = max / red;
+// 	float g_factor = max / green;
+// 	float b_factor = max / blue;
+// Get minimum value.  Can't use maximum because the sliders run out of room.
+	float min = MIN(red, green);
+	min = MIN(min, blue);
+// Get factors required to normalize other values to minimum
+	float r_factor = min / red;
+	float g_factor = min / green;
+	float b_factor = min / blue;
+
+// Try normalizing to green like others do it
+	r_factor = green / red;
+	g_factor = 1.0;
+	b_factor = green / blue;
+// Convert factors to slider values
+	plugin->config.cyan = plugin->calculate_slider(r_factor);
+	plugin->config.magenta = plugin->calculate_slider(g_factor);
+	plugin->config.yellow = plugin->calculate_slider(b_factor);
+	gui->update();
+
+	plugin->send_configure_change();
+	return 1;
+}
+
+
+ColorBalanceReset::ColorBalanceReset(ColorBalanceMain *plugin, 
+	ColorBalanceWindow *gui, 
+	int x, 
+	int y)
+ : BC_GenericButton(x, y, _("Reset"))
+{
+	this->plugin = plugin;
+	this->gui = gui;
+}
+
+int ColorBalanceReset::handle_event()
+{
+	plugin->config.cyan = 0;
+	plugin->config.magenta = 0;
+	plugin->config.yellow = 0;
+	gui->update();
+	plugin->send_configure_change();
+	return 1;
+}
+
+

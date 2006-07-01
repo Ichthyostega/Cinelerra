@@ -3,7 +3,7 @@
 
 
 
-#include "defaults.inc"
+#include "bchash.inc"
 #include "guicast.h"
 #include "mutex.h"
 #include "pluginaclient.h"
@@ -36,19 +36,12 @@ public:
 };
 
 
-class CompressorPreview : public BC_TextBox
-{
-public:
-	CompressorPreview(CompressorEffect *plugin, int x, int y);
-	int handle_event();
-	CompressorEffect *plugin;
-};
-
 class CompressorReaction : public BC_TextBox
 {
 public:
 	CompressorReaction(CompressorEffect *plugin, int x, int y);
 	int handle_event();
+	int button_press_event();
 	CompressorEffect *plugin;
 };
 
@@ -81,10 +74,37 @@ class CompressorTrigger : public BC_TextBox
 public:
 	CompressorTrigger(CompressorEffect *plugin, int x, int y);
 	int handle_event();
+	int button_press_event();
 	CompressorEffect *plugin;
 };
 
+class CompressorDecay : public BC_TextBox
+{
+public:
+	CompressorDecay(CompressorEffect *plugin, int x, int y);
+	int handle_event();
+	int button_press_event();
+	CompressorEffect *plugin;
+};
 
+class CompressorSmooth : public BC_CheckBox
+{
+public:
+	CompressorSmooth(CompressorEffect *plugin, int x, int y);
+	int handle_event();
+	CompressorEffect *plugin;
+};
+
+class CompressorInput : public BC_PopupMenu
+{
+public:
+	CompressorInput(CompressorEffect *plugin, int x, int y);
+	void create_objects();
+	int handle_event();
+	static char* value_to_text(int value);
+	static int text_to_value(char *text);
+	CompressorEffect *plugin;
+};
 
 
 
@@ -101,12 +121,14 @@ public:
 	
 	
 	CompressorCanvas *canvas;
-	CompressorPreview *preview;
 	CompressorReaction *reaction;
 	CompressorClear *clear;
 	CompressorX *x_text;
 	CompressorY *y_text;
 	CompressorTrigger *trigger;
+	CompressorDecay *decay;
+	CompressorSmooth *smooth;
+	CompressorInput *input;
 	CompressorEffect *plugin;
 };
 
@@ -138,17 +160,25 @@ public:
 // Return values of a specific point
 	double get_y(int number);
 	double get_x(int number);
-// Returns db output given linear input
+// Returns db output from db input
 	double calculate_db(double x);
 	int set_point(double x, double y);
 	void dump();
 
 	int trigger;
+	int input;
+	enum
+	{
+		TRIGGER,
+		MAX,
+		SUM
+	};
 	double min_db;
-	double preview_len;
 	double reaction_len;
+	double decay_len;
 	double min_x, min_y;
 	double max_x, max_y;
+	int smoothing_only;
 	ArrayList<compressor_point_t> levels;
 };
 
@@ -162,9 +192,14 @@ public:
 	int is_realtime();
 	void read_data(KeyFrame *keyframe);
 	void save_data(KeyFrame *keyframe);
-	int process_realtime(int64_t size, double **input_ptr, double **output_ptr);
+	int process_buffer(int64_t size, 
+		double **buffer,
+		int64_t start_position,
+		int sample_rate);
+	double calculate_gain(double input);
 
-
+// Calculate linear output from linear input
+	double calculate_output(double x);
 
 
 	int load_defaults();
@@ -175,25 +210,29 @@ public:
 
 	PLUGIN_CLASS_MEMBERS(CompressorConfig, CompressorThread)
 
+// The raw input data for each channel with readahead
 	double **input_buffer;
+// Number of samples in the input buffer 
 	int64_t input_size;
+// Number of samples allocated in the input buffer
 	int64_t input_allocated;
-	double *reaction_buffer;
-	int64_t reaction_allocated;
-	int64_t reaction_position;
-	double current_coef;
-	double previous_slope;
-	double previous_intercept;
-	double previous_max;
-	double previous_coef;
-	int max_counter;
-	int total_samples;
+// Starting sample of input buffer relative to project in requested rate.
+	int64_t input_start;
 
-// Same coefs are applied to all channels
-	double *coefs;
-	int64_t coefs_allocated;
-	int64_t last_peak_age;
-	double last_peak;
+// ending input value of smoothed input
+	double next_target;
+// starting input value of smoothed input
+	double previous_target;
+// samples between previous and next target value for readahead
+	int target_samples;
+// current sample from 0 to target_samples
+	int target_current_sample;
+// current smoothed input value
+	double current_value;
+// Temporaries for linear transfer
+	ArrayList<compressor_point_t> levels;
+	double min_x, min_y;
+	double max_x, max_y;
 };
 
 

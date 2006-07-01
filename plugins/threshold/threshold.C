@@ -1,5 +1,5 @@
 #include "clip.h"
-#include "defaults.h"
+#include "bchash.h"
 #include "filexml.h"
 #include "histogramengine.h"
 #include "language.h"
@@ -19,13 +19,15 @@ ThresholdConfig::ThresholdConfig()
 int ThresholdConfig::equivalent(ThresholdConfig &that)
 {
 	return EQUIV(min, that.min) &&
-		EQUIV(max, that.max);
+		EQUIV(max, that.max) &&
+		plot == that.plot;
 }
 
 void ThresholdConfig::copy_from(ThresholdConfig &that)
 {
 	min = that.min;
 	max = that.max;
+	plot = that.plot;
 }
 
 void ThresholdConfig::interpolate(ThresholdConfig &prev,
@@ -41,12 +43,14 @@ void ThresholdConfig::interpolate(ThresholdConfig &prev,
 
 	min = prev.min * prev_scale + next.min * next_scale;
 	max = prev.max * prev_scale + next.max * next_scale;
+	plot = prev.plot;
 }
 
 void ThresholdConfig::reset()
 {
 	min = 0.0;
 	max = 1.0;
+	plot = 1;
 }
 
 void ThresholdConfig::boundaries()
@@ -112,10 +116,18 @@ int ThresholdMain::process_buffer(VFrame *frame,
 	double frame_rate)
 {
 	load_configuration();
+
+	int use_opengl = get_use_opengl() &&
+		(!config.plot || !gui_open());
+
 	read_frame(frame,
 		0,
 		get_source_position(),
-		get_framerate());
+		get_framerate(),
+		use_opengl);
+
+	if(use_opengl) return run_opengl();
+
 	send_render_gui(frame);
 
 	if(!threshold_engine)
@@ -129,10 +141,11 @@ int ThresholdMain::load_defaults()
 {
 	char directory[BCTEXTLEN], string[BCTEXTLEN];
 	sprintf(directory, "%sthreshold.rc", BCASTDIR);
-	defaults = new Defaults(directory);
+	defaults = new BC_Hash(directory);
 	defaults->load();
 	config.min = defaults->get("MIN", config.min);
 	config.max = defaults->get("MAX", config.max);
+	config.plot = defaults->get("PLOT", config.plot);
 	config.boundaries();
 	return 0;
 }
@@ -141,6 +154,7 @@ int ThresholdMain::save_defaults()
 {
 	defaults->update("MIN", config.min);
 	defaults->update("MAX", config.max);
+	defaults->update("PLOT", config.plot);
 	defaults->save();
 }
 
@@ -151,6 +165,7 @@ void ThresholdMain::save_data(KeyFrame *keyframe)
 	file.tag.set_title("THRESHOLD");
 	file.tag.set_property("MIN", config.min);
 	file.tag.set_property("MAX", config.max);
+	file.tag.set_property("PLOT", config.plot);
 	file.append_tag();
 	file.terminate_string();
 }
@@ -167,6 +182,7 @@ void ThresholdMain::read_data(KeyFrame *keyframe)
 		{
 			config.min = file.tag.get_property("MIN", config.min);
 			config.max = file.tag.get_property("MAX", config.max);
+			config.plot = file.tag.get_property("PLOT", config.plot);
 		}
 	}
 	config.boundaries();
@@ -181,6 +197,7 @@ void ThresholdMain::update_gui()
 		{
 			thread->window->min->update(config.min);
 			thread->window->max->update(config.max);
+			thread->window->plot->update(config.plot);
 		}
 		thread->window->unlock_window();
 	}
@@ -204,7 +221,62 @@ void ThresholdMain::calculate_histogram(VFrame *frame)
 	engine->process_packages(frame);
 }
 
+int ThresholdMain::handle_opengl()
+{
+#ifdef HAVE_GL
+	static char *rgb_shader = 
+		"uniform sampler2D tex;\n"
+		"uniform float min;\n"
+		"uniform float max;\n"
+		"void main()\n"
+		"{\n"
+		"	vec4 pixel = texture2D(tex, gl_TexCoord[0].st);\n"
+		"	float v = dot(pixel.rgb, vec3(0.299, 0.587, 0.114));\n"
+		"	if(v >= min && v < max)\n"
+		"		pixel.rgb = vec3(1.0, 1.0, 1.0);\n"
+		"	else\n"
+		"		pixel.rgb = vec3(0.0, 0.0, 0.0);\n"
+		"	gl_FragColor = pixel;\n"
+		"}\n";
 
+	static char *yuv_shader = 
+		"uniform sampler2D tex;\n"
+		"uniform float min;\n"
+		"uniform float max;\n"
+		"void main()\n"
+		"{\n"
+		"	vec4 pixel = texture2D(tex, gl_TexCoord[0].st);\n"
+		"	if(pixel.r >= min && pixel.r < max)\n"
+		"		pixel.rgb = vec3(1.0, 0.5, 0.5);\n"
+		"	else\n"
+		"		pixel.rgb = vec3(0.0, 0.5, 0.5);\n"
+		"	gl_FragColor = pixel;\n"
+		"}\n";
+
+	get_output()->to_texture();
+	get_output()->enable_opengl();
+
+	unsigned int shader = 0;
+	if(cmodel_is_yuv(get_output()->get_color_model()))
+		shader = VFrame::make_shader(0, yuv_shader, 0);
+	else
+		shader = VFrame::make_shader(0, rgb_shader, 0);
+
+	if(shader > 0)
+	{
+		glUseProgram(shader);
+		glUniform1i(glGetUniformLocation(shader, "tex"), 0);
+		glUniform1f(glGetUniformLocation(shader, "min"), config.min);
+		glUniform1f(glGetUniformLocation(shader, "max"), config.max);
+	}
+
+	get_output()->init_screen();
+	get_output()->bind_texture(0);
+	get_output()->draw_texture();
+	glUseProgram(0);
+	get_output()->set_opengl_state(VFrame::SCREEN);
+#endif
+}
 
 
 

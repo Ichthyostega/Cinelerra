@@ -1,6 +1,6 @@
 #include "clip.h"
 #include "confirmsave.h"
-#include "defaults.h"
+#include "bchash.h"
 #include "errorbox.h"
 #include "filexml.h"
 #include "picon_png.h"
@@ -33,7 +33,7 @@ Despike::~Despike()
 	PLUGIN_DESTRUCTOR_MACRO
 }
 
-char* Despike::plugin_title() { return _("Despike"); }
+char* Despike::plugin_title() { return N_("Despike"); }
 int Despike::is_realtime() { return 1; }
 
 NEW_PICON_MACRO(Despike)
@@ -82,7 +82,7 @@ int Despike::load_defaults()
 	
 // load the defaults
 
-	defaults = new Defaults(directory);
+	defaults = new BC_Hash(directory);
 
 	defaults->load();
 

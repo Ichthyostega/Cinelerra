@@ -1,7 +1,8 @@
 #include "bcdisplayinfo.h"
 #include "clip.h"
-#include "defaults.h"
+#include "bchash.h"
 #include "filexml.h"
+#include "language.h"
 #include "pitch.h"
 #include "picon_png.h"
 #include "units.h"
@@ -11,21 +12,14 @@
 #include <string.h>
 
 
-#include <libintl.h>
-#define _(String) gettext(String)
-#define gettext_noop(String) String
-#define N_(String) gettext_noop (String)
+
+#define WINDOW_SIZE 8192
+#define OVERSAMPLE 8
 
 
+//#define WINDOW_SIZE 131072
 
-
-
-
-
-PluginClient* new_plugin(PluginServer *server)
-{
-	return new PitchEffect(server);
-}
+REGISTER_PLUGIN(PitchEffect);
 
 
 
@@ -34,40 +28,19 @@ PluginClient* new_plugin(PluginServer *server)
 PitchEffect::PitchEffect(PluginServer *server)
  : PluginAClient(server)
 {
+	PLUGIN_CONSTRUCTOR_MACRO
 	reset();
-	load_defaults();
 }
 
 PitchEffect::~PitchEffect()
 {
-	if(thread)
-	{
-		thread->window->set_done(0);
-		thread->completion.lock();
-		delete thread;
-	}
-	
-	save_defaults();
-	delete defaults;
+	PLUGIN_DESTRUCTOR_MACRO
 
 	if(fft) delete fft;
 }
 
-VFrame* PitchEffect::new_picon()
-{
-	return new VFrame(picon_png);
-}
-
-char* PitchEffect::plugin_title()
-{
-	return _("Pitch shift");
-}
-
-
-int PitchEffect::is_realtime()
-{
-	return 1;
-}
+char* PitchEffect::plugin_title() { return N_("Pitch shift"); }
+int PitchEffect::is_realtime() { return 1; }
 
 
 
@@ -108,7 +81,7 @@ int PitchEffect::load_defaults()
 {
 	char directory[BCTEXTLEN], string[BCTEXTLEN];
 	sprintf(directory, "%spitch.rc", BCASTDIR);
-	defaults = new Defaults(directory);
+	defaults = new BC_Hash(directory);
 	defaults->load();
 	
 	config.scale = defaults->get("SCALE", config.scale);
@@ -128,10 +101,17 @@ int PitchEffect::save_defaults()
 
 LOAD_CONFIGURATION_MACRO(PitchEffect, PitchConfig)
 
+SHOW_GUI_MACRO(PitchEffect, PitchThread)
+
+RAISE_WINDOW_MACRO(PitchEffect)
+
+SET_STRING_MACRO(PitchEffect)
+
+NEW_PICON_MACRO(PitchEffect)
+
 
 void PitchEffect::reset()
 {
-	thread = 0;
 	fft = 0;
 }
 
@@ -140,48 +120,34 @@ void PitchEffect::update_gui()
 	if(thread)
 	{
 		load_configuration();
-		thread->window->lock_window();
+		thread->window->lock_window("PitchEffect::update_gui");
 		thread->window->update();
 		thread->window->unlock_window();
 	}
 }
 
-int PitchEffect::show_gui()
+
+
+int PitchEffect::process_buffer(int64_t size, 
+		double *buffer,
+		int64_t start_position,
+		int sample_rate)
 {
 	load_configuration();
-	
-	thread = new PitchThread(this);
-	thread->start();
-	return 0;
-}
 
-void PitchEffect::raise_window()
-{
-	if(thread)
+
+	if(!fft)
 	{
-		thread->window->lock_window();
-		thread->window->raise_window();
-		thread->window->flush();
-		thread->window->unlock_window();
+		fft = new PitchFFT(this);
+		fft->initialize(WINDOW_SIZE);
+		fft->set_oversample(OVERSAMPLE);
 	}
-}
 
-int PitchEffect::set_string()
-{
-	if(thread) 
-	{
-		thread->window->lock_window();
-		thread->window->set_title(gui_string);
-		thread->window->unlock_window();
-	}
-	return 0;
-}
+	fft->process_buffer(start_position,
+		size, 
+		buffer,
+		get_direction());
 
-int PitchEffect::process_realtime(int64_t size, double *input_ptr, double *output_ptr)
-{
-	load_configuration();
-	if(!fft) fft = new PitchFFT(this);
-	fft->process_fifo(size, input_ptr, output_ptr);
 	return 0;
 }
 
@@ -197,55 +163,143 @@ PitchFFT::PitchFFT(PitchEffect *plugin)
  : CrossfadeFFT()
 {
 	this->plugin = plugin;
+	last_phase = new double[WINDOW_SIZE];
+	new_freq = new double[WINDOW_SIZE];
+	new_magn = new double[WINDOW_SIZE];
+	sum_phase = new double[WINDOW_SIZE];
+	anal_magn = new double[WINDOW_SIZE];
+	anal_freq = new double[WINDOW_SIZE];
+	memset (last_phase, 0, WINDOW_SIZE * sizeof(double));
+	memset (sum_phase, 0, WINDOW_SIZE * sizeof(double));
+}
+
+PitchFFT::~PitchFFT()
+{
+	delete [] last_phase;
+	delete [] new_freq;
+	delete [] new_magn;
+	delete [] sum_phase;
+	delete [] anal_magn;
+	delete [] anal_freq;
 }
 
 
 int PitchFFT::signal_process()
 {
-	int min_freq = 
-		1 + (int)(20.0 / ((double)plugin->PluginAClient::project_sample_rate / window_size * 2) + 0.5);
-//printf("PitchFFT::signal_process %d\n", min_freq);
-	if(plugin->config.scale < 1)
+	double scale = plugin->config.scale;
+	
+	memset(new_freq, 0, window_size * sizeof(double));
+	memset(new_magn, 0, window_size * sizeof(double));
+	
+// expected phase difference between windows
+	double expected_phase_diff = 2.0 * M_PI / oversample; 
+// frequency per bin
+	double freq_per_bin = (double)plugin->PluginAClient::project_sample_rate / window_size;
+
+//scale = 1.0;
+	for (int i = 0; i < window_size/2; i++) 
 	{
-		for(int i = min_freq; i < window_size / 2; i++)
+// Convert to magnitude and phase
+		double magn = sqrt(fftw_data[i][0] * fftw_data[i][0] + fftw_data[i][1] * fftw_data[i][1]);
+		double phase = atan2(fftw_data[i][1], fftw_data[i][0]);
+
+// Remember last phase
+		double temp = phase - last_phase[i];
+		last_phase[i] = phase;
+
+// Substract the expected advancement of phase
+		temp -= (double)i * expected_phase_diff;
+
+
+// wrap temp into -/+ PI ...  good trick!
+		int qpd = (int)(temp/M_PI);
+		if (qpd >= 0) 
+			qpd += qpd&1;
+		else 
+			qpd -= qpd&1;
+		temp -= M_PI*(double)qpd;	
+
+// Deviation from bin frequency	
+		temp = oversample * temp / (2.0 * M_PI);
+
+		temp = (double)(temp + i) * freq_per_bin;
+
+//		anal_magn[i] = magn;
+//		anal_freq[i] = temp;
+
+// Now temp is the real freq... move it!
+//		int new_bin = (int)(temp * scale / freq_per_bin + 0.5);
+		int new_bin = (int)(i * scale);
+		if (new_bin >= 0 && new_bin < window_size/2)
 		{
-			double destination = i * plugin->config.scale;
-			int dest_i = (int)(destination + 0.5);
-			if(dest_i != i)
-			{
-				if(dest_i <= window_size / 2)
-				{
-					freq_real[dest_i] = freq_real[i];
-					freq_imag[dest_i] = freq_imag[i];
-				}
-				freq_real[i] = 0;
-				freq_imag[i] = 0;
-			}
+//			double tot_magn = new_magn[new_bin] + magn;
+
+//			new_freq[new_bin] = (new_freq[new_bin] * new_magn[new_bin] + temp *scale* magn) / tot_magn;
+			new_freq[new_bin] = temp*scale;
+			new_magn[new_bin] += magn;
 		}
+
 	}
-	else
-	if(plugin->config.scale > 1)
-	{
-		for(int i = window_size / 2 - 1; i >= min_freq; i--)
-		{
-			double destination = i * plugin->config.scale;
-			int dest_i = (int)(destination + 0.5);
-			if(dest_i != i)
-			{
-				if(dest_i <= window_size / 2)
-				{
-					freq_real[dest_i] = freq_real[i];
-					freq_imag[dest_i] = freq_imag[i];
-				}
-				freq_real[i] = 0;
-				freq_imag[i] = 0;
-			}
+
+/*	for (int k = 0; k <= window_size/2; k++) {
+		int index = k/scale;
+		if (index <= window_size/2) {
+			new_magn[k] += anal_magn[index];
+			new_freq[k] = anal_freq[index] * scale;
+		} else{
+
+		new_magn[k] = 0;
+		new_freq[k] = 0;
 		}
 	}
 
-	symmetry(window_size, freq_real, freq_imag);
+*/
+	// Synthesize back the fft window 
+	for (int i = 0; i < window_size/2; i++) 
+	{
+		double magn = new_magn[i];
+		double temp = new_freq[i];
+// substract the bin frequency
+		temp -= (double)(i) * freq_per_bin;
+
+// get bin deviation from freq deviation
+		temp /= freq_per_bin;
+
+// oversample 
+		temp = 2.0 * M_PI *temp / oversample;
+
+// add back the expected phase difference (that we substracted in analysis)
+		temp += (double)(i) * expected_phase_diff;
+
+// accumulate delta phase, to get bin phase
+		sum_phase[i] += temp;
+
+		double phase = sum_phase[i];
+
+		fftw_data[i][0] = magn * cos(phase);
+		fftw_data[i][1] = magn * sin(phase);
+	}
+
+//symmetry(window_size, freq_real, freq_imag);
+	for (int i = window_size/2; i< window_size; i++)
+	{
+		fftw_data[i][0] = 0;
+		fftw_data[i][1] = 0;
+	}
+	
 
 	return 0;
+}
+
+int PitchFFT::read_samples(int64_t output_sample, 
+	int samples, 
+	double *buffer)
+{
+	return plugin->read_samples(buffer,
+		0,
+		plugin->get_samplerate(),
+		output_sample,
+		samples);
 }
 
 
@@ -287,35 +341,8 @@ void PitchConfig::interpolate(PitchConfig &prev,
 
 
 
+PLUGIN_THREAD_OBJECT(PitchEffect, PitchThread, PitchWindow) 
 
-PitchThread::PitchThread(PitchEffect *plugin)
- : Thread()
-{
-	this->plugin = plugin;
-	set_synchronous(0);
-	completion.lock();
-}
-
-PitchThread::~PitchThread()
-{
-	delete window;
-}
-
-
-void PitchThread::run()
-{
-	BC_DisplayInfo info;
-
-	window = new PitchWindow(plugin,
-		info.get_abs_cursor_x() - 125, 
-		info.get_abs_cursor_y() - 115);
-
-	window->create_objects();
-	int result = window->run_window();
-	completion.unlock();
-// Last command in thread
-	if(result) plugin->client_side_close();
-}
 
 
 
@@ -350,12 +377,7 @@ void PitchWindow::create_objects()
 	flush();
 }
 
-int PitchWindow::close_event()
-{
-// Set result to 1 to indicate a client side close
-	set_done(1);
-	return 1;
-}
+WINDOW_CLOSE_EVENT(PitchWindow)
 
 void PitchWindow::update()
 {

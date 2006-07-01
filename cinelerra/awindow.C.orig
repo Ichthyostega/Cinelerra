@@ -1,0 +1,42 @@
+#include "assetedit.h"
+#include "assetremove.h"
+#include "awindow.h"
+#include "awindowgui.h"
+#include "bcsignals.h"
+#include "clipedit.h"
+
+AWindow::AWindow(MWindow *mwindow) : Thread()
+{
+	this->mwindow = mwindow;
+	current_folder[0] = 0;
+}
+
+
+AWindow::~AWindow()
+{
+	delete asset_edit;
+}
+
+int AWindow::create_objects()
+{
+SET_TRACE
+	gui = new AWindowGUI(mwindow, this);
+SET_TRACE
+	gui->create_objects();
+SET_TRACE
+	gui->update_assets();
+SET_TRACE
+	asset_remove = new AssetRemoveThread(mwindow);
+SET_TRACE
+	asset_edit = new AssetEdit(mwindow);
+SET_TRACE
+	clip_edit = new ClipEdit(mwindow, this, 0);
+SET_TRACE
+	return 0;
+}
+
+
+void AWindow::run()
+{
+	gui->run_window();
+}

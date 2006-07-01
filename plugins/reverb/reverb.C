@@ -1,8 +1,9 @@
 #include "clip.h"
 #include "confirmsave.h"
-#include "defaults.h"
+#include "bchash.h"
 #include "errorbox.h"
 #include "filexml.h"
+#include "language.h"
 #include "picon_png.h"
 #include "reverb.h"
 #include "reverbwindow.h"
@@ -13,11 +14,6 @@
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
-
-#include <libintl.h>
-#define _(String) gettext(String)
-#define gettext_noop(String) String
-#define N_(String) gettext_noop (String)
 
 
 
@@ -79,11 +75,14 @@ Reverb::~Reverb()
 	}
 }
 
-char* Reverb::plugin_title() { return _("Heroine College Concert Hall"); }
+char* Reverb::plugin_title() { return N_("Heroine College Concert Hall"); }
 int Reverb::is_realtime() { return 1; }
 int Reverb::is_multichannel() { return 1; }
+int Reverb::is_synthesis() { return 1; }
 
-int Reverb::process_realtime(int64_t size, double **input_ptr, double **output_ptr)
+int Reverb::process_realtime(int64_t size, 
+	double **input_ptr, 
+	double **output_ptr)
 {
 	int64_t new_dsp_length, i, j;
 	main_in = input_ptr;
@@ -258,7 +257,7 @@ int Reverb::load_defaults()
 
 // load the defaults
 
-	defaults = new Defaults(directory);
+	defaults = new BC_Hash(directory);
 
 	defaults->load();
 
@@ -496,6 +495,7 @@ int ReverbEngine::process_overlay(double *in, double *out, double &out1, double 
 void ReverbEngine::run()
 {
 	int j, i;
+//printf("ReverbEngine::run 1 %d\n", calculate_realtime());
 	while(1)
 	{
 		input_lock.lock();

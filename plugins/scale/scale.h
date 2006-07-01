@@ -10,7 +10,7 @@ class ScaleConstrain;
 class ScaleThread;
 class ScaleWin;
 
-#include "defaults.h"
+#include "bchash.h"
 #include "guicast.h"
 #include "mutex.h"
 #include "scalewin.h"
@@ -91,7 +91,19 @@ public:
 	~ScaleMain();
 
 // required for all realtime plugins
-	int process_realtime(VFrame *input_ptr, VFrame *output_ptr);
+	int process_buffer(VFrame *frame,
+		int64_t start_position,
+		double frame_rate);
+	void calculate_transfer(VFrame *frame,
+		float &in_x1, 
+		float &in_x2, 
+		float &in_y1, 
+		float &in_y2, 
+		float &out_x1, 
+		float &out_x2, 
+		float &out_y1, 
+		float &out_y2);
+	int handle_opengl();
 	int is_realtime();
 	char* plugin_title();
 	int show_gui();
@@ -109,8 +121,7 @@ public:
 	ScaleThread *thread;
 
 	OverlayFrame *overlayer;   // To scale images
-	VFrame *temp_frame;        // Used if buffers are the same
-	Defaults *defaults;
+	BC_Hash *defaults;
 	ScaleConfig config;
 };
 

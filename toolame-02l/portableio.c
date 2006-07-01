@@ -43,12 +43,9 @@
  * conversions, and accommodated conversions involving +/- infinity,
  * NaN's, and denormalized numbers.
  *
- * $Id: portableio.c,v 1.1.1.1 2003/12/05 21:39:00 j6t Exp $
+ * $Id: portableio.c,v 1.1.1.1 2003/10/14 07:54:43 heroine Exp $
  *
  * $Log: portableio.c,v $
- * Revision 1.1.1.1  2003/12/05 21:39:00  j6t
- * Heroine Virtual's release 1.1.8
- *
  * Revision 1.1.1.1  2003/10/14 07:54:43  heroine
  *
  *

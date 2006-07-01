@@ -10,6 +10,7 @@ class IVTCWindow;
 #include "mutex.h"
 #include "ivtc.h"
 
+#define TOTAL_PATTERNS 3
 
 PLUGIN_THREAD_HEADER(IVTCMain, IVTCThread, IVTCWindow)
 
@@ -32,7 +33,7 @@ public:
 	IVTCMain *client;
 	IVTCOffset *frame_offset;
 	IVTCFieldOrder *first_field;
-	IVTCAuto *automatic;
+//	IVTCAuto *automatic;
 	IVTCAutoThreshold *threshold;
 	IVTCPattern *pattern[TOTAL_PATTERNS];
 };

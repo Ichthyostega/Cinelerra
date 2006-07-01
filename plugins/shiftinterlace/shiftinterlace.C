@@ -1,8 +1,9 @@
 #include "bcdisplayinfo.h"
 #include "clip.h"
-#include "defaults.h"
+#include "bchash.h"
 #include "filexml.h"
 #include "guicast.h"
+#include "language.h"
 #include "picon_png.h"
 #include "pluginvclient.h"
 #include "vframe.h"
@@ -12,11 +13,6 @@
 #include <stdint.h>
 #include <string.h>
 
-
-#include <libintl.h>
-#define _(String) gettext(String)
-#define gettext_noop(String) String
-#define N_(String) gettext_noop (String)
 
 
 
@@ -112,7 +108,7 @@ public:
 
 	ShiftInterlaceConfig config;
 	ShiftInterlaceThread *thread;
-	Defaults *defaults;
+	BC_Hash *defaults;
 };
 
 
@@ -264,15 +260,8 @@ ShiftInterlaceMain::~ShiftInterlaceMain()
 }
 
 
-int ShiftInterlaceMain::is_realtime() 
-{
-	return 1;
-}
-
-char* ShiftInterlaceMain::plugin_title() 
-{
-	return _("ShiftInterlace channels");
-}
+char* ShiftInterlaceMain::plugin_title()  { return N_("ShiftInterlace"); }
+int ShiftInterlaceMain::is_realtime() { return 1; }
 
 
 SHOW_GUI_MACRO(ShiftInterlaceMain, ShiftInterlaceThread)
@@ -293,7 +282,7 @@ int ShiftInterlaceMain::load_defaults()
 	sprintf(directory, "%sshiftinterlace.rc", BCASTDIR);
 
 // load the defaults
-	defaults = new Defaults(directory);
+	defaults = new BC_Hash(directory);
 	defaults->load();
 
 	config.odd_offset = defaults->get("ODD_OFFSET", config.odd_offset);
@@ -422,8 +411,14 @@ void ShiftInterlaceMain::shift_row(VFrame *input_frame,
 		case BC_RGB888:
 			SHIFT_ROW_MACRO(3, unsigned char, 0x0)
 			break;
+		case BC_RGB_FLOAT:
+			SHIFT_ROW_MACRO(3, float, 0x0)
+			break;
 		case BC_YUV888:
 			SHIFT_ROW_MACRO(3, unsigned char, 0x80)
+			break;
+		case BC_RGBA_FLOAT:
+			SHIFT_ROW_MACRO(4, float, 0x0)
 			break;
 		case BC_RGBA8888:
 			SHIFT_ROW_MACRO(4, unsigned char, 0x0)

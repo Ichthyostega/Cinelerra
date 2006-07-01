@@ -1,6 +1,6 @@
 #include "bcdisplayinfo.h"
 #include "clip.h"
-#include "defaults.h"
+#include "bchash.h"
 #include "filesystem.h"
 #include "filexml.h"
 #include "leveleffect.h"
@@ -183,16 +183,9 @@ void SoundLevelEffect::reset()
 	accum_size = 0;
 }
 
-char* SoundLevelEffect::plugin_title()
-{
-	return _("SoundLevel");
-}
+char* SoundLevelEffect::plugin_title() { return N_("SoundLevel"); }
+int SoundLevelEffect::is_realtime() { return 1; }
 
-
-int SoundLevelEffect::is_realtime()
-{
-	return 1;
-}
 
 void SoundLevelEffect::read_data(KeyFrame *keyframe)
 {
@@ -229,7 +222,7 @@ void SoundLevelEffect::save_data(KeyFrame *keyframe)
 
 int SoundLevelEffect::load_defaults()
 {
-	defaults = new Defaults(BCASTDIR "soundlevel.rc");
+	defaults = new BC_Hash(BCASTDIR "soundlevel.rc");
 	defaults->load();
 
 	config.duration = defaults->get("DURATION", config.duration);

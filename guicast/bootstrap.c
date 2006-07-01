@@ -5,11 +5,24 @@
 
 // Bootstrap for themes.
 
-// Concatenates all the resources and a table of contents 
+// By default, concatenates all the resources and a table of contents 
 // into an object file with objcopy.
-// The user must then pass the name of the destination symbol
+
+// Run nm <object> to get the symbols created by bootstrap.
+
+// The user must make extern variable declarations like
+// extern unsigned char _binary_myobject_data_start[];
+// and link the object to get at the symbols.
+
+// Pass the symbol like
 // _binary_destname_o_start
-// to BC_Theme::set_data to set the image table.
+// to BC_Theme::set_data to set an image table for a theme.
+
+
+// Because of the need for runtime compilation of source files for OpenGL,
+// it now supports loading a single resource and omitting the table of contents.
+
+
 
 
 // Usage: bootstrap <dest object> <resource> * n
@@ -56,18 +69,36 @@ int main(int argc, char *argv[])
 	int data_size = 0;
 	int data_offset = 0;
 	char temp_path[1024];
+	char out_path[1024];
 	char *ptr;
 	char system_command[1024];
+	int current_arg = 1;
+	int binary_mode = 0;
+	int string_mode = 0;
 
 	if(argc < 3)
 	{
-		fprintf(stderr, "Need 2 arguments you MOR-ON!\n");
+		fprintf(stderr, "Usage: bootstrap [-b] <dest object> <resource> * n\n");
+		fprintf(stderr, "-b - omit table of contents just store resource.\n");
+		fprintf(stderr, "-s - omit table of contents but append 0 to resource.\n");
 		exit(1);
 	}
 
+	if(!strcmp(argv[current_arg], "-b"))
+	{
+		binary_mode = 1;
+		current_arg++;
+	}
+
+	if(!strcmp(argv[current_arg], "-s"))
+	{
+		string_mode = 1;
+		current_arg++;
+	}
 
 // Make object filename
-	strcpy(temp_path, argv[1]);
+	strcpy(temp_path, argv[current_arg]);
+	strcpy(out_path, argv[current_arg++]);
 	ptr = strchr(temp_path, '.');
 	if(ptr)
 	{
@@ -104,9 +135,9 @@ int main(int argc, char *argv[])
 
 // Read through all the resources, concatenate to dest file, 
 // and record the contents.
-	for(i = 2; i < argc; i++)
+	while(current_arg < argc)
 	{
-		char *path = argv[i];
+		char *path = argv[current_arg++];
 		if(!(src = fopen(path, "r")))
 		{
 			fprintf(stderr, "%s while opening %s\n", strerror(errno), path);
@@ -120,38 +151,50 @@ int main(int argc, char *argv[])
 
 			data_offset = data_size;
 
+			if(!binary_mode && !string_mode)
+			{
 // Write size of image in data buffer
-			*(data_buffer + data_size) = (size & 0xff000000) >> 24;
-			data_size++;
-			*(data_buffer + data_size) = (size & 0xff0000) >> 16;
-			data_size++;
-			*(data_buffer + data_size) = (size & 0xff00) >> 8;
-			data_size++;
-			*(data_buffer + data_size) = size & 0xff;
-			data_size++;
+				*(data_buffer + data_size) = (size & 0xff000000) >> 24;
+				data_size++;
+				*(data_buffer + data_size) = (size & 0xff0000) >> 16;
+				data_size++;
+				*(data_buffer + data_size) = (size & 0xff00) >> 8;
+				data_size++;
+				*(data_buffer + data_size) = size & 0xff;
+				data_size++;
+			}
 
 			fread(data_buffer + data_size, 1, size, src);
 			data_size += size;
+// Terminate string
+			if(string_mode) data_buffer[data_size++] = 0;
 			fclose(src);
 
+			if(!binary_mode && !string_mode)
+			{
 // Create contents
-			append_contents(path, 
-				data_offset, 
-				contents_buffer, 
-				&contents_size);
+				append_contents(path, 
+					data_offset, 
+					contents_buffer, 
+					&contents_size);
+			}
 		}
 	}
 
+	if(!binary_mode && !string_mode)
+	{
 // Finish off size of contents
-	*(int*)(contents_buffer) = contents_size;
+		*(int*)(contents_buffer) = contents_size;
 // Write contents
-	fwrite(contents_buffer, 1, contents_size, dest);
+		fwrite(contents_buffer, 1, contents_size, dest);
+	}
+
 // Write data
 	fwrite(data_buffer, 1, data_size, dest);
 	fclose(dest);
 
 // Run system command on it
-	sprintf(system_command, "%s %s %s", BOOTSTRAP, temp_path, argv[1]);
+	sprintf(system_command, "%s %s %s", BOOTSTRAP, temp_path, out_path);
 	system(system_command);
 }
 

@@ -1,42 +1,10 @@
 #include "bcdisplayinfo.h"
+#include "language.h"
 #include "holowindow.h"
 
-#include <libintl.h>
-#define _(String) gettext(String)
-#define gettext_noop(String) String
-#define N_(String) gettext_noop (String)
 
 
-HoloThread::HoloThread(HoloMain *client)
- : Thread()
-{
-	this->client = client;
-	set_synchronous(0);
-	gui_started.lock();
-	completion.lock();
-}
-
-HoloThread::~HoloThread()
-{
-// Window always deleted here
-	delete window;
-}
-	
-void HoloThread::run()
-{
-	BC_DisplayInfo info;
-	window = new HoloWindow(client, 
-		info.get_abs_cursor_x() - 105, 
-		info.get_abs_cursor_y() - 100);
-	window->create_objects();
-	gui_started.unlock();
-	int result = window->run_window();
-	completion.unlock();
-// Last command executed in thread
-	if(result) client->client_side_close();
-}
-
-
+PLUGIN_THREAD_OBJECT(HoloMain, HoloThread, HoloWindow)
 
 
 
@@ -73,13 +41,7 @@ int HoloWindow::create_objects()
 	return 0;
 }
 
-int HoloWindow::close_event()
-{
-// Set result to 1 to indicate a client side close
-	set_done(1);
-	return 1;
-}
-
+WINDOW_CLOSE_EVENT(HoloWindow)
 
 
 

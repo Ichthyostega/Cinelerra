@@ -131,7 +131,7 @@ public:
 	int frame_height;
 	int antialias;
 	ShapeWipeThread *thread;
-	Defaults *defaults;
+	BC_Hash *defaults;
 };
 
 #endif

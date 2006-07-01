@@ -1,6 +1,6 @@
 #include "bcdisplayinfo.h"
 #include "clip.h"
-#include "defaults.h"
+#include "bchash.h"
 #include "filexml.h"
 #include "guicast.h"
 #include "language.h"
@@ -104,7 +104,7 @@ void LoopVideoWindow::create_objects()
 {
 	int x = 10, y = 10;
 
-	add_subwindow(new BC_Title(x, y, "Frames to loop:"));
+	add_subwindow(new BC_Title(x, y, _("Frames to loop:")));
 	y += 20;
 	add_subwindow(frames = new LoopVideoFrames(plugin, 
 		x, 
@@ -246,7 +246,7 @@ int LoopVideo::load_defaults()
 	sprintf(directory, "%sloopaudio.rc", BCASTDIR);
 
 // load the defaults
-	defaults = new Defaults(directory);
+	defaults = new BC_Hash(directory);
 	defaults->load();
 
 	config.frames = defaults->get("FRAMES", config.frames);

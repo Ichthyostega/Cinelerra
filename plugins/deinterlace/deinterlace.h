@@ -5,7 +5,7 @@
 
 class DeInterlaceMain;
 
-#include "defaults.inc"
+#include "bchash.inc"
 #include "deinterwindow.h"
 #include "pluginvclient.h"
 #include "vframe.inc"
@@ -40,8 +40,8 @@ public:
 		int64_t current_frame);
 
 	int mode;
-	int adaptive;
-	int threshold;
+//	int adaptive;
+//	int threshold;
 };
 
 class DeInterlaceMain : public PluginVClient
@@ -55,7 +55,9 @@ public:
 	
 
 // required for all realtime plugins
-	int process_realtime(VFrame *input, VFrame *output);
+	int process_buffer(VFrame *frame,
+		int64_t start_position,
+		double frame_rate);
 	int is_realtime();
 	int hide_gui();
 	void update_gui();
@@ -64,9 +66,10 @@ public:
 	int load_defaults();
 	int save_defaults();
 	void render_gui(void *data);
+	int handle_opengl();
 
-	void deinterlace_even(VFrame *input, VFrame *output, int dominance);
 	void deinterlace_avg_even(VFrame *input, VFrame *output, int dominance);
+	void deinterlace_even(VFrame *input, VFrame *output, int dominance);
 	void deinterlace_avg(VFrame *input, VFrame *output);
 	void deinterlace_swap(VFrame *input, VFrame *output, int dominance);
 

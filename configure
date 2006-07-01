@@ -48,7 +48,25 @@ gcc conftest.c >& /dev/null
 
 if [ -x a.out ]; then HAVE_VIDEO4LINUX2=y; else HAVE_VIDEO4LINUX2=n; fi
 
+
+# test for dvb
+
+rm -f a.out
+cat > conftest.c << EOF
+#include <linux/dvb/dmx.h>
+#include <linux/dvb/frontend.h>
+int main()
+{
+	return 0;
+}
+EOF
+
+gcc conftest.c >& /dev/null
+
+if [ -x a.out ]; then HAVE_DVB=y; else HAVE_DVB=n; fi
+
 rm -f a.out conftest.c
+
 
 
 
@@ -74,6 +92,36 @@ ERROR=1
 fi
 
 
+
+
+# test for OpenGL 2.0
+
+
+rm -f a.out
+cat > conftest.c << EOF
+#include <GL/gl.h>
+#include <GL/glext.h>
+#include <GL/glu.h>
+int main()
+{
+	glUseProgram(0);
+	return 0;
+}
+EOF
+
+gcc conftest.c -lGL -lGLU >& /dev/null
+
+if [ -x a.out ]; then HAVE_GL=y; else HAVE_GL=n; fi
+
+rm -f a.out conftest.c
+
+
+
+
+
+
+
+
 if [ $ERROR == 1 ];
 then echo "Giving up and going to a movie."
 exit 1
@@ -94,11 +142,12 @@ echo CONFIGURING FFTW
 cd fftw* && CFLAGS=-fPIC ./configure && cd ..
 
 echo CONFIGURING MJPEGTOOLS
-ALSA_PATH=`expr $TOPDIR/alsa-lib*` && \
-cd mjpegtools* && CFLAGS="-I$ALSA_PATH/include -L$ALSA_PATH/$OBJDIR" ./configure --enable-shared=no && cd ..
+cd mjpegtools* && ./configure --enable-shared=no && cd ..
+
+
 
 echo CONFIGURING SNDFILE
-cd libsndfile* && chmod a+x configure && ./configure && cd ..
+cd libsndfile* && chmod a+x ./configure && ./configure && cd ..
 
 echo CONFIGURING RAW1394
 cd libraw1394* && \
@@ -119,11 +168,10 @@ PKG_CONFIG_PATH=$RAW1394_PATH CFLAGS=-I$RAW1394_PATH/ LDFLAGS=-L$RAW1394_PATH/sr
 cd ..
 
 echo CONFIGURING THEORA
-ALSA_PATH=`expr $TOPDIR/alsa-lib*` && \
 LIBOGG_PATH=`expr $TOPDIR/quicktime/libogg*` && \
 LIBVORBIS_PATH=`expr $TOPDIR/quicktime/libvorbis*` && \
 cd libtheora* && \
-PKG_CONFIG_PATH=$LIBOGG_PATH:$LIBVORBIS_PATH CFLAGS="-I$LIBOGG_PATH/include -I$ALSA_PATH -L$ALSA_PATH/$OBJDIR -L$LIBOGG_PATH/src -I$LIBVORBIS_PATH/include -L$LIBVORBIS_PATH/lib" ./configure --enable-shared=no && \
+PKG_CONFIG_PATH=$LIBOGG_PATH:$LIBVORBIS_PATH CFLAGS="-I$LIBOGG_PATH/include -L$LIBOGG_PATH/src -I$LIBVORBIS_PATH/include -L$LIBVORBIS_PATH/lib" ./configure --enable-shared=no && \
 cd ..
 
 
@@ -140,6 +188,27 @@ then
 	echo "Have Video4Linux 2"
 else
 	echo "Don't have Video4Linux 2"
+fi
+
+if [ "$HAVE_DVB" == "y" ];
+then 
+	echo "#define HAVE_DVB" >> hvirtual_config.h
+	echo "Have DVB"
+else
+	echo "Don't have DVB"
+fi
+
+
+if [ "$HAVE_GL" == "y" ];
+then 
+cat >> hvirtual_config.h << EOF 
+#ifndef HAVE_GL
+#define HAVE_GL
+#endif
+EOF
+	echo "Have OpenGL 2.0"
+else
+	echo "Don't have OpenGL 2.0"
 fi
 
 

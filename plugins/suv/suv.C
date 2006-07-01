@@ -311,6 +311,11 @@ void SUV::initialize()
 	new_button("prevtip.png", "tipbutton_up.png", "tipbutton_hi.png", "tipbutton_dn.png", "prev_tip");
 	new_button("nexttip.png", "tipbutton_up.png", "tipbutton_hi.png", "tipbutton_dn.png", "next_tip");
 	new_button("closetip.png", "tipbutton_up.png", "tipbutton_hi.png", "tipbutton_dn.png", "close_tip");
+	new_button("swap_extents.png",
+		"editpanel_up.png",
+		"editpanel_hi.png",
+		"editpanel_dn.png",
+		"swap_extents");
 
 
 // Record windows
@@ -321,12 +326,13 @@ void SUV::initialize()
 	rmonitor_meters = new_image("recordmonitor_meters.png");
 
 
-	preferencescategory_x = 5;
+	preferences_category_overlap = 0;
+	preferencescategory_x = 0;
 	preferencescategory_y = 5;
 	preferencestitle_x = 5;
 	preferencestitle_y = 10;
 	preferencesoptions_x = 5;
-	preferencesoptions_y = 40;
+	preferencesoptions_y = 0;
 
 // MWindow
 	message_normal = resources->text_default;
@@ -352,6 +358,10 @@ void SUV::initialize()
 	new_image("mode_normal", "mode_normal.png");
 	new_image("mode_replace", "mode_replace.png");
 	new_image("mode_subtract", "mode_subtract.png");
+	new_image("mode_max", "mode_max.png");
+
+	new_image_set("plugin_on", 5, "plugin_on.png", "plugin_onhi.png", "plugin_onselect.png", "plugin_ondn.png", "plugin_onselecthi.png");
+	new_image_set("plugin_show", 5, "plugin_show.png", "plugin_showhi.png", "plugin_showselect.png", "plugin_showdn.png", "plugin_showselecthi.png");
 
 // CWindow
 	new_image("cpanel_bg", "cpanel_bg.png");
@@ -552,6 +562,23 @@ void SUV::initialize()
 		"batchcancel_hi.png",
 		"batchcancel_dn.png");
 
+	new_image_set("category_button",
+		3,
+		"preferencesbutton_dn.png",
+		"preferencesbutton_dnhi.png",
+		"preferencesbutton_dnlo.png");
+
+	new_image_set("category_button_checked",
+		3,
+		"preferencesbutton_up.png",
+		"preferencesbutton_uphi.png",
+		"preferencesbutton_dnlo.png");
+
+
+
+
+
+
 	new_toggle("arrow.png", editpanel_up, editpanel_hi, editpanel_checked, editpanel_dn, editpanel_checkedhi, "arrow");
 	new_toggle("autokeyframe.png", transport_up, editpanel_hi, editpanel_checked, editpanel_dn, editpanel_checkedhi, "autokeyframe");
 	new_toggle("ibeam.png", editpanel_up, editpanel_hi, editpanel_checked, editpanel_dn, editpanel_checkedhi, "ibeam");
@@ -579,7 +606,7 @@ void SUV::initialize()
 	flush_images();
 
 	title_font = MEDIUMFONT_3D;
-	title_color = WHITE;
+	title_color = 0xbfbfbf;
 	recordgui_fixed_color = YELLOW;
 	recordgui_variable_color = RED;
 
@@ -824,9 +851,9 @@ void SUV::build_bg_data()
 	new_image("resource128", "resource128.png");
 	new_image("resource64", "resource64.png");
 	new_image("resource32", "resource32.png");
-	plugin_bg_data = new VFrame(get_image_data("plugin_bg.png"));
-	title_bg_data = new VFrame(get_image_data("title_bg.png"));
-	vtimebar_bg_data = new VFrame(get_image_data("vwindow_timebar.png"));
+	new_image("plugin_bg_data", "plugin_bg.png");
+	new_image("title_bg_data", "title_bg.png");
+	new_image("vtimebar_bg_data", "vwindow_timebar.png");
 }
 
 
@@ -1052,11 +1079,11 @@ void SUV::get_plugindialog_sizes()
 	plugindialog_module_y = y;
 
 	plugindialog_new_w = plugindialog_shared_x - plugindialog_new_x - 10;
-	plugindialog_new_h = mwindow->session->plugindialog_h - 120;
+	plugindialog_new_h = mwindow->session->plugindialog_h - 100;
 	plugindialog_shared_w = plugindialog_module_x - plugindialog_shared_x - 10;
-	plugindialog_shared_h = mwindow->session->plugindialog_h - 120;
+	plugindialog_shared_h = mwindow->session->plugindialog_h - 100;
 	plugindialog_module_w = mwindow->session->plugindialog_w - plugindialog_module_x - 10;
-	plugindialog_module_h = mwindow->session->plugindialog_h - 120;
+	plugindialog_module_h = mwindow->session->plugindialog_h - 100;
 
 	plugindialog_newattach_x = plugindialog_new_x + 20;
 	plugindialog_newattach_y = plugindialog_new_y + plugindialog_new_h + 10;

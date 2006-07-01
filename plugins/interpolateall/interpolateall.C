@@ -1,18 +1,13 @@
 #include "bcdisplayinfo.h"
 #include "clip.h"
-#include "defaults.h"
+#include "bchash.h"
 #include "guicast.h"
 #include "filexml.h"
+#include "language.h"
 #include "mainprogress.h"
 #include "pluginaclient.h"
 
 #include <string.h>
-
-
-#include <libintl.h>
-#define _(String) gettext(String)
-#define gettext_noop(String) String
-#define N_(String) gettext_noop (String)
 
 
 
@@ -78,21 +73,9 @@ InterpolateAllEffect::~InterpolateAllEffect()
 
 
 
-char* InterpolateAllEffect::plugin_title()
-{
-	return _("Interpolate");
-}
-
-
-int InterpolateAllEffect::is_realtime()
-{
-	return 0;
-}
-
-int InterpolateAllEffect::is_multichannel()
-{
-	return 0;
-}
+char* InterpolateAllEffect::plugin_title() { return N_("Interpolate"); }
+int InterpolateAllEffect::is_realtime() { return 0; }
+int InterpolateAllEffect::is_multichannel() { return 0; }
 
 
 int InterpolateAllEffect::get_parameters()

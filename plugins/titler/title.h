@@ -29,7 +29,7 @@ class TitleEngine;
 class GlyphEngine;
 class TitleTranslate;
 
-#include "defaults.h"
+#include "bchash.h"
 #include "loadbalance.h"
 #include "mutex.h"
 #include "overlayframe.h"
@@ -74,17 +74,16 @@ public:
 	void copy_from(TitleConfig &that);
 	void interpolate(TitleConfig &prev, 
 		TitleConfig &next, 
-		int64_t prev_frame, 
-		int64_t next_frame, 
-		int64_t current_frame);
+		long prev_frame, 
+		long next_frame, 
+		long current_frame);
 
 
 // Font information
 	char font[BCTEXTLEN];
-	int64_t style;
+	long style;
 	int size;
 	int color;
-	int color_stroke;
 // Motion of title across frame
 	int motion_strategy;
 // Loop motion path
@@ -100,8 +99,8 @@ public:
 // Pixels down and right of dropshadow
 	int dropshadow;
 // Calculated during every frame for motion strategy
-	int64_t prev_keyframe_position;
-	int64_t next_keyframe_position;
+	long prev_keyframe_position;
+	long next_keyframe_position;
 // Stamp timecode
 	int timecode;
 
@@ -109,8 +108,6 @@ public:
 	char text[BCTEXTLEN];
 // Encoding to convert from 
 	char encoding[BCTEXTLEN];
-// Width of the stroke
-	double stroke_width;
 };
 
 class FontEntry
@@ -151,7 +148,6 @@ public:
 	FT_ULong char_code;
 	int width, height, pitch, advance_w, left, top, freetype_index;
 	VFrame *data;
-	VFrame *data_stroke;
 };
 
 
@@ -356,13 +352,12 @@ public:
 
 	static ArrayList<FontEntry*> *fonts;
 
-	Defaults *defaults;
+	BC_Hash *defaults;
 	ArrayList<TitleGlyph*> glyphs;
 	Mutex glyph_lock;
 
 // Stage 1 parameters must be compared to redraw the text mask
 	VFrame *text_mask;
-	VFrame *text_mask_stroke;
 	GlyphEngine *glyph_engine;
 	TitleEngine *title_engine;
 	TitleTranslate *translate;
@@ -408,8 +403,7 @@ public:
 	int text_h;
 // Position of each character relative to total text extents
 	title_char_position_t *char_positions;
-// Positions of the bottom pixels of the rows
-	int *rows_bottom;
+
 	VFrame *input, *output;
 
 	int need_reconfigure;

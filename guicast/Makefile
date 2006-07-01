@@ -40,9 +40,9 @@ OBJS = \
 	$(OBJDIR)/bcdisplayinfo.o \
 	$(OBJDIR)/bcdragwindow.o \
 	$(OBJDIR)/bcfilebox.o \
-	$(OBJDIR)/bcipc.o \
 	$(OBJDIR)/bclistbox.o \
 	$(OBJDIR)/bclistboxitem.o \
+	$(OBJDIR)/bchash.o \
 	$(OBJDIR)/bcmenu.o \
 	$(OBJDIR)/bcmenubar.o \
 	$(OBJDIR)/bcmenuitem.o \
@@ -50,6 +50,7 @@ OBJS = \
 	$(OBJDIR)/bcnewfolder.o \
 	$(OBJDIR)/bcmeter.o \
 	$(OBJDIR)/bcpan.o \
+	$(OBJDIR)/bcpbuffer.o \
 	$(OBJDIR)/bcpixmap.o \
 	$(OBJDIR)/bcpopup.o \
 	$(OBJDIR)/bcpopupmenu.o \
@@ -62,18 +63,20 @@ OBJS = \
 	$(OBJDIR)/bcsignals.o \
 	$(OBJDIR)/bcslider.o \
 	$(OBJDIR)/bcsubwindow.o \
+	$(OBJDIR)/bcsynchronous.o \
 	$(OBJDIR)/bctextbox.o \
+	$(OBJDIR)/bctexture.o \
 	$(OBJDIR)/bctheme.o \
 	$(OBJDIR)/bctitle.o \
 	$(OBJDIR)/bctoggle.o \
 	$(OBJDIR)/bctumble.o \
 	$(OBJDIR)/bcwindow.o \
+	$(OBJDIR)/bcwindow3d.o \
 	$(OBJDIR)/bcwindowbase.o \
 	$(OBJDIR)/bcwindowdraw.o \
 	$(OBJDIR)/bcwindowevents.o \
 	$(OBJDIR)/condition.o \
 	$(OBJDIR)/errorbox.o \
-	$(OBJDIR)/defaults.o \
 	$(OBJDIR)/filesystem.o \
 	$(OBJDIR)/mutex.o \
 	$(OBJDIR)/rotateframe.o \
@@ -84,6 +87,7 @@ OBJS = \
 	$(OBJDIR)/bctimer.o \
 	$(OBJDIR)/units.o \
 	$(OBJDIR)/vframe.o \
+	$(OBJDIR)/vframe3d.o \
 	$(OBJDIR)/workarounds.o
 
 OUTPUT = $(OBJDIR)/libguicast.so
@@ -105,6 +109,10 @@ TESTLIBS := \
 ifeq ($(HAVE_XFT), y)
 TESTLIBS += -lXft
 endif	
+
+ifeq ($(HAVE_GL), y)
+TESTLIBS += -lGL
+endif
 
 UTILS = $(OBJDIR)/bootstrap $(OBJDIR)/pngtoh
 
@@ -183,6 +191,7 @@ $(OBJDIR)/bcdialog.o:                                         bcdialog.C
 $(OBJDIR)/bcdisplayinfo.o: 				      bcdisplayinfo.C
 $(OBJDIR)/bcdragwindow.o:  				      bcdragwindow.C
 $(OBJDIR)/bcfilebox.o:     				      bcfilebox.C
+$(OBJDIR)/bchash.o:                                           bchash.C
 $(OBJDIR)/bcipc.o: 	   				      bcipc.C
 $(OBJDIR)/bclistbox.o:     				      bclistbox.C
 $(OBJDIR)/bclistboxitem.o:     				      bclistboxitem.C
@@ -193,6 +202,7 @@ $(OBJDIR)/bcmenupopup.o:                                      bcmenupopup.C
 $(OBJDIR)/bcmeter.o: 	   				      bcmeter.C
 $(OBJDIR)/bcnewfolder.o:                                      bcnewfolder.C
 $(OBJDIR)/bcpan.o: 	   				      bcpan.C
+$(OBJDIR)/bcpbuffer.o:                                        bcpbuffer.C
 $(OBJDIR)/bcpixmap.o: 	   				      bcpixmap.C
 $(OBJDIR)/bcpopup.o: 	   				      bcpopup.C
 $(OBJDIR)/bcpopupmenu.o:   				      bcpopupmenu.C
@@ -205,11 +215,14 @@ $(OBJDIR)/bcscrollbar.o:   				      bcscrollbar.C
 $(OBJDIR)/bcsignals.o:     				      bcsignals.C
 $(OBJDIR)/bcslider.o: 	   				      bcslider.C
 $(OBJDIR)/bcsubwindow.o:   				      bcsubwindow.C
+$(OBJDIR)/bcsynchronous.o:                                    bcsynchronous.C
 $(OBJDIR)/bctextbox.o:     				      bctextbox.C
+$(OBJDIR)/bctexture.o:                                        bctexture.C
 $(OBJDIR)/bctitle.o: 	   				      bctitle.C
 $(OBJDIR)/bctheme.o: 	   				      bctheme.C
 $(OBJDIR)/bctoggle.o: 	   				      bctoggle.C
 $(OBJDIR)/bctumble.o: 	   				      bctumble.C
+$(OBJDIR)/bcwindow3d.o:                                       bcwindow3d.C
 $(OBJDIR)/bcwindow.o: 	   				      bcwindow.C
 $(OBJDIR)/bcwindowbase.o:  				      bcwindowbase.C
 $(OBJDIR)/bcwindowdraw.o:  				      bcwindowdraw.C
@@ -230,6 +243,7 @@ $(OBJDIR)/thread.o: 	   				      thread.C
 $(OBJDIR)/bctimer.o: 	   				      bctimer.C
 $(OBJDIR)/units.o: 	   				      units.C
 $(OBJDIR)/vframe.o: 	   				      vframe.C
+$(OBJDIR)/vframe3d.o: 	   				      vframe3d.C
 $(OBJDIR)/workarounds.o:   				      workarounds.C
 
 

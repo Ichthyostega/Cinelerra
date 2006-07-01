@@ -2,11 +2,11 @@
 #define PICTURE_H
 
 
-// Container for picture controls
+// Container for picture controls like brightness.
 
 #include "arraylist.h"
 #include "bcwindowbase.inc"
-#include "defaults.inc"
+#include "bchash.inc"
 #include "mwindow.inc"
 
 class PictureItem
@@ -31,16 +31,17 @@ public:
 class PictureConfig
 {
 public:
-	PictureConfig(MWindow *mwindow);
+	PictureConfig(BC_Hash *defaults);
 	~PictureConfig();
 	void copy_settings(PictureConfig *picture);
 	void copy_usage(PictureConfig *picture);
 	void load_defaults();
 	void save_defaults();
 	void set_item(int device_id, int value);
+	void dump();
 
 	int brightness;
-	int hue;\
+	int hue;
 	int color;
 	int contrast;
 	int whiteness;
@@ -57,8 +58,8 @@ public:
 	PictureItem* new_item(const char *name);
 	PictureItem* get_item(const char *name, int id);
 	ArrayList<PictureItem*> controls;
-// To get defaults
-	MWindow *mwindow;
+// Pointer to MWindow::defaults get defaults
+	BC_Hash *defaults;
 };
 
 
