@@ -23,7 +23,7 @@
 #define VDEVICEV4L_H
 
 #include "vdevicebase.h"
-#include <linux/videodev.h>
+#include "debian/videodev.h"
 #include "videodevice.inc"
 
 class VDeviceV4L : public VDeviceBase

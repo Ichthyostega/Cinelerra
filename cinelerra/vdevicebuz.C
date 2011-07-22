@@ -45,7 +45,7 @@
 #include <stdint.h>
 #include <linux/kernel.h>
 //#include <linux/videodev2.h>
-#include <linux/videodev.h>
+#include "debian/videodev.h"
 #include <fcntl.h>
 #include <sys/ioctl.h>
 #include <sys/mman.h>
