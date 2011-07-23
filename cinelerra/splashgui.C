@@ -64,9 +64,14 @@ void SplashGUI::create_objects()
 		0,
 		0));
 	add_subwindow(operation = 
-		new BC_Title(5, 
-			progress->get_y() - get_text_height(MEDIUMFONT) - 5,
-			_("Loading...")));
+		new BC_Title( // 5
+            (int)(get_w()*0.46), 
+			//progress->get_y() - get_text_height(MEDIUMFONT) - 5,
+            get_h() - get_text_height(MEDIUMFONT) - 60,
+			_("Loading..."),
+            MEDIUMFONT,
+            0x6065C8              // Ichthyostega's private colors
+            ));
 }
 
 
