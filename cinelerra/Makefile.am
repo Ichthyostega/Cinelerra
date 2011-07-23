@@ -681,6 +681,7 @@ cinelerra_LDADD = \
 	$(top_builddir)/libmpeg3/libmpeg3hv.la \
 	@FFMPEG_LIBS@ \
 	$(XIPH_LIBS) \
+	$(MP3LAME_LIBS) \
 	$(A52DEC_LIBS) \
 	$(OPENEXR_LIBS) \
 	-lsndfile \
