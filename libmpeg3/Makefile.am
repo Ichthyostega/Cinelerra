@@ -11,13 +11,13 @@ libmpeg3hv_la_SOURCES = bitstream.c libmpeg3.c mpeg3atrack.c mpeg3css.c \
 	mpeg3title.c \
 	mpeg3tocutil.c \
 											mpeg3vtrack.c workarounds.c 
-bin_PROGRAMS = mpeg3dump mpeg3toc mpeg3cat
-mpeg3dump_SOURCES = mpeg3dump.c
-mpeg3dump_LDADD = libmpeg3hv.la
-mpeg3toc_SOURCES = mpeg3toc.c
-mpeg3toc_LDADD = libmpeg3hv.la
-mpeg3cat_SOURCES = mpeg3cat.c
-mpeg3cat_LDADD = libmpeg3hv.la
+bin_PROGRAMS = mpeg3dump_cv mpeg3toc_cv mpeg3cat_cv
+mpeg3dump_cv_SOURCES = mpeg3dump.c
+mpeg3dump_cv_LDADD = libmpeg3hv.la
+mpeg3toc_cv_SOURCES = mpeg3toc.c
+mpeg3toc_cv_LDADD = libmpeg3hv.la
+mpeg3cat_cv_SOURCES = mpeg3cat.c
+mpeg3cat_cv_LDADD = libmpeg3hv.la
 
 SUBDIRS = audio video 
 

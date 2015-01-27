@@ -34,8 +34,9 @@ int main(int argc, char *argv[])
 	if(argc < 2)
 	{
 		fprintf(stderr, "Concatenate elementary streams or demultiplex a program stream.\n"
-			"Usage: mpeg3cat -[av0123456789] <infile> [infile...] > <outfile>\n\n"
-			"Example: Concatenate 2 video files: mpeg3cat xena1.m2v xena2.m2v > xena.m2v\n"
+			"Custom version included with Cinelerra-CV.\n"
+			"Usage: mpeg3cat_cv -[av0123456789] <infile> [infile...] > <outfile>\n\n"
+			"Example: Concatenate 2 video files: mpeg3cat_cv xena1.m2v xena2.m2v > xena.m2v\n"
 			"         Extract audio stream 0: mpeg3cat -a0 xena.vob > war_cry.ac3\n");
 		exit(1);
 	}
