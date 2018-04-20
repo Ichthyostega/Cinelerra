@@ -111,7 +111,7 @@ int NormalizeMain::start_loop()
 	current_position = PluginClient::start;
 	peak = new double[PluginClient::total_in_buffers];
 	scale = new double[PluginClient::total_in_buffers];
-	bzero(peak, sizeof(double) * PluginClient::total_in_buffers);
+	memset(peak, 0, sizeof(double) * PluginClient::total_in_buffers);
 	return 0;
 }
 

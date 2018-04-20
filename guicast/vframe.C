@@ -437,7 +437,7 @@ int VFrame::allocate_compressed_data(long bytes)
 	if(data && compressed_allocated < bytes)
 	{
 		unsigned char *new_data = new unsigned char[bytes];
-		bcopy(data, new_data, compressed_allocated);
+		memmove(new_data, data, compressed_allocated);
 UNBUFFER(data);
 		delete [] data;
 		data = new_data;
@@ -596,7 +596,7 @@ int VFrame::clear_frame()
 			break;
 
 		case BC_YUV420P:
-			bzero(data, h * w * 2);
+			memset(data, 0, h * w * 2);
 			break;
 
 		case BC_YUV888:
@@ -616,7 +616,7 @@ int VFrame::clear_frame()
 			break;
 		
 		default:
-			bzero(data, h * bytes_per_line);
+			memset(data, 0, h * bytes_per_line);
 			break;
 	}
 	return 0;

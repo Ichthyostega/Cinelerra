@@ -42,20 +42,20 @@ Resample::Resample(File *file, int channels)
 	}
 	itime = new double[channels];
 	output_temp_start = new long[channels];
-	bzero(output_temp_start, sizeof(long) * channels);
+	memset(output_temp_start, 0, sizeof(long) * channels);
 	resample_init = new int[channels];
-	bzero(resample_init, sizeof(int) * channels);
+	memset(resample_init, 0, sizeof(int) * channels);
 	last_ratio = 0;
 	output_temp = 0;
 	output_size = new long[channels];
-	bzero(output_size, sizeof(long) * channels);
+	memset(output_size, 0, sizeof(long) * channels);
 	output_allocation = 0;
 	input_size = RESAMPLE_CHUNKSIZE;
 	input_chunk_end = new long[channels];
-	bzero(input_chunk_end, sizeof(long) * channels);
+	memset(input_chunk_end, 0, sizeof(long) * channels);
 	input = new double[input_size];
 	last_out_end = new long[channels];
-	bzero(last_out_end, sizeof(long) * channels);
+	memset(last_out_end, 0, sizeof(long) * channels);
 //printf("Resample::Resample 2 %d\n", channels);
 }
 
@@ -89,10 +89,10 @@ void Resample::reset(int channel)
 //printf("Resample::reset 1 channel=%d normalized_sample_rate=%d\n", channel, file->normalized_sample_rate);
 	if(channel < 0)
 	{
-		bzero(resample_init, sizeof(int) * channels);
-		bzero(output_size, sizeof(long) * channels);
-		bzero(last_out_end, sizeof(long) * channels);
-		bzero(input_chunk_end, sizeof(long) * channels);
+		memset(resample_init, 0, sizeof(int) * channels);
+		memset(output_size, 0, sizeof(long) * channels);
+		memset(last_out_end, 0, sizeof(long) * channels);
+		memset(input_chunk_end, 0, sizeof(long) * channels);
 	}
 	else
 	{
@@ -171,7 +171,7 @@ void Resample::resample_chunk(double *input,
 	{
 		resample_init[channel] = 1;
 		itime[channel] = 0;
-		bzero(old[channel], sizeof(double) * BLACKSIZE);
+		memset(old[channel], 0, sizeof(double) * BLACKSIZE);
 
 // precompute blackman filter coefficients
     	for (j = 0; j <= 2 * BPC; ++j) 
@@ -223,7 +223,7 @@ void Resample::resample_chunk(double *input,
 				new_output[l] = new double[new_allocation];
 				if(output_temp) 
 				{
-					bcopy(output_temp[l], new_output[l], output_allocation * sizeof(double));
+					memmove(new_output[l], output_temp[l], output_allocation * sizeof(double));
 					delete [] output_temp[l];
 				}
 			}
@@ -240,7 +240,7 @@ void Resample::resample_chunk(double *input,
 	itime[channel] += num_used - k * resample_ratio;
 //	for(i = 0; i < BLACKSIZE; i++)
 //		inbuf_old[i] = input[num_used + i - BLACKSIZE];
-	bcopy(input + num_used - BLACKSIZE, inbuf_old, BLACKSIZE * sizeof(double));
+	memmove(inbuf_old, input + num_used - BLACKSIZE, BLACKSIZE * sizeof(double));
 
 	last_ratio = resample_ratio;
 }
@@ -308,12 +308,12 @@ int Resample::resample(double *output,
 			if(fragment_len > out_len) fragment_len = out_len;
 
 //printf("Resample::resample 1 %d %d %d\n", out_len, output_size[channel], channel);
-			bcopy(output_temp[channel], output, fragment_len * sizeof(double));
+			memmove(output, output_temp[channel], fragment_len * sizeof(double));
 
 // Shift leftover forward
 //			for(int i = fragment_len; i < output_size[channel]; i++)
 //				output_temp[channel][i - fragment_len] = output_temp[channel][i];
-			bcopy(output_temp[channel] + fragment_len, output_temp[channel], (output_size[channel] - fragment_len) * sizeof(double)); 
+			memmove(output_temp[channel], output_temp[channel] + fragment_len, (output_size[channel] - fragment_len) * sizeof(double)); 
 
 			output_size[channel] -= fragment_len;
 			out_len -= fragment_len;
@@ -358,20 +358,20 @@ Resample_float::Resample_float(File *file, int channels)
 	}
 	itime = new float[channels];
 	output_temp_start = new long[channels];
-	bzero(output_temp_start, sizeof(long) * channels);
+	memset(output_temp_start, 0, sizeof(long) * channels);
 	resample_init = new int[channels];
-	bzero(resample_init, sizeof(int) * channels);
+	memset(resample_init, 0, sizeof(int) * channels);
 	last_ratio = 0;
 	output_temp = 0;
 	output_size = new long[channels];
-	bzero(output_size, sizeof(long) * channels);
+	memset(output_size, 0, sizeof(long) * channels);
 	output_allocation = 0;
 	input_size = RESAMPLE_CHUNKSIZE;
 	input_chunk_end = new long[channels];
-	bzero(input_chunk_end, sizeof(long) * channels);
+	memset(input_chunk_end, 0, sizeof(long) * channels);
 	input = new float[input_size];
 	last_out_end = new long[channels];
-	bzero(last_out_end, sizeof(long) * channels);
+	memset(last_out_end, 0, sizeof(long) * channels);
 }
 
 
@@ -404,10 +404,10 @@ void Resample_float::reset(int channel)
 //printf("Resample_float::reset 1 channel=%d normalized_sample_rate=%d\n", channel, file->normalized_sample_rate);
 	if(channel < 0)
 	{
-		bzero(resample_init, sizeof(int) * channels);
-		bzero(output_size, sizeof(long) * channels);
-		bzero(last_out_end, sizeof(long) * channels);
-		bzero(input_chunk_end, sizeof(long) * channels);
+		memset(resample_init, 0, sizeof(int) * channels);
+		memset(output_size, 0, sizeof(long) * channels);
+		memset(last_out_end, 0, sizeof(long) * channels);
+		memset(input_chunk_end, 0, sizeof(long) * channels);
 	}
 	else
 	{
@@ -489,7 +489,7 @@ void Resample_float::resample_chunk(float *input,
 	{
 		resample_init[channel] = 1;
 		itime[channel] = 0;
-		bzero(old[channel], sizeof(float) * BLACKSIZE);
+		memset(old[channel], 0, sizeof(float) * BLACKSIZE);
 
 //printf("Resample_float::resample_chunk 4\n");
 // precompute blackman filter coefficients
@@ -548,7 +548,7 @@ void Resample_float::resample_chunk(float *input,
 				new_output[l] = new double[new_allocation];
 				if(output_temp) 
 				{
-					bcopy(output_temp[l], new_output[l], output_allocation * sizeof(double));
+					memmove(new_output[l], output_temp[l], output_allocation * sizeof(double));
 					delete [] output_temp[l];
 				}
 			}
@@ -567,7 +567,7 @@ void Resample_float::resample_chunk(float *input,
 	itime[channel] += num_used - k * resample_ratio;
 //	for(i = 0; i < BLACKSIZE; i++)
 //		inbuf_old[i] = input[num_used + i - BLACKSIZE];
-	bcopy(input + num_used - BLACKSIZE, inbuf_old, BLACKSIZE * sizeof(float));
+	memmove(inbuf_old, input + num_used - BLACKSIZE, BLACKSIZE * sizeof(float));
 
 //printf("Resample_float::resample_chunk 13\n");
 	last_ratio = resample_ratio;
@@ -631,13 +631,13 @@ int Resample_float::resample(double *output,
 			if(fragment_len > out_len) fragment_len = out_len;
 
 //printf("Resample_float::resample 1 %d %d %d\n", out_len, output_size[channel], channel);
-			bcopy(output_temp[channel], output, fragment_len * sizeof(double));
+			memmove(output, output_temp[channel], fragment_len * sizeof(double));
 
 
 // Shift leftover forward
 			//for(int i = fragment_len; i < output_size[channel]; i++)
 			//	output_temp[channel][i - fragment_len] = output_temp[channel][i];
-			bcopy(output_temp[channel] + fragment_len, output_temp[channel], (output_size[channel] - fragment_len) * sizeof(double)); 
+			memmove(output_temp[channel], output_temp[channel] + fragment_len, (output_size[channel] - fragment_len) * sizeof(double)); 
 
 			output_size[channel] -= fragment_len;
 			out_len -= fragment_len;

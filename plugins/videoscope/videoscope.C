@@ -377,7 +377,7 @@ VideoScopeWindow::~VideoScopeWindow()
 
 VideoScopeGraduation::VideoScopeGraduation()
 {
-	bzero(label, sizeof(label));
+	memset(label, 0, sizeof(label));
 }
 
 void VideoScopeWindow::calculate_sizes(int w, int h)
@@ -919,10 +919,10 @@ void VideoScopeEffect::render_gui(void *input)
 
 //printf("VideoScopeEffect::process_realtime 1 %d\n", PluginClient::smp);
 // Clear bitmaps
-		bzero(window->waveform_bitmap->get_data(), 
+		memset(window->waveform_bitmap->get_data(), 0,
 			window->waveform_bitmap->get_h() * 
 			window->waveform_bitmap->get_bytes_per_line());
-		bzero(window->vector_bitmap->get_data(), 
+		memset(window->vector_bitmap->get_data(), 0,
 			window->vector_bitmap->get_h() * 
 			window->vector_bitmap->get_bytes_per_line());
 

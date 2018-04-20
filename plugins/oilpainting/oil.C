@@ -496,12 +496,12 @@ OilUnit::OilUnit(OilEffect *plugin, OilServer *server)
 		{ \
 			for(int x1 = 0; x1 < w; x1++) \
 			{ \
-				bzero(count, sizeof(count)); \
-				bzero(val, sizeof(val)); \
-				bzero(hist[0], sizeof(int) * (hist_size + 1)); \
-				bzero(hist[1], sizeof(int) * (hist_size + 1)); \
-				bzero(hist[2], sizeof(int) * (hist_size + 1)); \
-				if (components == 4) bzero(hist[3], sizeof(int) * (hist_size + 1)); \
+				memset(count, 0, sizeof(count)); \
+				memset(val, 0, sizeof(val)); \
+				memset(hist[0], 0, sizeof(int) * (hist_size + 1)); \
+				memset(hist[1], 0, sizeof(int) * (hist_size + 1)); \
+				memset(hist[2], 0, sizeof(int) * (hist_size + 1)); \
+				if (components == 4) memset(hist[3], 0, sizeof(int) * (hist_size + 1)); \
  \
 				int x3 = CLIP((x1 - n), 0, w - 1); \
 				int y3 = CLIP((y1 - n), 0, h - 1); \
@@ -593,8 +593,8 @@ OilUnit::OilUnit(OilEffect *plugin, OilServer *server)
 			for(int x1 = 0; x1 < w; x1++) \
 			{ \
 				count2 = 0; \
-				bzero(val, sizeof(val)); \
-				bzero(hist2, sizeof(int) * (hist_size + 1)); \
+				memset(val, 0, sizeof(val)); \
+				memset(hist2, 0, sizeof(int) * (hist_size + 1)); \
  \
 				int x3 = CLIP((x1 - n), 0, w - 1); \
 	    		int y3 = CLIP((y1 - n), 0, h - 1); \

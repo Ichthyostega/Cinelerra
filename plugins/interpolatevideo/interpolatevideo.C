@@ -366,7 +366,7 @@ InterpolateVideo::InterpolateVideo(PluginServer *server)
  : PluginVClient(server)
 {
 	PLUGIN_CONSTRUCTOR_MACRO
-	bzero(frames, sizeof(VFrame*) * 2);
+	memset(frames, 0, sizeof(VFrame*) * 2);
 	for(int i = 0; i < 2; i++)
 		frame_number[i] = -1;
 	last_position = -1;

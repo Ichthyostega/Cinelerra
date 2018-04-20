@@ -466,7 +466,7 @@ int MotionBlurMain::process_realtime(VFrame *input_ptr, VFrame *output_ptr)
 		}
 	}
 
-	bzero(accum, 
+	memset(accum, 0,
 		input_ptr->get_w() * 
 		input_ptr->get_h() * 
 		cmodel_components(input_ptr->get_color_model()) * 

@@ -43,6 +43,8 @@
 #include "virtualanode.h"
 #include "virtualnode.h"
 
+#include <string.h>
+
 
 VirtualAConsole::VirtualAConsole(RenderEngine *renderengine, ARender *arender)
  : VirtualConsole(renderengine, arender, TRACK_AUDIO)
@@ -100,7 +102,7 @@ int VirtualAConsole::process_buffer(int64_t len,
 // len);
 		if(arender->audio_out[i])
 		{
-			bzero(arender->audio_out[i], len * sizeof(double));
+			memset(arender->audio_out[i], 0, len * sizeof(double));
 		}
 	}
 

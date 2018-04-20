@@ -50,6 +50,7 @@
 #include <sys/ioctl.h>
 #include <sys/mman.h>
 #include <unistd.h>
+#include <string.h>
 
 
 
@@ -98,7 +99,7 @@ void VDeviceBUZInput::start()
 	total_buffers = device->device->in_config->capture_length;
 	buffer = new char*[total_buffers];
 	buffer_size = new int[total_buffers];
-	bzero(buffer_size, sizeof(int) * total_buffers);
+	memset(buffer_size, 0, sizeof(int) * total_buffers);
 	for(int i = 0; i < total_buffers; i++)
 	{
 		buffer[i] = new char[INPUT_BUFFER_SIZE];
@@ -482,7 +483,7 @@ int VDeviceBUZ::read_buffer(VFrame *frame)
 		}
 		else
 		{
-			bcopy(buffer, frame->get_data(), buffer_size);
+			memmove(frame->get_data(), buffer, buffer_size);
 		}
 
 		input_thread->put_buffer();
@@ -555,7 +556,7 @@ int VDeviceBUZ::open_input_core(Channel *channel)
 	bparm.odd_even = 0;
     bparm.decimation = 0;
     bparm.quality = device->quality;
-    bzero(bparm.APP_data, sizeof(bparm.APP_data));
+    memset(bparm.APP_data, 0, sizeof(bparm.APP_data));
 
 	if(ioctl(jvideo_fd, BUZIOC_S_PARAMS, &bparm) < 0)
 		perror("VDeviceBUZ::open_input BUZIOC_S_PARAMS");
@@ -707,7 +708,7 @@ int VDeviceBUZ::write_buffer(VFrame *frame, EDL *edl)
 			device->cpus);
 		temp_frame->allocate_compressed_data(mjpeg_output_size(mjpeg));
 		temp_frame->set_compressed_size(mjpeg_output_size(mjpeg));
-		bcopy(mjpeg_output_buffer(mjpeg), temp_frame->get_data(), mjpeg_output_size(mjpeg));
+		memmove(temp_frame->get_data(), mjpeg_output_buffer(mjpeg), mjpeg_output_size(mjpeg));
 	}
 	else
 		ptr = frame;
@@ -734,8 +735,8 @@ int VDeviceBUZ::write_buffer(VFrame *frame, EDL *edl)
 	}
 	else
 	{
-		bcopy(ptr->get_data(), 
-			output_buffer + output_number * breq.size, 
+		memmove(output_buffer + output_number * breq.size, 
+			ptr->get_data(), 
 			ptr->get_compressed_size());
 	}
 

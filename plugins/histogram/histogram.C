@@ -1465,7 +1465,7 @@ void HistogramEngine::init_packages()
 	{
 		HistogramUnit *unit = (HistogramUnit*)get_client(i);
 		for(int i = 0; i < HISTOGRAM_MODES; i++)
-			bzero(unit->accum[i], sizeof(int) * HISTOGRAM_SLOTS);
+			memset(unit->accum[i], 0, sizeof(int) * HISTOGRAM_SLOTS);
 	}
 
 }

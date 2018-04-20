@@ -738,7 +738,7 @@ int FileSystem::join_names(char *out, char *dir_in, char *name_in)
 int64_t FileSystem::get_date(char *filename)
 {
 	struct stat file_status;
-	bzero(&file_status, sizeof(struct stat));
+	memset(&file_status, 0, sizeof(struct stat));
 	stat(filename, &file_status);
 	return file_status.st_mtime;
 }
@@ -746,7 +746,7 @@ int64_t FileSystem::get_date(char *filename)
 int64_t FileSystem::get_size(char *filename)
 {
 	struct stat file_status;
-	bzero(&file_status, sizeof(struct stat));
+	memset(&file_status, 0, sizeof(struct stat));
 	stat(filename, &file_status);
 	return file_status.st_size;
 }

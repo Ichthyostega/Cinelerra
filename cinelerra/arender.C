@@ -43,6 +43,8 @@
 #include "virtualconsole.h"
 #include "virtualnode.h"
 
+#include <string.h>
+
 ARender::ARender(RenderEngine *renderengine)
  : CommonRender(renderengine)
 {
@@ -215,7 +217,7 @@ int ARender::process_buffer(double **buffer_out,
 	}
 
 // Don't delete audio_out on completion
-	bzero(this->audio_out, sizeof(double*) * MAXCHANNELS);
+	memset(this->audio_out, 0, sizeof(double*) * MAXCHANNELS);
 
 
 

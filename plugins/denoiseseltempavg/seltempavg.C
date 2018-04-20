@@ -211,9 +211,9 @@ int SelTempAvgMain::process_buffer(VFrame *frame,
 				history[i] = new VFrame(0, w, h, color_model);
 			history_size = config.frames;
 			history_frame = new int64_t[config.frames];
-			bzero(history_frame, sizeof(int64_t) * config.frames);
+			memset(history_frame, 0, sizeof(int64_t) * config.frames);
 			history_valid = new int[config.frames];
-			bzero(history_valid, sizeof(int) * config.frames);
+			memset(history_valid, 0, sizeof(int) * config.frames);
 		}
 
 
@@ -379,8 +379,8 @@ int SelTempAvgMain::process_buffer(VFrame *frame,
 	} \
 	else \
 	{ \
-		bzero(row, w * h * sizeof(type) * components); \
-		bzero(row_sq, w * h * 3 * sizeof(float)); \
+		memset(row, 0,   w * h * sizeof(type) * components); \
+		memset(row_sq,0, w * h * 3 * sizeof(float)); \
 	} \
 }
 

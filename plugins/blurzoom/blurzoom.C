@@ -211,7 +211,7 @@ int BlurZoomMain::start_realtime()
 	set_table();
 	make_palette();
 	
-	bzero(blurzoombuf, buf_area * 2);
+	memset(blurzoombuf, 0, buf_area * 2);
 	
 	
 	background = new uint16_t[project_frame_w * project_frame_h];

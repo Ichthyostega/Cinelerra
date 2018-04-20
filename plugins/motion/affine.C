@@ -40,12 +40,12 @@
 
 AffineMatrix::AffineMatrix()
 {
-	bzero(values, sizeof(values));
+	memset(values, 0, sizeof(values));
 }
 
 void AffineMatrix::identity()
 {
-	bzero(values, sizeof(values));
+	memset(values, 0, sizeof(values));
 	values[0][0] = 1;
 	values[1][1] = 1;
 	values[2][2] = 1;

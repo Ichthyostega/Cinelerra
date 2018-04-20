@@ -129,7 +129,7 @@ int TimeStretchEngine::process(double *in_buffer, int in_size)
 			{
 				int new_allocation = output_size + window_size + window_skirt;
 				double *new_output = new double[new_allocation];
-				bzero(new_output, new_allocation * sizeof(double));
+				memset(new_output, 0, new_allocation * sizeof(double));
 				if(output)
 				{
 					memcpy(new_output, 

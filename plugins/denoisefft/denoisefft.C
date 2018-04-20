@@ -456,7 +456,7 @@ void DenoiseFFTEffect::collect_noise()
 		collect_engine = new DenoiseFFTCollect(this);
 		collect_engine->initialize(WINDOW_SIZE);
 	}
-	bzero(reference, sizeof(double) * WINDOW_SIZE / 2);
+	memset(reference, 0, sizeof(double) * WINDOW_SIZE / 2);
 
 	int64_t collection_start = collection_sample;
 	int step = 1;

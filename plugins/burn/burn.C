@@ -196,7 +196,7 @@ int BurnMain::process_realtime(VFrame *input_ptr, VFrame *output_ptr)
 
 	if(total == 0)
 	{
-		bzero(buffer, input_ptr->get_w() * input_ptr->get_h());
+		memset(buffer, 0, input_ptr->get_w() * input_ptr->get_h());
 		effecttv->image_bgset_y(input_ptr);
 	}
 	burn_server->process_packages();

@@ -257,7 +257,7 @@ int DenoiseVideo::process_realtime(VFrame *input, VFrame *output)
 	if(!accumulation)
 	{
 		accumulation = new float[w * h * cmodel_components(color_model)];
-		bzero(accumulation, sizeof(float) * w * h * cmodel_components(color_model));
+		memset(accumulation, 0, sizeof(float) * w * h * cmodel_components(color_model));
 	}
 
 	float *accumulation_ptr = accumulation;

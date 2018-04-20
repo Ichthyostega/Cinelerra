@@ -203,7 +203,7 @@ void HistogramEngine::process_packages(VFrame *data)
 	LoadServer::process_packages();
 	for(int i = 0; i < 5; i++)
 	{
-		bzero(accum[i], sizeof(int64_t) * HISTOGRAM_RANGE);
+		memset(accum[i], 0, sizeof(int64_t) * HISTOGRAM_RANGE);
 	}
 
 	for(int i = 0; i < get_total_clients(); i++)
@@ -234,7 +234,7 @@ void HistogramEngine::init_packages()
 	{
 		HistogramUnit *unit = (HistogramUnit*)get_client(i);
 		for(int i = 0; i < 5; i++)
-			bzero(unit->accum[i], sizeof(int64_t) * HISTOGRAM_RANGE);
+			memset(unit->accum[i], 0, sizeof(int64_t) * HISTOGRAM_RANGE);
 	}
 }
 

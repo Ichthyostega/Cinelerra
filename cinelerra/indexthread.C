@@ -32,9 +32,11 @@
 #include "mwindowgui.h"
 #include "preferences.h"
 #include "mainsession.h"
-#include <unistd.h>
 #include "trackcanvas.h"
 #include "tracks.h"
+
+#include <unistd.h>
+#include <string.h>
 
 // Read data from buffers and calculate peaks
 
@@ -65,7 +67,7 @@ IndexThread::IndexThread(MWindow *mwindow,
 // This is deleted in the asset's destructor
 	asset->index_offsets = new int64_t[asset->channels];
 	asset->index_sizes = new int64_t[asset->channels];
-	bzero(asset->index_buffer, index_size * sizeof(float));
+	memset(asset->index_buffer, 0, index_size * sizeof(float));
 
 // initialization is completed in run
 	for(int i = 0; i < TOTAL_BUFFERS; i++)

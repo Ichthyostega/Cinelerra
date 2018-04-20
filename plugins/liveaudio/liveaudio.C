@@ -247,7 +247,7 @@ int LiveAudio::process_buffer(int64_t size,
 		for(int i = 0; i < history_channels; i++)
 		{
 			history[i] = new double[HISTORY_SAMPLES];
-			bzero(history[i], sizeof(double) * HISTORY_SAMPLES);
+			memset(history[i], 0, sizeof(double) * HISTORY_SAMPLES);
 		}
 	}
 

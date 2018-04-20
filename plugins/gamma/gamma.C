@@ -337,9 +337,9 @@ void GammaEngine::init_packages()
 	for(int i = 0; i < get_total_clients(); i++)
 	{
 		GammaUnit *unit = (GammaUnit*)get_client(i);
-		bzero(unit->accum, sizeof(int) * HISTOGRAM_SIZE);
+		memset(unit->accum, 0, sizeof(int) * HISTOGRAM_SIZE);
 	}
-	bzero(accum, sizeof(int) * HISTOGRAM_SIZE);
+	memset(accum, 0, sizeof(int) * HISTOGRAM_SIZE);
 }
 
 LoadClient* GammaEngine::new_client()

@@ -145,7 +145,7 @@ int IEC61883Input::open(int port,
 
 		buffer = new char*[total_buffers];
 		buffer_valid = new int[total_buffers];
-		bzero(buffer_valid, sizeof(int) * total_buffers);
+		memset(buffer_valid, 0, sizeof(int) * total_buffers);
 		for(int i = 0; i < total_buffers; i++)
 		{
 			buffer[i] = new char[DV_PAL_SIZE];

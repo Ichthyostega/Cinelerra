@@ -139,8 +139,8 @@ int VDeviceV4L2JPEG::read_buffer(VFrame *frame)
 		}
 		else
 		{
-			bcopy(buffer->get_data(), 
-				frame->get_data(), 
+			memmove(frame->get_data(), 
+				buffer->get_data(), 
 				buffer->get_compressed_size());
 		}
 

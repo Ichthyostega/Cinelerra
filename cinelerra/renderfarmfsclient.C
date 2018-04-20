@@ -1068,7 +1068,7 @@ int RenderFarmFSClient::stat64 (__const char *__restrict __file,
 {
 	int len = strlen(__file) + 1;
 	int result = 0;
-	bzero(__buf, sizeof(struct stat64));
+	memset(__buf, 0, sizeof(struct stat64));
 
 	client->lock("RenderFarmFSClient::stat64");
 	if(!client->send_request_header(RENDERFARM_STAT64, len))

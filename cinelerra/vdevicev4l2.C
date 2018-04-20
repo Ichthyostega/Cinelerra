@@ -98,7 +98,7 @@ void VDeviceV4L2Put::run()
 		if(buffer >= 0)
 		{
 			struct v4l2_buffer arg;
-			bzero(&arg, sizeof(arg));
+			memset(&arg, 0, sizeof(arg));
 			arg.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 			arg.index = buffer;
 			arg.memory = V4L2_MEMORY_MMAP;
@@ -239,7 +239,7 @@ void VDeviceV4L2Thread::allocate_buffers(int number)
 	{
 		device_buffers[i] = new VFrame;
 	}
-	bzero(buffer_valid, sizeof(int) * total_buffers);
+	memset(buffer_valid, 0, sizeof(int) * total_buffers);
 }
 
 void VDeviceV4L2Thread::run()
@@ -604,7 +604,7 @@ printf("VDeviceV4L2Thread::run got %d buffers\n", total_buffers);
 	while(!done && !error)
 	{
 		struct v4l2_buffer buffer;
-		bzero(&buffer, sizeof(buffer));
+		memset(&buffer, 0, sizeof(buffer));
 		buffer.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 		buffer.memory = V4L2_MEMORY_MMAP;
 
@@ -783,7 +783,7 @@ int VDeviceV4L2::get_sources(VideoDevice *device,
 		while(!done && i < 20)
 		{
 			struct v4l2_input arg;
-			bzero(&arg, sizeof(arg));
+			memset(&arg, 0, sizeof(arg));
 			arg.index = i;
 			
 			if(ioctl(input_fd, VIDIOC_ENUMINPUT, &arg) < 0)
@@ -804,7 +804,7 @@ int VDeviceV4L2::get_sources(VideoDevice *device,
 		for(i = V4L2_CID_BASE; i < V4L2_CID_LASTP1; i++)
 		{
 			struct v4l2_queryctrl arg;
-			bzero(&arg, sizeof(arg));
+			memset(&arg, 0, sizeof(arg));
 			arg.id = i;
 // This returns errors for unsupported controls which is what we want.
 			if(!ioctl(input_fd, VIDIOC_QUERYCTRL, &arg))

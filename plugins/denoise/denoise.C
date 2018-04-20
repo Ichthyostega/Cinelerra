@@ -529,7 +529,7 @@ int DenoiseEffect::process_realtime(int64_t size, double *input_ptr, double *out
 		{
 			dsp_in[i] = input_buffer[i] * in_scale;
 		}
-		bzero(dsp_out, sizeof(double) * window_size);
+		memset(dsp_out, 0, sizeof(double) * window_size);
 
 
 
@@ -608,7 +608,7 @@ int DenoiseEffect::process_realtime(int64_t size, double *input_ptr, double *out
 	else
 	{
 //printf("DenoiseEffect::process_realtime 1\n");
-		bzero(output_ptr, sizeof(double) * size);
+		memset(output_ptr, 0, sizeof(double) * size);
 	}
 
 	return 0;

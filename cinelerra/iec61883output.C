@@ -194,9 +194,9 @@ int IEC61883Output::open(int port,
 			buffer[i] = new char[DV_PAL_SIZE];
 		buffer_size = new int[total_buffers];
 		buffer_valid = new int[total_buffers];
-		bzero(buffer_size, sizeof(int) * total_buffers);
-		bzero(buffer_valid, sizeof(int) * total_buffers);
-		bzero(buffer, sizeof(char*) * total_buffers);
+		memset(buffer_size, 0, sizeof(int) * total_buffers);
+		memset(buffer_valid, 0, sizeof(int) * total_buffers);
+		memset(buffer, 0, sizeof(char*) * total_buffers);
 		video_lock = new Condition(0, "IEC61883Output::video_lock");
 		audio_lock = new Condition(0, "IEC61883Output::audio_lock");
 		start_lock = new Condition(0, "IEC61883Output::start_lock");

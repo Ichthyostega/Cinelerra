@@ -419,8 +419,8 @@ void BlurEngine::run()
  \
 		for(j = 0; j < w; j++) \
 		{ \
-			bzero(val_p, sizeof(pixel_f) * (end_in - start_in)); \
-			bzero(val_m, sizeof(pixel_f) * (end_in - start_in)); \
+			memset(val_p, 0, sizeof(pixel_f) * (end_in - start_in)); \
+			memset(val_m, 0, sizeof(pixel_f) * (end_in - start_in)); \
  \
 			for(l = 0, k = start_in; k < end_in; l++, k++) \
 			{ \
@@ -456,8 +456,8 @@ void BlurEngine::run()
 /* Horizontal pass */ \
 		for(j = start_out; j < end_out; j++) \
 		{ \
-			bzero(val_p, sizeof(pixel_f) * w); \
-			bzero(val_m, sizeof(pixel_f) * w); \
+			memset(val_p, 0, sizeof(pixel_f) * w); \
+			memset(val_m, 0, sizeof(pixel_f) * w); \
  \
 			for(k = 0; k < w; k++) \
 			{ \

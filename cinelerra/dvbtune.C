@@ -153,7 +153,7 @@ int DVBTune::open_tuner()
 	}
 
 	struct dvb_frontend_parameters frontend_param;
-	bzero(&frontend_param, sizeof(frontend_param));
+	memset(&frontend_param, 0, sizeof(frontend_param));
 
 // Set frequency
 	int index = CLIP(TunerServer::get_channel(), 2, 69);
@@ -443,7 +443,7 @@ void DVBTuneStatus::run()
 		uint32_t ber, uncorrected_blocks;
 
 
-		bzero(&status, sizeof(status));
+		memset(&status, 0, sizeof(status));
 		Thread::enable_cancel();
 		ioctl(server->frontend_fd, FE_READ_STATUS, &status);
 		ioctl(server->frontend_fd, FE_READ_SIGNAL_STRENGTH, &signal);

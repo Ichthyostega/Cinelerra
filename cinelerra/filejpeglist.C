@@ -134,7 +134,7 @@ int FileJPEGList::write_frame(VFrame *frame, VFrame *data)
 		frame->get_color_model(),
 		file->cpus);
 	data->allocate_compressed_data(mjpeg_output_size(mjpeg));
-	bcopy(mjpeg_output_buffer(mjpeg), frame->get_data(), mjpeg_output_size(mjpeg));
+	memmove(frame->get_data(), mjpeg_output_buffer(mjpeg), mjpeg_output_size(mjpeg));
 	mjpeg_delete(mjpeg);
 	return 0;
 }

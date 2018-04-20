@@ -829,7 +829,7 @@ void ScaleUnit::tabulate_reduction(bilinear_table_t* &table,
 	int in_total)
 {
 	table = new bilinear_table_t[out_total];
-	bzero(table, sizeof(bilinear_table_t) * out_total);
+	memset(table, 0, sizeof(bilinear_table_t) * out_total);
 //printf("ScaleUnit::tabulate_reduction 1 %f %d %d %d\n", scale, in_pixel1, out_total, in_total);
 	for(int i = 0; i < out_total; i++)
 	{
@@ -917,7 +917,7 @@ void ScaleUnit::tabulate_enlarge(bilinear_table_t* &table,
 	int in_total)
 {
 	table = new bilinear_table_t[out_total];
-	bzero(table, sizeof(bilinear_table_t) * out_total);
+	memset(table, 0, sizeof(bilinear_table_t) * out_total);
 
 	for(int i = 0; i < out_total; i++)
 	{
@@ -1721,7 +1721,7 @@ void TranslateUnit::translation_array_f(transfer_table_f* &table,
 	out_w_int = out_x2_int - out_x1_int;
 
 	table = new transfer_table_f[out_w_int];
-	bzero(table, sizeof(transfer_table_f) * out_w_int);
+	memset(table, 0, sizeof(transfer_table_f) * out_w_int);
 
 
 // printf("OverlayFrame::translation_array_f 2 %f %f -> %f %f scale=%f %f\n", 
@@ -1812,7 +1812,7 @@ void TranslateUnit::translation_array_i(transfer_table_i* &table,
 	out_w_int = out_x2_int - out_x1_int;
 
 	table = new transfer_table_i[out_w_int];
-	bzero(table, sizeof(transfer_table_i) * out_w_int);
+	memset(table, 0, sizeof(transfer_table_i) * out_w_int);
 
 
 //printf("OverlayFrame::translation_array_f 1 %f %f -> %f %f\n", in_x1, in_x2, out_x1, out_x2);

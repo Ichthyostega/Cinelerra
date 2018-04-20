@@ -593,7 +593,7 @@ SET_TRACE
 	temp->copy_from(frame);
 	this->input = temp;
 
-	bzero(accum, 
+	memset(accum, 0,
 		frame->get_w() * 
 		frame->get_h() *
 		cmodel_components(frame->get_color_model()) *

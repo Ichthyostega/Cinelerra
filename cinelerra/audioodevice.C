@@ -96,7 +96,7 @@ int AudioDevice::arm_buffer(int buffer_num,
 	buffer_size[buffer_num] = new_size;
 
 	buffer_num_buffer = output_buffer[buffer_num];
-	bzero(buffer_num_buffer, new_size);
+	memset(buffer_num_buffer, 0, new_size);
 	
 	last_input_channel = device_channels - 1;
 // copy data

@@ -32,6 +32,8 @@
 #include "track.h"
 #include "transportque.inc"
 
+#include <string.h>
+
 
 int Automation::autogrouptypes_fixedrange[] =
 {
@@ -49,7 +51,7 @@ Automation::Automation(EDL *edl, Track *track)
 {
 	this->edl = edl;
 	this->track = track;
-	bzero(autos, sizeof(Autos*) * AUTOMATION_TOTAL);
+	memset(autos, 0, sizeof(Autos*) * AUTOMATION_TOTAL);
 }
 
 Automation::~Automation()

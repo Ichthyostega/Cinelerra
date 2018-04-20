@@ -349,8 +349,8 @@ void MaskUnit::do_feather(VFrame *output,
 	for(j = 0; j < frame_w; j++) \
 	{ \
 /* printf("DO_FEATHER 1.1 %d\n", j); */ \
-		bzero(val_p, sizeof(float) * (end_in - start_in)); \
-		bzero(val_m, sizeof(float) * (end_in - start_in)); \
+		memset(val_p, 0, sizeof(float) * (end_in - start_in)); \
+		memset(val_m, 0, sizeof(float) * (end_in - start_in)); \
 		for(int l = 0, k = start_in; k < end_in; l++, k++) \
 		{ \
 			src[l] = (float)in_rows[k][j]; \
@@ -367,8 +367,8 @@ void MaskUnit::do_feather(VFrame *output,
 	for(j = start_out; j < end_out; j++) \
 	{ \
 /* printf("DO_FEATHER 2 %d\n", j); */ \
-		bzero(val_p, sizeof(float) * frame_w); \
-		bzero(val_m, sizeof(float) * frame_w); \
+		memset(val_p, 0, sizeof(float) * frame_w); \
+		memset(val_m, 0, sizeof(float) * frame_w); \
 		for(int k = 0; k < frame_w; k++) \
 		{ \
 			src[k] = (float)out_rows[j][k]; \

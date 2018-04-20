@@ -102,7 +102,7 @@ int FileVorbis::check_sig(Asset *asset)
 int FileVorbis::reset_parameters_derived()
 {
 	fd = 0;
-	bzero(&vf, sizeof(vf));
+	memset(&vf, 0, sizeof(vf));
 	pcm_history = 0;
 	pcm_history_float = 0;
 }
@@ -477,7 +477,7 @@ int FileVorbis::read_samples_float(float *buffer, int64_t len)
 //				{
 //					temp[j] = temp[j + diff];
 //				}
-				bcopy(temp, temp + diff, (HISTORY_MAX - diff) * sizeof(float));
+				memmove(temp + diff, temp, (HISTORY_MAX - diff) * sizeof(float));
 			}
 			history_start += diff;
 			history_size -= diff;
@@ -511,7 +511,7 @@ int FileVorbis::read_samples_float(float *buffer, int64_t len)
 			float *input = vorbis_output[i];
 //			for(int j = 0; j < result; j++)
 //				output[j] = input[j];
-			bcopy(input, output, result * sizeof(float));
+			memmove(output, input, result * sizeof(float));
 		}
 		history_size += result;
 		accumulation += result;
@@ -527,7 +527,7 @@ int FileVorbis::read_samples_float(float *buffer, int64_t len)
 		history_start;
 //	for(int i = 0; i < len; i++)
 //		buffer[i] = input[i];
-	bcopy(input, buffer, len * sizeof(float));
+	memmove(buffer, input, len * sizeof(float));
 
 // printf("FileVorbis::read_samples 2 %d %d %d %d\n", 
 // history_start, 

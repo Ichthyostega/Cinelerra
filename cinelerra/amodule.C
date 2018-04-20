@@ -159,7 +159,7 @@ int AModule::render(double *buffer,
 
 
 // Clear buffer
-	bzero(buffer, input_len * sizeof(double));
+	memset(buffer, 0, input_len * sizeof(double));
 
 // The EDL is normalized to the requested sample rate because the requested rate may
 // be the project sample rate and a sample rate 
@@ -347,7 +347,7 @@ int AModule::render(double *buffer,
 					}
 					else
 					{
-						bzero(transition_temp, transition_fragment_len * sizeof(double));
+						memset(transition_temp, 0, transition_fragment_len * sizeof(double));
 					}
 
 					double *output = buffer + buffer_offset;

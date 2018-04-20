@@ -26,10 +26,12 @@
 #include "filexml.h"
 #include "panauto.h"
 
+#include <string.h>
+
 PanAuto::PanAuto(EDL *edl, PanAutos *autos)
  : Auto(edl, (Autos*)autos)
 {
-	bzero(values, MAXCHANNELS * sizeof(float));
+	memset(values, 0, MAXCHANNELS * sizeof(float));
 	handle_x = handle_y = 0;
 }
 
@@ -58,7 +60,7 @@ void PanAuto::rechannel()
 
 void PanAuto::load(FileXML *file)
 {
-	bzero(values, MAXCHANNELS * sizeof(float));
+	memset(values, 0, MAXCHANNELS * sizeof(float));
 	handle_x = file->tag.get_property("HANDLE_X", (int64_t)handle_x);
 	handle_y = file->tag.get_property("HANDLE_Y", (int64_t)handle_y);
 	for(int i = 0; i < edl->session->audio_channels; i++)

@@ -694,8 +694,8 @@ int FileAVI::read_frame(VFrame *frame)
 	{
 		case BC_RGB888:
 			if(frame->get_color_model() == BC_RGB888)
-				bcopy(temp_image->Data(), 
-					frame->get_data(), 
+				memmove(frame->get_data(),
+                                        temp_image->Data(), 
 					VFrame::calculate_data_size(asset->width, 
 						asset->height, 
 						-1, 

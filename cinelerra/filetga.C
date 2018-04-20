@@ -585,7 +585,7 @@ void FileTGA::write_data(unsigned char *buffer,
 	}
 //printf("FileTGA::write_data 1 %d\n", len);
 
-	bcopy(buffer, data->get_data() + file_offset, len);
+	memmove(data->get_data() + file_offset, buffer, len);
 //printf("FileTGA::write_data 1 %d\n", len);
 	file_offset += len;
 //printf("FileTGA::write_data 1 %d\n", len);
@@ -617,7 +617,7 @@ void FileTGA::read_line(unsigned char *row,
 	else
 	{
 		if(file_offset + bytes * width <= data_size)
-			bcopy(data + file_offset, row, bytes * width);
+			memmove(row, data + file_offset, bytes * width);
 		file_offset += bytes * width;
 	}
 	
@@ -689,7 +689,7 @@ void FileTGA::rle_read(unsigned char *row,
 			if(head >= 128)
 			{
 				repeat = head - 127;
-				bcopy(data + file_offset, sample, bytes);
+				memmove(sample, data + file_offset, bytes);
 				file_offset += bytes;
 			}
 			else
@@ -709,7 +709,7 @@ void FileTGA::rle_read(unsigned char *row,
 		}
 		else
 		{
-			bcopy(data + file_offset, row, bytes);
+			memmove(row, data + file_offset, bytes);
 			file_offset += bytes;
 			
 			direct--;

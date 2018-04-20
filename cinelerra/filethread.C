@@ -81,7 +81,7 @@ void FileThread::reset()
 	disable_read = 1;
 	start_position = -1;
 	read_position = 0;
-	bzero(read_frames, sizeof(FileThreadFrame*) * MAX_READ_FRAMES);
+	memset(read_frames, 0, sizeof(FileThreadFrame*) * MAX_READ_FRAMES);
 }
 
 

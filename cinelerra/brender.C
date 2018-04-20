@@ -241,9 +241,9 @@ void BRender::allocate_map(int64_t brender_start, int64_t start, int64_t end)
 	}
 
 // Zero all before brender start
-	bzero(map, brender_start);
+	memset(map, 0, brender_start);
 // Zero all after current start
-	bzero(map + start, end - start);
+	memset(map + start, 0, end - start);
 
 	map_size = end;
 	map_valid = 1;

@@ -239,7 +239,7 @@ int Spectrogram::process_buffer(int64_t size,
 		data = new float[HALF_WINDOW];
 	}
 
-	bzero(data, sizeof(float) * HALF_WINDOW);
+	memset(data, 0, sizeof(float) * HALF_WINDOW);
 	total_windows = 0;
 	fft->process_buffer(start_position,
 		size, 

@@ -417,7 +417,7 @@ Decimate::Decimate(PluginServer *server)
  : PluginVClient(server)
 {
 	PLUGIN_CONSTRUCTOR_MACRO
-	bzero(frames, sizeof(VFrame*) * TOTAL_FRAMES);
+	memset(frames, 0, sizeof(VFrame*) * TOTAL_FRAMES);
 	for(int i = 0; i < TOTAL_FRAMES; i++)
 		differences[i] = -1;
 	lookahead_size = 0;
@@ -589,7 +589,7 @@ int64_t Decimate::calculate_fdct(VFrame *frame)
 
 	uint16_t temp[64];
 	uint64_t result[64];
-	bzero(result, sizeof(int64_t) * 64);
+	memset(result, 0, sizeof(int64_t) * 64);
 	int w = frame->get_w();
 	int h = frame->get_h();
 

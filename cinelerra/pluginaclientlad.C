@@ -879,7 +879,7 @@ int PluginAClientLAD::process_realtime(int64_t size,
 			in_buffer[j] = input_ptr[j];
 	}
 	for(int i = 0; i < out_channels; i++)
-		bzero(out_buffers[i], sizeof(float) * size);
+		memset(out_buffers[i], 0, sizeof(float) * size);
 //printf("PluginAClientLAD::process_realtime 4\n");
 
 	server->lad_descriptor->run(lad_instance, size);
@@ -918,7 +918,7 @@ int PluginAClientLAD::process_realtime(int64_t size,
 	}
 //printf("PluginAClientLAD::process_realtime 2 %p\n", lad_instance);
 	for(int i = 0; i < out_channels; i++)
-		bzero(out_buffers[i], sizeof(float) * size);
+		memset(out_buffers[i], 0, sizeof(float) * size);
 //printf("PluginAClientLAD::process_realtime 2 %p\n", lad_instance);
 
 	server->lad_descriptor->run(lad_instance, size);
