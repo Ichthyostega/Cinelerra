@@ -2,6 +2,7 @@
 #include "mpeg3protos.h"
 
 #include <errno.h>
+#include <inttypes.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -293,7 +294,7 @@ const int debug = 0;
 					file->video_eof[i] = read_int64(buffer, &position);
 					file->total_frame_offsets[i] = read_int32(buffer, &position);
 					file->frame_offsets[i] = malloc(file->total_frame_offsets[i] * sizeof(int64_t));
-if(debug) printf("mpeg3_read_toc 62 %d %d %lld\n", 
+if(debug) printf("mpeg3_read_toc 62 %d %d %d\n",
 file->total_frame_offsets[i], position, buffer_size);
 					for(j = 0; j < file->total_frame_offsets[i]; j++)
 					{
@@ -728,6 +729,7 @@ int mpeg3_update_index(mpeg3_t *file,
 	{
 		divide_index(file, track_number);
 	}
+	return 0;
 }
 
 
@@ -1083,6 +1085,7 @@ int mpeg3_do_toc(mpeg3_t *file, int64_t *bytes_processed)
 // Make user value independant of data type in packet
 	*bytes_processed = mpeg3demux_tell_byte(file->demuxer);
 //printf("mpeg3_do_toc 1000 %llx\n", *bytes_processed);
+	return 0;
 }
 
 
@@ -1205,7 +1208,7 @@ void mpeg3_stop_toc(mpeg3_t *file)
 
 // Store file information
 	PUT_INT32(FILE_INFO);
-	fprintf(file->toc_fd, file->fs->path);
+	fputs(file->fs->path, file->toc_fd);
 	for(j = strlen(file->fs->path); j < MPEG3_STRLEN; j++)
 			fputc(0, file->toc_fd);
 	PUT_INT64(file->source_date);
@@ -1236,7 +1239,7 @@ void mpeg3_stop_toc(mpeg3_t *file)
 // Path
 		PUT_INT32(TITLE_PATH);
 
-		fprintf(file->toc_fd, title->fs->path);
+		fputs(title->fs->path, file->toc_fd);
 
 // Pad path with 0
 		for(j = strlen(title->fs->path); j < MPEG3_STRLEN; j++)

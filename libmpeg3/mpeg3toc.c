@@ -6,6 +6,7 @@
 
 #include "libmpeg3.h"
 
+#include <inttypes.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
@@ -107,7 +108,7 @@ int main(int argc, char *argv[])
 			int64_t elapsed_seconds = current_time.tv_sec - start_time.tv_sec;
 			int64_t total_seconds = elapsed_seconds * total_bytes / bytes_processed;
 			int64_t eta = total_seconds - elapsed_seconds;
-			fprintf(stderr, "%lld%% ETA: %dm%ds        \r", 
+			fprintf(stderr, "%" PRId64 "%% ETA: %" PRId64 "m%" PRId64 "s        \r",
 				bytes_processed * 100 / total_bytes,
 				eta / 60,
 				eta % 60);
@@ -123,7 +124,7 @@ int main(int argc, char *argv[])
 	int64_t elapsed = current_time.tv_sec - start_time.tv_sec;
 	if(verbose)
 	{
-		fprintf(stderr, "%dm%ds elapsed           \n", 
+		fprintf(stderr, "%" PRId64 "m%" PRId64 "s elapsed           \n",
 			elapsed / 60,
 			elapsed % 60);
 	}
@@ -490,7 +491,6 @@ mpeg3demux_movie_size(input->atrack[j]->demuxer));
 						int64_t position = mpeg3demux_tell_byte(demuxer) - 2048;
 						int64_t result;
 						uint32_t code = 0;
-						int got_top = 0;
 						int got_bottom = 0;
 						int got_keyframe = 0;
 						int fields = 0;
@@ -537,11 +537,6 @@ mpeg3demux_movie_size(input->atrack[j]->demuxer));
 							mpeg3video_get_header(video, 0);
 							video->current_repeat += 100;
 
-							if(video->pict_struct == TOP_FIELD)
-							{
-								got_top = 1;
-							}
-							else
 							if(video->pict_struct == BOTTOM_FIELD)
 							{
 								got_bottom = 1;
@@ -549,7 +544,7 @@ mpeg3demux_movie_size(input->atrack[j]->demuxer));
 							else
 							if(video->pict_struct == FRAME_PICTURE)
 							{
-								got_top = got_bottom = 1;
+								got_bottom = 1;
 							}
 							fields++;
 

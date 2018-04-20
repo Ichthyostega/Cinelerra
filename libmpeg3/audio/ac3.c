@@ -1,10 +1,11 @@
 #include <stdint.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 #include <a52dec/a52.h>
 #include "mpeg3private.h"
 #include "mpeg3protos.h"
-
+#include "../../config.h"
 #include <string.h>
 
 
@@ -12,7 +13,11 @@ mpeg3_ac3_t* mpeg3_new_ac3()
 {
 	mpeg3_ac3_t *result = calloc(1, sizeof(mpeg3_ac3_t));
 	result->stream = mpeg3bits_new_stream(0, 0);
+#ifdef A52_INIT_NEEDS_ARG
 	result->state = a52_init(0);
+#else
+	result->state = a52_init();
+#endif
 	result->output = a52_samples(result->state);
 	return result;
 }
@@ -91,7 +96,7 @@ int mpeg3_ac3_header(mpeg3_ac3_t *audio, unsigned char *header)
 				audio->channels += 2;
 				break;
 			default:
-				printf("mpeg3_ac3_header: unknown channel code: %p\n", audio->flags & A52_CHANNEL_MASK);
+				printf("mpeg3_ac3_header: unknown channel code: %x\n", audio->flags & A52_CHANNEL_MASK);
 				break;
 		}
 	}
