@@ -10,7 +10,7 @@ AM_CFLAGS = \
 	$(MJPEG_CFLAGS) \
 	$(LIBDV_CFLAGS) \
 	-DENCORE_INCLUDE=\"encore50/encore.h\" \
-	@FFMPEG_CFLAGS@
+	@FFMPEG_CFLAGS@ -Wno-implicit-function-declaration
 
 libquicktimehv_la_LDFLAGS = -version-info 1:0:0 -release 1.6.0 -Wl,--no-undefined 
 
@@ -21,7 +21,7 @@ libquicktimehv_la_LIBADD = \
 	$(FAAD_LIBS) \
 	-lfaac \
 	encore50/libencore.la \
-	$(top_builddir)/libmpeg3/libmpeg3hv.la \
+	$(LIBMPEG3_LIBS) \
 	$(LIBX264_LIBS) \
 	$(LIBDV_LIBS) \
 	-ljpeg -lpng \
@@ -129,12 +129,9 @@ noinst_HEADERS = cmodel_permutation.h \
 	
 EXTRA_DIST = docs
 
-INCLUDES = -I$(top_srcdir)/libmpeg3
+AM_CPPFLAGS = $(LIBMPEG3_CFLAGS)
 
 pkgincludedir=$(includedir)/quicktime
 pkginclude_HEADERS=quicktime.h qtprivate.h
 
 LIBTOOL = $(SHELL) $(top_builddir)/libtool $(LTC_FLAGS)
-
-dist-hook:
-	-rm -rf $(distdir)/docs/CVS
