@@ -874,7 +874,7 @@ long VFrame::get_number()
 	return sequence_number;
 }
 
-void VFrame::push_prev_effect(char *name)
+void VFrame::push_prev_effect(const char *name)
 {
 	char *ptr;
 	prev_effects.append(ptr = new char[strlen(name) + 1]);
@@ -888,7 +888,7 @@ void VFrame::pop_prev_effect()
 		prev_effects.remove_object(prev_effects.last());
 }
 
-void VFrame::push_next_effect(char *name)
+void VFrame::push_next_effect(const char *name)
 {
 	char *ptr;
 	next_effects.append(ptr = new char[strlen(name) + 1]);
@@ -902,7 +902,7 @@ void VFrame::pop_next_effect()
 		next_effects.remove_object(next_effects.last());
 }
 
-char* VFrame::get_next_effect(int number)
+const char* VFrame::get_next_effect(int number)
 {
 	if(!next_effects.total) return "";
 	else
@@ -911,7 +911,7 @@ char* VFrame::get_next_effect(int number)
 	return next_effects.values[next_effects.total - number - 1];
 }
 
-char* VFrame::get_prev_effect(int number)
+const char* VFrame::get_prev_effect(int number)
 {
 	if(!prev_effects.total) return "";
 	else

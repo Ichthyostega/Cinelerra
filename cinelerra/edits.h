@@ -63,7 +63,7 @@ public:
 // Insert a 0 length edit at the position
 	Edit* insert_new_edit(int64_t sample);
 	int save(FileXML *xml, char *output_path);
-	int copy(int64_t start, int64_t end, FileXML *xml, char *output_path);
+	int copy(int64_t start, int64_t end, FileXML *xml, const char *output_path);
 // Clear region of edits
 	virtual void clear(int64_t start, int64_t end);
 // Clear edits and plugins for a handle modification
@@ -102,12 +102,12 @@ public:
 
 // ================================== file operations
 
-	int load(FileXML *xml, int track_offset);
+	void load(FileXML *xml, int track_offset);
 	int load_edit(FileXML *xml, int64_t &startproject, int track_offset);
 
-	virtual Edit* append_new_edit() {};
+	virtual Edit* append_new_edit() { return 0; };
 	virtual Edit* insert_edit_after(Edit *previous_edit) { return 0; };
-	virtual int load_edit_properties(FileXML *xml) {};
+	virtual int load_edit_properties(FileXML *xml) { return 0; };
 
 
 // ==================================== accounting
@@ -132,7 +132,7 @@ public:
 
 	int64_t loaded_length;
 private:
-	virtual int clone_derived(Edit* new_edit, Edit* old_edit) {};
+	virtual int clone_derived(Edit* new_edit, Edit* old_edit) { return 0; };
 };
 
 

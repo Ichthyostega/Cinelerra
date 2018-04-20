@@ -77,7 +77,7 @@ private:
 	int create_screencap_objs();
 	int create_buz_objs();
 	int create_x11_objs();
-	int create_dvb_objs();
+	void create_dvb_objs();
 
 	VDriverMenu *menu;
 
@@ -167,7 +167,7 @@ public:
 class VDriverItem : public BC_MenuItem
 {
 public:
-	VDriverItem(VDriverMenu *popup, char *text, int driver);
+	VDriverItem(VDriverMenu *popup, const char *text, int driver);
 	~VDriverItem();
 	
 	int handle_event();

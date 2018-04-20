@@ -96,7 +96,7 @@ int Pipe::substitute()
 		}
 
 		// insert the file string at the substitution point
-		if (f + strlen(sub_str) - complete > sizeof(complete))
+		if (f + strlen(sub_str) - complete > sizeof(complete) - 1)
 		{
 			printf("Pipe::substitute(): max length exceeded\n");
 			return -1;
@@ -105,13 +105,13 @@ int Pipe::substitute()
 		f += strlen(sub_str);
 		count++;
 	}
-
+	*f = 0;
 	return count;
 }
 	
 	
 
-int Pipe::open(char *mode) 
+int Pipe::open(const char *mode)
 {
 	if (file) close();
 
@@ -124,7 +124,7 @@ int Pipe::open(char *mode)
 	if (substitute() < 0) 
 		return 1;
 
-	if (complete == NULL || strlen(complete) == 0) 
+	if (strlen(complete) == 0) 
 	{
 		printf("Pipe::open(): no pipe to open\n");
 		return 1;
@@ -161,4 +161,31 @@ void Pipe::close()
 	pclose(file);
 	file = 0;
 	fd = -1;
+}
+
+char *Pipe::search_executable(const char *name, char *exepath)
+{
+	char *p, *q;
+
+	if(name == 0 || *name == 0)
+		return 0;
+	if((p = getenv("PATH")) == 0)
+		return 0;
+
+	for(q = p; q; p = q + 1)
+	{
+		q = strchr(p, ':');
+		if(q)
+		{
+			strncpy(exepath, p, q - p);
+			exepath[q - p] = 0;
+		}
+		else
+			strcpy(exepath, p);
+		strcat(exepath, "/");
+		strcat(exepath, name);
+		if(access(exepath, X_OK) == 0)
+			return exepath;
+	}
+	return 0;
 }

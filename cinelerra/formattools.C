@@ -312,7 +312,7 @@ Asset* FormatTools::get_asset()
 
 void FormatTools::update_extension()
 {
-	char *extension = File::get_tag(asset->format);
+	const char *extension = File::get_tag(asset->format);
 	if(extension)
 	{
 		char *ptr = strrchr(asset->path, '.');
@@ -322,7 +322,7 @@ void FormatTools::update_extension()
 			*ptr = '.';
 		}
 		ptr++;
-		sprintf(ptr, extension);
+		sprintf(ptr, "%s", extension);
 
 		int character1 = ptr - asset->path;
 		int character2 = ptr - asset->path + strlen(extension);

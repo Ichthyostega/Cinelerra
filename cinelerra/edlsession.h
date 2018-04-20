@@ -78,8 +78,8 @@ public:
 	AutoConf *auto_conf;
 	float actual_frame_rate;
 // Aspect ratio for video
-    float aspect_w;
-    float aspect_h;
+	double aspect_w;
+	double aspect_h;
 	int audio_channels;
 	int audio_tracks;
 // automation follows edits during editing
@@ -96,6 +96,9 @@ public:
 	int interlace_mode;
 // Coords for cropping operation
 	int crop_x1, crop_x2, crop_y1, crop_y2;
+	float ruler_x1, ruler_y1;
+	float ruler_x2, ruler_y2;
+// Ruler points relative to the output frame.
 // Current folder in resource window
 	char current_folder[BCTEXTLEN];
 // align cursor on frame boundaries

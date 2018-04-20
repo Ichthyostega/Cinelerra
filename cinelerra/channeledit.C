@@ -108,7 +108,7 @@ void ChannelEditThread::run()
 
 }
 
-int ChannelEditThread::close_threads()
+void ChannelEditThread::close_threads()
 {
 	if(in_progress && window)
 	{
@@ -275,6 +275,7 @@ int ChannelEditWindow::create_objects()
 int ChannelEditWindow::close_event()
 {
 	set_done(0);
+	return 0;
 }
 
 int ChannelEditWindow::add_channel()
@@ -327,6 +328,7 @@ int ChannelEditWindow::update_list()
 	}
 
 	list_box->update(&channel_list, 0, 0, 1, list_box->get_yposition());
+	return 0;
 }
 
 int ChannelEditWindow::update_list(Channel *channel)
@@ -341,6 +343,7 @@ int ChannelEditWindow::update_list(Channel *channel)
 	}
 
 	update_list();
+	return 0;
 }
 
 
@@ -354,11 +357,13 @@ int ChannelEditWindow::edit_channel()
 				list_box->get_selection_number(0, 0)), 
 			1);
 	}
+	return 0;
 }
 
 int ChannelEditWindow::edit_picture()
 {
 	picture_thread->edit_picture();
+	return 0;
 }
 
 void ChannelEditWindow::scan_confirm()
@@ -414,6 +419,7 @@ int ChannelEditWindow::delete_channel(int number)
 	channel_list.remove_number(number);
 	thread->new_channels->remove_number(number);
 	update_list();
+	return 0;
 }
 
 int ChannelEditWindow::delete_channel(Channel *channel)
@@ -497,6 +503,7 @@ int ChannelEditWindow::change_channel_from_list(int channel_number)
 		thread->current_channel = channel_number;
 		channel_picker->set_channel(thread->new_channels->get(channel_number));
 	}
+	return 0;
 }
 
 ChannelEditSelect::ChannelEditSelect(ChannelEditWindow *window, int x, int y)
@@ -510,6 +517,7 @@ int ChannelEditSelect::handle_event()
 {
 	window->change_channel_from_list(
 		window->list_box->get_selection_number(0, 0));
+	return 1;
 }
 
 ChannelEditAdd::ChannelEditAdd(ChannelEditWindow *window, int x, int y)
@@ -523,6 +531,7 @@ ChannelEditAdd::~ChannelEditAdd()
 int ChannelEditAdd::handle_event()
 {
 	window->add_channel();
+	return 1;
 }
 
 ChannelEditList::ChannelEditList(ChannelEditWindow *window, int x, int y)
@@ -541,6 +550,7 @@ ChannelEditList::~ChannelEditList()
 int ChannelEditList::handle_event()
 {
 	window->edit_channel();
+	return 1;
 }
 
 ChannelEditMoveUp::ChannelEditMoveUp(ChannelEditWindow *window, int x, int y)
@@ -556,6 +566,7 @@ int ChannelEditMoveUp::handle_event()
 	lock_window("ChannelEditMoveUp::handle_event");
 	window->move_channel_up();
 	unlock_window();
+	return 1;
 }
 
 ChannelEditMoveDown::ChannelEditMoveDown(ChannelEditWindow *window, int x, int y)
@@ -571,6 +582,7 @@ int ChannelEditMoveDown::handle_event()
 	lock_window("ChannelEditMoveDown::handle_event");
 	window->move_channel_down();
 	unlock_window();
+	return 1;
 }
 
 ChannelEditSort::ChannelEditSort(ChannelEditWindow *window, int x, int y)
@@ -583,6 +595,7 @@ int ChannelEditSort::handle_event()
 	lock_window("ChannelEditSort::handle_event");
 	window->sort();
 	unlock_window();
+	return 1;
 }
 
 ChannelEditScan::ChannelEditScan(ChannelEditWindow *window, int x, int y)
@@ -593,6 +606,7 @@ ChannelEditScan::ChannelEditScan(ChannelEditWindow *window, int x, int y)
 int ChannelEditScan::handle_event()
 {
 	window->scan_confirm();
+	return 1;
 }
 
 ChannelEditDel::ChannelEditDel(ChannelEditWindow *window, int x, int y)
@@ -606,6 +620,7 @@ ChannelEditDel::~ChannelEditDel()
 int ChannelEditDel::handle_event()
 {
 	if(window->list_box->get_selection_number(0, 0) > -1) window->delete_channel(window->list_box->get_selection_number(0, 0));
+	return 1;
 }
 
 ChannelEdit::ChannelEdit(ChannelEditWindow *window, int x, int y)
@@ -619,6 +634,7 @@ ChannelEdit::~ChannelEdit()
 int ChannelEdit::handle_event()
 {
 	window->edit_channel();
+	return 1;
 }
 
 ChannelEditPicture::ChannelEditPicture(ChannelEditWindow *window, int x, int y)
@@ -632,6 +648,7 @@ ChannelEditPicture::~ChannelEditPicture()
 int ChannelEditPicture::handle_event()
 {
 	window->edit_picture();
+	return 1;
 }
 
 
@@ -852,7 +869,7 @@ ChannelEditEditThread::~ChannelEditEditThread()
 	delete completion;
 }
 
-int ChannelEditEditThread::close_threads()
+void ChannelEditEditThread::close_threads()
 {
 	if(edit_window)
 	{
@@ -886,6 +903,7 @@ int ChannelEditEditThread::edit_channel(Channel *channel, int editing)
 		user_title = 0;
 	set_synchronous(0);
 	Thread::start();
+	return 0;
 }
 
 
@@ -914,6 +932,7 @@ int ChannelEditEditThread::change_source(char *source_name)
 			edit_window->title_text->update(source_name);
 		}
 	}
+	return 0;
 }
 
 int ChannelEditEditThread::source_up()
@@ -922,6 +941,7 @@ int ChannelEditEditThread::source_up()
 	if(new_channel.entry > chanlists[new_channel.freqtable].count - 1) new_channel.entry = 0;
 	source_text->update(chanlists[new_channel.freqtable].list[new_channel.entry].name);
 	set_device();
+	return 0;
 }
 
 int ChannelEditEditThread::source_down()
@@ -930,18 +950,21 @@ int ChannelEditEditThread::source_down()
 	if(new_channel.entry < 0) new_channel.entry = chanlists[new_channel.freqtable].count - 1;
 	source_text->update(chanlists[new_channel.freqtable].list[new_channel.entry].name);
 	set_device();
+	return 0;
 }
 
 int ChannelEditEditThread::set_input(int value)
 {
 	new_channel.input = value;
 	set_device();
+	return 0;
 }
 
 int ChannelEditEditThread::set_norm(int value)
 {
 	new_channel.norm = value;
 	set_device();
+	return 0;
 }
 
 int ChannelEditEditThread::set_freqtable(int value)
@@ -950,6 +973,7 @@ int ChannelEditEditThread::set_freqtable(int value)
 	if(new_channel.entry > chanlists[new_channel.freqtable].count - 1) new_channel.entry = 0;
 	source_text->update(chanlists[new_channel.freqtable].list[new_channel.entry].name);
 	set_device();
+	return 0;
 }
 
 void ChannelEditEditThread::run()
@@ -1131,6 +1155,7 @@ ChannelEditEditSource::~ChannelEditEditSource()
 int ChannelEditEditSource::handle_event()
 {
 	thread->change_source(get_text());
+	return 1;
 }
 
 
@@ -1145,10 +1170,12 @@ ChannelEditEditSourceTumbler::~ChannelEditEditSourceTumbler()
 int ChannelEditEditSourceTumbler::handle_up_event()
 {
 	thread->source_up();
+	return 1;
 }
 int ChannelEditEditSourceTumbler::handle_down_event()
 {
 	thread->source_down();
+	return 1;
 }
 
 ChannelEditEditInput::ChannelEditEditInput(int x, 
@@ -1179,6 +1206,7 @@ int ChannelEditEditInput::add_items()
 				inputs->values[i]->device_name, 
 				i));
 		}
+	return 0;
 }
 int ChannelEditEditInput::handle_event()
 {
@@ -1213,6 +1241,7 @@ int ChannelEditEditInputItem::handle_event()
 		thread->set_input(value);
 	else
 		edit->scan_params.input = value;
+	return 1;
 }
 
 ChannelEditEditNorm::ChannelEditEditNorm(int x, 
@@ -1265,6 +1294,7 @@ int ChannelEditEditNormItem::handle_event()
 		thread->set_norm(value);
 	else
 		edit->scan_params.norm = value;
+	return 1;
 }
 
 
@@ -1318,6 +1348,7 @@ int ChannelEditEditFreqItem::handle_event()
 		thread->set_freqtable(value);
 	else
 		edit->scan_params.freqtable = value;
+	return 1;
 }
 
 
@@ -1384,6 +1415,7 @@ int ChannelEditPictureThread::edit_picture()
 	completion->lock("ChannelEditPictureThread::edit_picture");
 	set_synchronous(0);
 	Thread::start();
+	return 0;
 }
 
 void ChannelEditPictureThread::run()
@@ -1405,7 +1437,7 @@ SET_TRACE
 	in_progress = 0;
 }
 
-int ChannelEditPictureThread::close_threads()
+void ChannelEditPictureThread::close_threads()
 {
 	if(edit_window)
 	{

@@ -33,6 +33,7 @@
 #include "preferences.h"
 
 #include <string.h>
+#include <inttypes.h>
 
 // edl came from a command which won't exist anymore
 CICache::CICache(Preferences *preferences,
@@ -219,7 +220,7 @@ int CICache::delete_entry(Asset *asset)
 	return 0;
 }
 
-int CICache::age()
+void CICache::age()
 {
 	CICacheItem *current;
 
@@ -324,14 +325,14 @@ int CICache::delete_oldest()
 	}
 }
 
-int CICache::dump()
+void CICache::dump()
 {
 	CICacheItem *current;
 	total_lock->lock("CICache::dump");
-	printf("CICache::dump total size %lld\n", get_memory_usage(0));
+	printf("CICache::dump total size %" PRId64 "\n", get_memory_usage(0));
 	for(current = first; current; current = NEXT)
 	{
-		printf("cache item %x asset %x %s age=%d\n", 
+		printf("cache item %p asset %p %s age=%d\n", 
 			current, 
 			current->asset,
 			current->asset->path, 

@@ -155,6 +155,7 @@ int PluginServer::reset_parameters()
 	is_lad = 0;
 	lad_descriptor_function = 0;
 	lad_descriptor = 0;
+	return 0;
 }
 
 
@@ -171,6 +172,7 @@ int PluginServer::cleanup_plugin()
 	gui_on = 0;
 	plugin = 0;
 	plugin_open = 0;
+	return 0;
 }
 
 void PluginServer::set_mwindow(MWindow *mwindow)
@@ -199,9 +201,10 @@ int PluginServer::set_path(char *path)
 	if(this->path) delete [] this->path;
 	this->path = new char[strlen(path) + 1];
 	strcpy(this->path, path);
+	return 0;
 }
 
-void PluginServer::set_title(char *string)
+void PluginServer::set_title(const char *string)
 {
 	if(title) delete [] title;
 	title = new char[strlen(string) + 1];
@@ -370,6 +373,7 @@ int PluginServer::init_realtime(int realtime_sched,
 	client->plugin_init_realtime(realtime_sched, 
 		total_in_buffers, 
 		buffer_size);
+	return 0;
 
 }
 
@@ -941,7 +945,7 @@ int PluginServer::detach_buffers()
 	return 0;
 }
 
-int PluginServer::arm_buffer(int buffer_number, 
+void PluginServer::arm_buffer(int buffer_number,
 		int64_t offset_in, 
 		int64_t offset_out,
 		int double_buffer_in,
@@ -954,7 +958,7 @@ int PluginServer::arm_buffer(int buffer_number,
 }
 
 
-int PluginServer::set_automation(FloatAutos *autos, FloatAuto **start_auto, FloatAuto **end_auto, int reverse)
+void PluginServer::set_automation(FloatAutos *autos, FloatAuto **start_auto, FloatAuto **end_auto, int reverse)
 {
 	this->autos = autos;
 	this->start_auto = start_auto;

@@ -31,6 +31,7 @@
 #include "filesystem.h"
 #include "language.h"
 #include "mutex.h"
+#include <inttypes.h>
 #include <string.h>
 #include <sys/stat.h>
 
@@ -421,9 +422,9 @@ int BC_FileBoxReload::handle_event()
 
 BC_FileBox::BC_FileBox(int x, 
 		int y, 
-		char *init_path,
-		char *title,
-		char *caption,
+		const char *init_path,
+		const char *title,
+		const char *caption,
 		int show_all_files,
 		int want_directory,
 		int multiple_files,
@@ -503,7 +504,7 @@ BC_FileBox::BC_FileBox(int x,
 		fs->complete_path(this->current_path);
 		fs->update(this->current_path);
 		strcpy(directory, fs->get_current_dir());
-		sprintf(filename, "");
+		filename[0] = 0;
 	}
 
 
@@ -779,7 +780,7 @@ int BC_FileBox::create_tables()
 // 		{
 			if(!is_dir)
 			{
-				sprintf(string, "%lld", file_item->size);
+				sprintf(string, "%" PRId64, file_item->size);
 				new_item = new BC_ListBoxItem(string, get_resources()->file_color);
 			}
 			else
@@ -793,7 +794,7 @@ int BC_FileBox::create_tables()
 // Date entry
 		if(!is_dir || 1)
 		{
-			static char *month_text[13] = 
+			static const char *month_text[13] = 
 			{
 				"Null",
 				"Jan",
@@ -877,7 +878,7 @@ BC_Pixmap* BC_FileBox::get_icon(char *path, int is_dir)
 	return icons[icon_type];
 }
 
-char* BC_FileBox::columntype_to_text(int type)
+const char* BC_FileBox::columntype_to_text(int type)
 {
 	switch(type)
 	{
@@ -922,7 +923,7 @@ int BC_FileBox::refresh()
 	return 0;
 }
 
-int BC_FileBox::update_filter(char *filter)
+int BC_FileBox::update_filter(const char *filter)
 {
 	fs->set_filter(filter);
 	fs->update(0);

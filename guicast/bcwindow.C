@@ -24,7 +24,7 @@
 
 
 
-BC_Window::BC_Window(char *title, 
+BC_Window::BC_Window(const char *title, 
 				int x,
 				int y,
 				int w, 
@@ -35,7 +35,7 @@ BC_Window::BC_Window(char *title,
 				int private_color, 
 				int hide,
 				int bg_color,
-				char *display_name,
+				const char *display_name,
 				int group_it)
  : BC_WindowBase()
 {

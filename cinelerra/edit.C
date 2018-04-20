@@ -35,7 +35,7 @@
 #include "tracks.h"
 #include "transition.h"
 #include <string.h>
-
+#include <inttypes.h>
 
 Edit::Edit()
 {
@@ -81,7 +81,7 @@ void Edit::reset()
 	user_title[0] = 0;
 }
 
-int Edit::copy(int64_t start, int64_t end, FileXML *file, char *output_path)
+int Edit::copy(int64_t start, int64_t end, FileXML *file, const char *output_path)
 {
 // variables
 //printf("Edit::copy 1\n");
@@ -332,7 +332,7 @@ int Edit::dump()
 		printf("      TRANSITION %p\n", transition);
 		transition->dump();
 	}
-	printf("      startsource %lld startproject %lld length %lld\n", startsource, startproject, length); fflush(stdout);
+	printf("      startsource %" PRId64 " startproject %" PRId64 " length %" PRId64 "\n", startsource, startproject, length); fflush(stdout);
 	return 0;
 }
 

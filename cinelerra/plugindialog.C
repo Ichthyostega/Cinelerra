@@ -63,7 +63,7 @@ PluginDialogThread::~PluginDialogThread()
 
 void PluginDialogThread::start_window(Track *track,
 	Plugin *plugin, 
-	char *title)
+	const char *title)
 {
 	if(Thread::running())
 	{
@@ -517,7 +517,7 @@ int PluginDialog::attach_module(int number)
 	return 0;
 }
 
-int PluginDialog::save_settings()
+void PluginDialog::save_settings()
 {
 }
 

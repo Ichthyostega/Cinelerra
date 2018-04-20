@@ -52,6 +52,7 @@ TransitionMenuItem::~TransitionMenuItem()
 
 int TransitionMenuItem::handle_event()
 {
+	return 1;
 }
 
 
@@ -83,7 +84,7 @@ void PasteTransition::run()
 
 
 
-Transition::Transition(EDL *edl, Edit *edit, char *title, long unit_length)
+Transition::Transition(EDL *edl, Edit *edit, const char *title, long unit_length)
  : Plugin(edl, (PluginSet*)edit->edits, title)
 {
 	this->edit = edit;
@@ -209,9 +210,10 @@ int Transition::popup_transition(int x, int y)
 // 		mwindow->gui->transition_popup->activate_menu(this, PROGRAM_NAME ": Transition", y, x);
 // 	else
 // 		mwindow->gui->transition_popup->activate_menu(this, PROGRAM_NAME ": Transition", x, y);
+	return 0;
 }
 
-int Transition::update_derived()
+void Transition::update_derived()
 {
 // Redraw transition titles
 }
@@ -222,14 +224,14 @@ int Transition::update_display()
 	return 0;
 }
 
-char* Transition::default_title()
+const char* Transition::default_title()
 {
 	return "Transition";
 }
 
 void Transition::dump()
 {
-	printf("       title: %s length: %d\n", title, length);
+	printf("       title: %s length: %jd\n", title, length);
 }
 
 

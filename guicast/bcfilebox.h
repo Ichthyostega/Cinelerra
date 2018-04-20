@@ -200,9 +200,9 @@ class BC_FileBox : public BC_Window
 public:
 	BC_FileBox(int x, 
 		int y,
-		char *init_path,
-		char *title,
-		char *caption,
+		const char *init_path,
+		const char *title,
+		const char *caption,
 // Set to 1 to get hidden files. 
 		int show_all_files = 0,
 // Want only directories
@@ -250,7 +250,7 @@ public:
 // Give the path of any selected item or 0.  Used when many items are
 // selected in the list.  Should only be called when OK is pressed.
 	char* get_path(int selection);
-	int update_filter(char *filter);
+	int update_filter(const char *filter);
 	virtual int resize_event(int w, int h);
 	char* get_newfolder_title();
 	char* get_delete_title();
@@ -276,7 +276,7 @@ private:
 	void create_listbox(int x, int y, int mode);
 // Get the icon number for a listbox
 	BC_Pixmap* get_icon(char *path, int is_dir);
-	static char* columntype_to_text(int type);
+	static const char* columntype_to_text(int type);
 // Get the column whose type matches type.
 	int column_of_type(int type);
 
@@ -302,7 +302,7 @@ private:
 	int sort_column;
 	int sort_order;
 
-	char *column_titles[FILEBOX_COLUMNS];
+	const char *column_titles[FILEBOX_COLUMNS];
 	ArrayList<BC_ListBoxItem*> filter_list;
 	ArrayList<BC_ListBoxItem*> *list_column;
 	int *column_type;

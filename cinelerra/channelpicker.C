@@ -138,54 +138,49 @@ void RecordChannelPicker::set_channel_number(int number)
 	record->set_channel(number);
 }
 
-int RecordChannelPicker::set_brightness(int value)
+void RecordChannelPicker::set_brightness(int value)
 {
 	if(record)
 	{
 		record->picture->brightness = value;
 		record->set_video_picture();
 	}
-	return 0;
 }
 
-int RecordChannelPicker::set_hue(int value)
+void RecordChannelPicker::set_hue(int value)
 {
 	if(record)
 	{
 		record->picture->hue = value;
 		record->set_video_picture();
 	}
-	return 0;
 }
 
-int RecordChannelPicker::set_color(int value)
+void RecordChannelPicker::set_color(int value)
 {
 	if(record)
 	{
 		record->picture->color = value;
 		record->set_video_picture();
 	}
-	return 0;
 }
 
-int RecordChannelPicker::set_contrast(int value)
+void RecordChannelPicker::set_contrast(int value)
 {
 	if(record)
 	{
 		record->picture->contrast = value;
 		record->set_video_picture();
 	}
-	return 0;
 }
 
-int RecordChannelPicker::set_whiteness(int value)
+void RecordChannelPicker::set_whiteness(int value)
 {
 	if(record)
 	{
 		record->picture->whiteness = value;
 		record->set_video_picture();
 	}
-	return 0;
 }
 
 int RecordChannelPicker::set_picture(int device_id, int value)
@@ -354,27 +349,27 @@ int PrefsChannelPicker::has_signal()
 	return 0;
 }
 
-int PrefsChannelPicker::set_brightness(int value)
+void PrefsChannelPicker::set_brightness(int value)
 {
 	prefs->out_config->brightness = value;
 }
 
-int PrefsChannelPicker::set_hue(int value)
+void PrefsChannelPicker::set_hue(int value)
 {
 	prefs->out_config->hue = value;
 }
 
-int PrefsChannelPicker::set_color(int value)
+void PrefsChannelPicker::set_color(int value)
 {
 	prefs->out_config->color = value;
 }
 
-int PrefsChannelPicker::set_contrast(int value)
+void PrefsChannelPicker::set_contrast(int value)
 {
 	prefs->out_config->contrast = value;
 }
 
-int PrefsChannelPicker::set_whiteness(int value)
+void PrefsChannelPicker::set_whiteness(int value)
 {
 	prefs->out_config->whiteness = value;
 }
@@ -494,13 +489,12 @@ int ChannelPicker::reposition()
 	return 0;
 }
 
-int ChannelPicker::close_threads()
+void ChannelPicker::close_threads()
 {
 	channel_button->thread->close_threads();
-	return 0;
 }
 
-char* ChannelPicker::get_source_name(Channel *channel)
+const char* ChannelPicker::get_source_name(Channel *channel)
 {
 	if(channel->entry < chanlists[channel->freqtable].count)
 		return chanlists[channel->freqtable].list[channel->entry].name;
@@ -508,7 +502,7 @@ char* ChannelPicker::get_source_name(Channel *channel)
 		return chanlists[channel->freqtable].list[0].name;
 }
 
-char* ChannelPicker::current_channel_name()
+const char* ChannelPicker::current_channel_name()
 {
 	if(get_current_channel_struct())
 	{

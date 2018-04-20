@@ -526,7 +526,7 @@ int ADevicePrefs::create_firewire_objs()
 
 
 
-int ADevicePrefs::create_cine_objs()
+void ADevicePrefs::create_cine_objs()
 {
 	BC_Resources *resources = BC_WindowBase::get_resources();
 	int x1 = x + menu->get_w() + 5;
@@ -607,7 +607,7 @@ char* ADriverMenu::adriver_to_string(int driver)
 	return string;
 }
 
-ADriverItem::ADriverItem(ADriverMenu *popup, char *text, int driver)
+ADriverItem::ADriverItem(ADriverMenu *popup, const char *text, int driver)
  : BC_MenuItem(text)
 {
 	this->popup = popup;

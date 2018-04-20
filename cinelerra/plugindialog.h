@@ -56,7 +56,7 @@ public:
 // Set up parameters for a transition menu.
 	void start_window(Track *track,
 		Plugin *plugin, 
-		char *title);
+		const char *title);
 	int set_dialog(Transition *transition, char *title);
 	void run();
 
@@ -99,7 +99,7 @@ public:
 	int attach_new(int number);
 	int attach_shared(int number);
 	int attach_module(int number);
-	int save_settings();
+	void save_settings();
 	int resize_event(int w, int h);
 
 	BC_Title *standalone_title;

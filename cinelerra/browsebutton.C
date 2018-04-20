@@ -33,9 +33,9 @@ BrowseButton::BrowseButton(MWindow *mwindow,
 	BC_TextBox *textbox, 
 	int x, 
 	int y, 
-	char *init_directory, 
-	char *title, 
-	char *caption, 
+	const char *init_directory, 
+	const char *title, 
+	const char *caption, 
 	int want_directory,
 	const char *recent_prefix)
  : BC_Button(x, y, mwindow->theme->get_image_set("magnify_button")), 
@@ -43,7 +43,7 @@ BrowseButton::BrowseButton(MWindow *mwindow,
 {
 	this->parent_window = parent_window;
 	this->want_directory = want_directory;
-	this->title = title;
+	strcpy(this->title, title);
 	this->caption = caption;
 	this->init_directory = init_directory;
 	this->textbox = textbox;
@@ -133,9 +133,9 @@ void BrowseButton::run()
 BrowseButtonWindow::BrowseButtonWindow(MWindow *mwindow, 
 	BrowseButton *button,
 	BC_WindowBase *parent_window, 
-	char *init_directory, 
-	char *title, 
-	char *caption, 
+	const char *init_directory, 
+	const char *title, 
+	const char *caption, 
 	int want_directory)
  : BC_FileBox(button->x - 
  		BC_WindowBase::get_resources()->filebox_w / 2, 

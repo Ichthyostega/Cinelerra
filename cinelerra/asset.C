@@ -35,6 +35,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <inttypes.h>
 
 
 Asset::Asset()
@@ -166,8 +167,11 @@ int Asset::init_values()
 	ac3_bitrate = 128;
 
 	png_use_alpha = 0;
+
+#ifdef HAVE_OPENEXR
 	exr_use_alpha = 0;
 	exr_compression = 0;
+#endif
 
 	tiff_cmodel = 0;
 	tiff_compression = 0;
@@ -318,8 +322,11 @@ void Asset::copy_format(Asset *asset, int do_index)
 	ac3_bitrate = asset->ac3_bitrate;
 	
 	png_use_alpha = asset->png_use_alpha;
+
+#ifdef HAVE_OPENEXR
 	exr_use_alpha = asset->exr_use_alpha;
 	exr_compression = asset->exr_compression;
+#endif
 
 	tiff_cmodel = asset->tiff_cmodel;
 	tiff_compression = asset->tiff_compression;
@@ -452,7 +459,7 @@ int Asset::test_path(const char *path)
 		return 0;
 }
 
-int Asset::test_plugin_title(const char *path)
+void Asset::test_plugin_title(const char *path)
 {
 }
 
@@ -665,7 +672,7 @@ int Asset::read_index(FileXML *file)
 	return 0;
 }
 
-int Asset::write_index(char *path, int data_bytes)
+void Asset::write_index(char *path, int data_bytes)
 {
 	FILE *file;
 	if(!(file = fopen(path, "wb")))
@@ -712,7 +719,7 @@ int Asset::write_index(char *path, int data_bytes)
 
 int Asset::write(FileXML *file, 
 	int include_index, 
-	char *output_path)
+	const char *output_path)
 {
 	char new_path[BCTEXTLEN];
 	char asset_directory[BCTEXTLEN];
@@ -899,7 +906,7 @@ int Asset::write_index(FileXML *file)
 
 
 
-char* Asset::construct_param(char *param, char *prefix, char *return_value)
+char* Asset::construct_param(const char *param, const char *prefix, char *return_value)
 {
 	if(prefix)
 		sprintf(return_value, "%s%s", prefix, param);
@@ -912,7 +919,7 @@ char* Asset::construct_param(char *param, char *prefix, char *return_value)
 #define GET_DEFAULT(x, y) defaults->get(construct_param(x, prefix, string), y);
 
 void Asset::load_defaults(BC_Hash *defaults, 
-	char *prefix, 
+	const char *prefix, 
 	int do_format,
 	int do_compression,
 	int do_path,
@@ -1031,8 +1038,10 @@ void Asset::load_defaults(BC_Hash *defaults,
 	ac3_bitrate = GET_DEFAULT("AC3_BITRATE", ac3_bitrate);
 
 	png_use_alpha = GET_DEFAULT("PNG_USE_ALPHA", png_use_alpha);
+#ifdef HAVE_OPENEXR
 	exr_use_alpha = GET_DEFAULT("EXR_USE_ALPHA", exr_use_alpha);
 	exr_compression = GET_DEFAULT("EXR_COMPRESSION", exr_compression);
+#endif
 	tiff_cmodel = GET_DEFAULT("TIFF_CMODEL", tiff_cmodel);
 	tiff_compression = GET_DEFAULT("TIFF_COMPRESSION", tiff_compression);
 
@@ -1048,7 +1057,7 @@ void Asset::load_defaults(BC_Hash *defaults,
 }
 
 void Asset::save_defaults(BC_Hash *defaults, 
-	char *prefix,
+	const char *prefix,
 	int do_format,
 	int do_compression,
 	int do_path,
@@ -1146,8 +1155,10 @@ void Asset::save_defaults(BC_Hash *defaults,
 
 
 		UPDATE_DEFAULT("PNG_USE_ALPHA", png_use_alpha);
+#ifdef HAVE_OPENEXR
 		UPDATE_DEFAULT("EXR_USE_ALPHA", exr_use_alpha);
 		UPDATE_DEFAULT("EXR_COMPRESSION", exr_compression);
+#endif
 		UPDATE_DEFAULT("TIFF_CMODEL", tiff_cmodel);
 		UPDATE_DEFAULT("TIFF_COMPRESSION", tiff_compression);
 
@@ -1257,13 +1268,13 @@ int Asset::dump()
 	printf("   format %d\n", format);
 	printf("   audio_data %d channels %d samplerate %d bits %d byte_order %d signed %d header %d dither %d acodec %c%c%c%c\n",
 		audio_data, channels, sample_rate, bits, byte_order, signed_, header, dither, acodec[0], acodec[1], acodec[2], acodec[3]);
-	printf("   audio_length %lld\n", audio_length);
+	printf("   audio_length %" PRId64 "\n", audio_length);
 	char string[BCTEXTLEN];
 	ilacemode_to_xmltext(string, interlace_mode);
 	printf("   video_data %d layers %d framerate %f width %d height %d vcodec %c%c%c%c aspect_ratio %f interlace_mode %s\n",
 	       video_data, layers, frame_rate, width, height, vcodec[0], vcodec[1], vcodec[2], vcodec[3], aspect_ratio, string);
-	printf("   video_length %lld \n", video_length);
-	printf("   reel_name %s reel_number %i tcstart %d tcend %d tcf %d\n",
+	printf("   video_length %" PRId64 "\n", video_length);
+	printf("   reel_name %s reel_number %i tcstart %jd tcend %jd tcf %d\n",
 		reel_name, reel_number, tcstart, tcend, tcformat);
 	
 	return 0;

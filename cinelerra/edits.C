@@ -39,6 +39,7 @@
 #include "transition.h"
 #include "transportque.inc"
 
+#include <inttypes.h>
 #include <string.h>
 
 Edits::Edits(EDL *edl, Track *track, Edit *default_edit)
@@ -246,7 +247,7 @@ Edit* Edits::split_edit(int64_t position)
 		} else
 		{  // now we are now surely in situation where we have a) broken edit list or b) negative position... report error!
 			printf("ERROR!\n");       
-			printf("Trying to insert edit at position, but failed: %lli\n", position);
+			printf("Trying to insert edit at position, but failed: %" PRId64 "\n", position);
 			printf("Dump is here:\n");
 			track->dump();
 			return 0;
@@ -468,7 +469,7 @@ int Edits::optimize()
 
 // ===================================== file operations
 
-int Edits::load(FileXML *file, int track_offset)
+void Edits::load(FileXML *file, int track_offset)
 {
 	int result = 0;
 	int64_t startproject = 0;
@@ -643,7 +644,7 @@ Edit* Edits::get_playable_edit(int64_t position, int use_nudge)
 
 
 
-int Edits::copy(int64_t start, int64_t end, FileXML *file, char *output_path)
+int Edits::copy(int64_t start, int64_t end, FileXML *file, const char *output_path)
 {
 	Edit *current_edit;
 
@@ -659,6 +660,7 @@ int Edits::copy(int64_t start, int64_t end, FileXML *file, char *output_path)
 	file->tag.set_title("/EDITS");
 	file->append_tag();
 	file->append_newline();
+	return 0;
 }
 
 

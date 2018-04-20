@@ -88,7 +88,7 @@ public:
 	void render_stop();
 
 // queries
-	void set_title(char *string);
+	void set_title(const char *string);
 // Generate title for display
 	void generate_display_title(char *string);
 // Get keyframes for configuration.  Position is always relative to EDL rate.
@@ -194,12 +194,12 @@ public:
 	void render_gui(void *data, int size);
 
 // Send the boundary autos of the next fragment
-	int set_automation(FloatAutos *autos, FloatAuto **start_auto, FloatAuto **end_auto, int reverse);
+	void set_automation(FloatAutos *autos, FloatAuto **start_auto, FloatAuto **end_auto, int reverse);
 
 
 
 // set the fragment position of a buffer before rendering
-	int arm_buffer(int buffer_number, 
+	void arm_buffer(int buffer_number,
 				int64_t in_fragment_position, 
 				int64_t out_fragment_position,
 				int double_buffer_in,

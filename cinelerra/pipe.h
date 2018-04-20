@@ -37,11 +37,12 @@ class Pipe {
 	int open_read() ;
 	int open_write() ;
 	void close() ;
+	static char *search_executable(const char *name, char *exepath);
 
 	int fd;
  private:
 	int substitute() ;
- 	int open(char *mode) ;
+	int open(const char *mode) ;
 	
 	char sub_char;
 	char *sub_str;

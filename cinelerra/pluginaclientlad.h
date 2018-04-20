@@ -125,7 +125,7 @@ public:
 		int y);
 	~PluginAClientWindow();
 	
-	int create_objects();
+	void create_objects();
 	int close_event();
 
 
@@ -166,8 +166,8 @@ public:
 	PLUGIN_CLASS_MEMBERS(PluginAClientConfig, PluginAClientThread)
 
 
-	static char* lad_to_string(char *string, char *input);
-	static char* lad_to_upper(char *string, char *input);
+	static char* lad_to_string(char *string, const char *input);
+	static char* lad_to_upper(char *string, const char *input);
 	int get_inchannels();
 	int get_outchannels();
 	void delete_buffers();

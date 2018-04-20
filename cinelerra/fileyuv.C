@@ -254,10 +254,10 @@ int FileYUV::write_frames(VFrame ***layers, int len)
 
 
 void FileYUV::get_parameters(BC_WindowBase *parent_window, 
-			     Asset *asset, 
-			     BC_WindowBase* &format_window,
-			     int video_options,
-			     FormatTools *format)
+	Asset *asset,
+	BC_WindowBase* &format_window,
+	int video_options,
+	FormatTools *format)
 {
 	if (! video_options) return;
 
@@ -283,14 +283,14 @@ void FileYUV::get_parameters(BC_WindowBase *parent_window,
 
 int FileYUV::check_sig(Asset *asset)
 {
+	int rs;
 	char temp[9];
-        FILE *f = fopen(asset->path, "rb");
+	FILE *f = fopen(asset->path, "rb");
 
-        // check for starting with "YUV4MPEG2"
-        fread(&temp, 9, 1, f);
-        fclose(f);
-	if (strncmp(temp, "YUV4MPEG2", 9) == 0) return 1;
-
+	// check for starting with "YUV4MPEG2"
+	rs = fread(&temp, 9, 1, f) == 1;
+	fclose(f);
+	if(rs && strncmp(temp, "YUV4MPEG2", 9) == 0) return 1;
         return 0;
 }
 
@@ -436,6 +436,7 @@ int YUVConfigVideo::create_objects()
 
 	x += 180;
 	add_subwindow(ffmpeg = new PipePreset(x, y, "ffmpeg", pipe_textbox, pipe_checkbox));
+	ffmpeg->add_item(new BC_MenuItem("(H.264) | ffmpeg -f yuv4mpegpipe -i - -y -vcodec libx264 -crf 21 -preset medium %"));
 	ffmpeg->add_item(new BC_MenuItem("(DVD) | ffmpeg -f yuv4mpegpipe -i - -y -target dvd -ilme -ildct -hq -f mpeg2video %"));
 	ffmpeg->add_item(new BC_MenuItem("(VCD) | ffmpeg -f yuv4mpegpipe -i - -y -target vcd -hq -f mpeg2video %"));
 
@@ -465,10 +466,11 @@ int PipeCheckBox::handle_event()
 			textbox->enable();
 		else 
 			textbox->disable();
+	return 1;
 }
 
 
-PipePreset::PipePreset(int x, int y, char *title, BC_TextBox *textbox, BC_CheckBox *checkbox)
+PipePreset::PipePreset(int x, int y, const char *title, BC_TextBox *textbox, BC_CheckBox *checkbox)
 	: BC_PopupMenu(x, y, 150, title)
 {
 	this->pipe_textbox = textbox;
@@ -489,4 +491,5 @@ int PipePreset::handle_event()
 	
 	// menuitem sets the title after selection but we reset it
 	set_text(title);
+	return 1;
 }

@@ -131,7 +131,7 @@ public:
 	RecordGUIMonitorAudio *monitor_audio;
 	RecordStartoverThread *startover_thread;
 	EndRecordThread *interrupt_thread;
-	static char *batch_titles[BATCH_COLUMNS];
+	static const char *batch_titles[BATCH_COLUMNS];
 	int column_widths[BATCH_COLUMNS];
 	LoadMode *load_mode;
 	int flash_color;
@@ -192,14 +192,14 @@ public:
 	int calibrate_dc_offset(long new_value, int channel);
 	int update_dropped_frames(long new_dropped);
 	int update_clipped_samples(long new_clipped);
-	int set_translation(int x, int y, float z);
+	void set_translation(int x, int y, float z);
 
 	void update_labels(double new_position);
 	int update_position(double new_position);
-	int update_prev_label(long new_position);
+	void update_prev_label(long new_position);
 //	int update_next_label(long new_position);
 
-	int update_title(BC_Title *title, double position);
+	void update_title(BC_Title *title, double position);
 
 	int goto_prev_label();
 //	int goto_next_label();

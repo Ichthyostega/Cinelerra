@@ -135,7 +135,7 @@ int ExportEDLAsset::edit_to_timecodes(Edit *edit, char *sourceinpoint, char *sou
 }
 
 
-int ExportEDLAsset::export_it()
+void ExportEDLAsset::export_it()
 {
 	FILE *fh;
 	fh = fopen(path, "w+");
@@ -192,7 +192,7 @@ int ExportEDLAsset::export_it()
 
 				if (last_dissolve)
 				{
-					fprintf(fh, "%03d %8s %s %4s %03s", colnum, reel_name, avselect, edittype, cutinfo);
+					fprintf(fh, "%03d %8s %s %4s %3s", colnum, reel_name, avselect, edittype, cutinfo);
 					fprintf(fh, " %s %s", last_sourceout, last_sourceout);
 					fprintf(fh, " %s %s", destinpoint, destinpoint);
 					fprintf(fh,"\n");		
@@ -201,7 +201,7 @@ int ExportEDLAsset::export_it()
 					colnum --;
 				}
 				edittype[0] = 'D';
-				fprintf(fh, "%03d %8s %s %4s %03d", colnum, reel_name, avselect, edittype, edit->transition->length);
+				fprintf(fh, "%03d %8s %s %4s %03jd", colnum, reel_name, avselect, edittype, edit->transition->length);
 				fprintf(fh, " %s %s", sourceinpoint, sourceoutpoint);
 				fprintf(fh, " %s %s", destinpoint, destoutpoint);
 				fprintf(fh,"\n");
@@ -351,7 +351,7 @@ void ExportEDL::run()
 #define WIDTH 410
 #define HEIGHT 400
 
-static char *list_titles[] = 
+static const char *list_titles[] = 
 {
 	N_("No."),
 	N_("Track name")
@@ -470,6 +470,7 @@ int ExportEDLPathText::handle_event()
 {
 	strcpy(window->exportasset->path, get_text());
 //	window->handle_event();
+	return 1;
 }
 
 ExportEDLWindowTrackList::ExportEDLWindowTrackList(ExportEDLWindow *window, 
@@ -496,6 +497,7 @@ int ExportEDLWindowTrackList::handle_event()
 //	window->exportasset->track_number = get_selection_number(0, 0);
 //	printf("aaaaa %i\n", window->exportasset->track_number );
 //	window->set_done(0); 
+	return 1;
 }
 
 

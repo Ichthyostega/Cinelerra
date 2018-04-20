@@ -81,7 +81,7 @@ AssetPicon::AssetPicon(MWindow *mwindow,
 
 AssetPicon::AssetPicon(MWindow *mwindow, 
 	AWindowGUI *gui, 
-	char *folder)
+	const char *folder)
  : BC_ListBoxItem(folder, gui->folder_icon)
 {
 	reset();
@@ -908,7 +908,7 @@ void AWindowGUI::collect_assets()
 
 void AWindowGUI::copy_picons(ArrayList<BC_ListBoxItem*> *dst, 
 	ArrayList<BC_ListBoxItem*> *src, 
-	char *folder)
+	const char *folder)
 {
 // Remove current pointers
 	dst[0].remove_all();
@@ -941,7 +941,7 @@ void AWindowGUI::copy_picons(ArrayList<BC_ListBoxItem*> *dst,
 }
 
 void AWindowGUI::sort_picons(ArrayList<BC_ListBoxItem*> *src, 
-		char *folder)
+		const char *folder)
 {
 //printf("AWindowGUI::sort_picons 1\n")
 	int done = 0;

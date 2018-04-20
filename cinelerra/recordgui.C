@@ -87,7 +87,7 @@ TRACE("RecordGUI::~RecordGUI 2");
 }
 
 
-char* RecordGUI::batch_titles[] = 
+const char* RecordGUI::batch_titles[] = 
 {
 	N_("On"),
 	N_("Path"),
@@ -1226,7 +1226,7 @@ void RecordStartoverThread::run()
 
 
 
-int RecordGUI::set_translation(int x, int y, float z)
+void RecordGUI::set_translation(int x, int y, float z)
 {
 	record->video_x = x;
 	record->video_y = y;
@@ -1289,7 +1289,7 @@ void RecordGUI::update_labels(double new_position)
 
 
 
-int RecordGUI::update_prev_label(long new_position) 
+void RecordGUI::update_prev_label(long new_position)
 { 
 	update_title(prev_label_title, new_position);
 }
@@ -1299,7 +1299,7 @@ int RecordGUI::update_prev_label(long new_position)
 // 	update_title(next_label_title, new_position); 
 // }
 // 
-int RecordGUI::update_title(BC_Title *title, double position)
+void RecordGUI::update_title(BC_Title *title, double position)
 {
 	static char string[256];
 
@@ -1371,6 +1371,7 @@ int RecordGUIModeMenu::add_items()
 int RecordGUIModeMenu::handle_event()
 {
 //	engine->set_record_mode(get_text());
+	return 1;
 }
 
 RecordGUIMode::RecordGUIMode(char *text)
@@ -1444,7 +1445,7 @@ void RecordStatusThread::run()
 			if(gui->total_dropped_frames != new_dropped_frames)
 			{
 				gui->total_dropped_frames = new_dropped_frames;
-				sprintf(string, "%d\n", gui->total_dropped_frames);
+				sprintf(string, "%ld\n", gui->total_dropped_frames);
 				gui->lock_window("RecordStatusThread::run 1");
 				gui->frames_dropped->update(string);
 				gui->unlock_window();
@@ -1463,7 +1464,7 @@ void RecordStatusThread::run()
 			{
 				char string[1024];
 				gui->total_clipped_samples = new_clipped_samples;
-				sprintf(string, "%d\n", gui->total_clipped_samples);
+				sprintf(string, "%ld\n", gui->total_clipped_samples);
 				gui->lock_window("RecordStatusThread::run 2");
 				gui->samples_clipped->update(string);
 				gui->unlock_window();

@@ -102,7 +102,7 @@ void BC_WindowBase::clear_box(int x, int y, int w, int h, BC_Pixmap *pixmap)
 
 void BC_WindowBase::draw_text(int x, 
 	int y, 
-	char *text, 
+	const char *text, 
 	int length, 
 	BC_Pixmap *pixmap)
 {
@@ -266,7 +266,7 @@ void BC_WindowBase::draw_text(int x,
 
 void BC_WindowBase::draw_xft_text(int x, 
 	int y, 
-	char *text, 
+	const char *text, 
 	int length, 
 	BC_Pixmap *pixmap,
 	int x2,
@@ -319,8 +319,7 @@ void BC_WindowBase::draw_xft_text(int x,
 #endif
 }
 
-
-void BC_WindowBase::draw_center_text(int x, int y, char *text, int length)
+void BC_WindowBase::draw_center_text(int x, int y, const char *text, int length)
 {
 	if(length < 0) length = strlen(text);
 	int w = get_text_width(current_font, text, length);

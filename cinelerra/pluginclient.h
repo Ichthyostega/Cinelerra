@@ -120,7 +120,7 @@ void thread_class::run() \
 #define PLUGIN_CLASS_MEMBERS(config_name, thread_name) \
 	int load_configuration(); \
 	VFrame* new_picon(); \
-	char* plugin_title(); \
+	const char* plugin_title(); \
 	int show_gui(); \
 	int set_string(); \
 	void raise_window(); \
@@ -246,7 +246,7 @@ public:
 	virtual int is_multichannel();
 	virtual int is_synthesis();
 	virtual int is_transition();
-	virtual char* plugin_title();   // return the title of the plugin
+	virtual const char* plugin_title();   // return the title of the plugin
 	virtual VFrame* new_picon();
 	virtual Theme* new_theme();
 // Get theme being used by Cinelerra currently.  Used by all plugins.
@@ -426,11 +426,11 @@ public:
 	int write_frames(int64_t total_frames);  // returns 1 for failure / tells the server that all output channel buffers are ready to go
 	int write_samples(int64_t total_samples);  // returns 1 for failure / tells the server that all output channel buffers are ready to go
 	virtual int plugin_get_parameters();
-	char* get_defaultdir();     // Directory defaults should be stored in
+	const char* get_defaultdir();     // Directory defaults should be stored in
 	void set_interactive();
 
 // Realtime operations.
-	int reset();
+	void reset();
 	virtual int plugin_command_derived(int plugin_command) {}; // Extension of plugin_run for derived plugins
 	int plugin_get_range();
 	int plugin_init_realtime(int realtime_priority, 

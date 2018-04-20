@@ -191,7 +191,7 @@ int Tracks::load(FileXML *xml, int &track_offset, uint32_t load_flags)
 // add the appropriate type of track
 	char string[BCTEXTLEN];
 	Track *track = 0;
-	sprintf(string, "");
+	string[0] = 0;
 	
 	xml->tag.get_property("TYPE", string);
 
@@ -347,20 +347,20 @@ int Tracks::total_of(int type)
 	
 	for(Track *current = first; current; current = NEXT)
 	{
-		long unit_start = current->to_units(edl->local_session->get_selectionstart(1), 0);
-		mute_keyframe = 
-			(IntAuto*)current->automation->autos[AUTOMATION_MUTE]->get_prev_auto(
-			unit_start, 
-			PLAY_FORWARD,
-			(Auto* &)mute_keyframe);
-
-		result += 
-			(current->play && type == PLAY) ||
-			(current->record && type == RECORD) ||
-			(current->gang && type == GANG) ||
-			(current->draw && type == DRAW) ||
-			(mute_keyframe->value && type == MUTE) ||
-			(current->expand_view && type == EXPAND);
+		if(type == MUTE)
+		{
+			int64_t unit_start = current->to_units(edl->local_session->get_selectionstart(1), 0);
+			result += ((IntAutos*)current->automation->autos[AUTOMATION_MUTE])->get_automation_constant(unit_start, unit_start);
+		}
+		else
+		{
+			result +=
+				(current->play && type == PLAY) ||
+				(current->record && type == RECORD) ||
+				(current->gang && type == GANG) ||
+				(current->draw && type == DRAW) ||
+				(current->expand_view && type == EXPAND);
+		}
 	}
 	return result;
 }
@@ -536,7 +536,7 @@ int Tracks::dump()
 {
 	for(Track* current = first; current; current = NEXT)
 	{
-		printf("  Track: %x\n", current);
+		printf("  Track: %p\n", current);
 		current->dump();
 		printf("\n");
 	}

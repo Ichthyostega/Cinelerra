@@ -211,6 +211,7 @@ int File::get_options(FormatTools *format,
 				audio_options, 
 				video_options);
 			break;
+#ifdef HAVE_OPENEXR
 		case FILE_EXR:
 		case FILE_EXR_LIST:
 			FileEXR::get_parameters(parent_window, 
@@ -219,6 +220,7 @@ int File::get_options(FormatTools *format,
 				audio_options, 
 				video_options);
 			break;
+#endif
 	        case FILE_YUV:
 			FileYUV::get_parameters(parent_window,
 				asset,
@@ -361,7 +363,11 @@ int File::open_file(Preferences *preferences,
 			}
 
 			char test[16];
-			fread(test, 16, 1, stream);
+			if(fread(test, 16, 1, stream) != 1)
+			{
+				fclose(stream);
+				return 1;
+			}
 
 			if(FileDV::check_sig(this->asset))
 			{
@@ -390,6 +396,7 @@ int File::open_file(Preferences *preferences,
 				file = new FileJPEG(this->asset, this);
 			}
 			else
+#ifdef HAVE_OPENEXR
 			if(FileEXR::check_sig(this->asset, test))
 			{
 // EXR file
@@ -397,6 +404,7 @@ int File::open_file(Preferences *preferences,
 				file = new FileEXR(this->asset, this);
 			}
 			else
+#endif
 			if(FileYUV::check_sig(this->asset))
 			{
 // YUV file
@@ -500,12 +508,12 @@ int File::open_file(Preferences *preferences,
 		case FILE_JPEG_LIST:
 			file = new FileJPEG(this->asset, this);
 			break;
-
+#ifdef HAVE_OPENEXR
 		case FILE_EXR:
 		case FILE_EXR_LIST:
 			file = new FileEXR(this->asset, this);
 			break;
-
+#endif
 		case FILE_YUV:
 			file = new FileYUV(this->asset, this);
 			break;
@@ -657,7 +665,7 @@ int File::start_video_thread(int64_t buffer_size,
 	return 0;
 }
 
-int File::start_video_decode_thread()
+void File::start_video_decode_thread()
 {
 // Currently, CR2 is the only one which won't work asynchronously, so
 // we're not using a virtual function yet.
@@ -831,7 +839,7 @@ int File::set_audio_position(int64_t position, float base_samplerate)
 		result = file->set_audio_position(current_sample);
 
 		if(result)
-			printf("File::set_audio_position position=%d base_samplerate=%f asset=%p asset->sample_rate=%d\n",
+			printf("File::set_audio_position position=%jd base_samplerate=%f asset=%p asset->sample_rate=%d\n",
 				position, base_samplerate, asset, asset->sample_rate);
 	}
 
@@ -1192,10 +1200,12 @@ int File::strtoformat(ArrayList<PluginServer*> *plugindb, char *format)
 	if(!strcasecmp(format, _(JPEG_NAME))) return FILE_JPEG;
 	else
 	if(!strcasecmp(format, _(JPEG_LIST_NAME))) return FILE_JPEG_LIST;
+#ifdef HAVE_OPENEXR
 	else
 	if(!strcasecmp(format, _(EXR_NAME))) return FILE_EXR;
 	else
 	if(!strcasecmp(format, _(EXR_LIST_NAME))) return FILE_EXR_LIST;
+#endif
 	else
 	if(!strcasecmp(format, _(YUV_NAME))) return FILE_YUV;
 	else
@@ -1273,12 +1283,14 @@ char* File::formattostr(ArrayList<PluginServer*> *plugindb, int format)
 		case FILE_CR2:
 			return _(CR2_NAME);
 			break;
+#ifdef HAVE_OPENEXR
 		case FILE_EXR:
 			return _(EXR_NAME);
 			break;
 		case FILE_EXR_LIST:
 			return _(EXR_LIST_NAME);
 			break;
+#endif
 		case FILE_YUV:
 			return _(YUV_NAME);
 			break;
@@ -1456,12 +1468,12 @@ int File::get_best_colormodel(Asset *asset, int driver)
 		case FILE_JPEG_LIST:
 			return FileJPEG::get_best_colormodel(asset, driver);
 			break;
-
+#ifdef HAVE_OPENEXR
 		case FILE_EXR:
 		case FILE_EXR_LIST:
 			return FileEXR::get_best_colormodel(asset, driver);
 			break;
-		
+#endif
 		case FILE_YUV:
 			return FileYUV::get_best_colormodel(asset, driver);
 			break;
@@ -1534,8 +1546,10 @@ int File::supports_video(int format)
 		case FILE_JPEG:
 		case FILE_JPEG_LIST:
 		case FILE_CR2:
+#ifdef HAVE_OPENEXR
 		case FILE_EXR:
 		case FILE_EXR_LIST:
+#endif
 	        case FILE_YUV:
 		case FILE_PNG:
 		case FILE_PNG_LIST:
@@ -1597,8 +1611,10 @@ char* File::get_tag(int format)
 		case FILE_AU:           return "au";
 		case FILE_AVI:          return "avi";
 		case FILE_RAWDV:        return "dv";
+#ifdef HAVE_OPENEXR
 		case FILE_EXR:          return "exr";
 		case FILE_EXR_LIST:     return "exr";
+#endif
 		case FILE_JPEG:         return "jpg";
 		case FILE_JPEG_LIST:    return "jpg";
 		case FILE_MOV:          return "mov";

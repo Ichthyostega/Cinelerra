@@ -41,11 +41,8 @@
 #include "picture.inc"
 #include "vdevicebase.inc"
 #include "vdevicebuz.inc"
-#include "vdevicelml.inc"
 #include "vdevicev4l.inc"
 #include "vdevicex11.inc"
-#include "videoconfig.inc"
-#include "videowindow.inc"
 #ifdef HAVE_FIREWIRE
 #include "audio1394.inc"
 #include "device1394output.inc"
@@ -71,10 +68,10 @@ public:
 	~KeepaliveThread();
 
 	void run();
-	int reset_keepalive();   // Call after frame capture to reset counter
+	void reset_keepalive();   // Call after frame capture to reset counter
 	int get_failed();
-	int start_keepalive();
-	int stop();
+	void start_keepalive();
+	void stop();
 
 	Timer timer;
 	int still_alive;
@@ -123,7 +120,7 @@ public:
 
 // Return codec to store on disk if compressed
 	void fix_asset(Asset *asset, int driver);
-	static char* drivertostr(int driver);
+	static const char* drivertostr(int driver);
 // Get the best colormodel for recording given the file format.
 // Must be called between open_input and read_buffer.
 	int get_best_colormodel(Asset *asset);
@@ -150,7 +147,7 @@ public:
 	int read_buffer(VFrame *frame);  // Read the next frame off the device
 	int has_signal();
 	int frame_to_vframe(VFrame *frame, unsigned char *input); // Translate the captured frame to a VFrame
-	int initialize();
+	void initialize();
 	ArrayList<Channel*>* get_inputs();
 // Create new input source if it doesn't match device_name.  
 // Otherwise return it.
@@ -174,7 +171,6 @@ public:
 // Get output buffer for playback using colormodel.
 // colormodel argument should be as close to best_colormodel as possible
 	void new_output_buffer(VFrame **output, int colormodel);
-	int wait_for_startup();
 	int wait_for_completion();
 	int output_visible();     // Whether the output is visible or not.
 	int stop_playback();

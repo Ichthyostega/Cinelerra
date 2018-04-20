@@ -39,7 +39,7 @@ public:
 		int y, 
 		int w, 
 		int rows, 
-		char *text, 
+		const char *text, 
 		int has_border = 1, 
 		int font = MEDIUMFONT);
 	BC_TextBox(int x, 
@@ -64,6 +64,14 @@ public:
 		int has_border = 1, 
 		int font = MEDIUMFONT,
 		int precision = 4);
+	BC_TextBox(int x, 
+		int y, 
+		int w, 
+		int rows, 
+		double text, 
+		int has_border = 1, 
+		int font = MEDIUMFONT,
+		int precision = 4);
 	virtual ~BC_TextBox();
 
 // Whenever the contents of the text change
@@ -71,9 +79,10 @@ public:
 // Whenever the position of the text changes
 	virtual int motion_event() { return 0; };
 	void set_selection(int char1, int char2, int ibeam);
-	int update(char *text);
+	int update(const char *text);
 	int update(int64_t value);
 	int update(float value);
+	int update(double value);
 	void disable();
 	void enable();
 	int get_enabled();
@@ -112,7 +121,7 @@ public:
 // Table of separators to skip.  Used by time textboxes
 // The separator format is "0000:0000".  Things not alnum are considered
 // separators.  The alnums are replaced by user text.
-	void set_separators(char *separators);
+	void set_separators(const char *separators);
 
 // 1 - selects text, -1 - deselects, 0 - do nothing
 // in all cases it returns text_selected after the operation
@@ -127,7 +136,7 @@ private:
 	void copy_selection(int clipboard_num);
 	void paste_selection(int clipboard_num);
 	void delete_selection(int letter1, int letter2, int text_len);
-	void insert_text(char *string);
+	void insert_text(const char *string);
 // Reformat text according to separators.
 // ibeam_left causes the ibeam to move left.
 	void do_separators(int ibeam_left);
@@ -166,7 +175,7 @@ private:
 	Timer *skip_cursor;
 // Used for custom formatting text boxes
 	int last_keypress;
-	char *separators;
+	const char *separators;
 };
 
 
@@ -183,7 +192,7 @@ public:
 		int y, 
 		int w,
 		int rows,
-		char *default_text);
+		const char *default_text);
 	virtual ~BC_ScrollTextBox();
 	void create_objects();
 	virtual int handle_event();
@@ -204,7 +213,7 @@ private:
 	BC_ScrollTextBoxText *text;
 	BC_ScrollTextBoxYScroll *yscroll;
 	BC_WindowBase *parent_window;
-	char *default_text;
+	const char *default_text;
 	int x, y, w, rows;
 };
 
@@ -238,7 +247,7 @@ class BC_PopupTextBox : public BC_RelocatableWidget
 public:
 	BC_PopupTextBox(BC_WindowBase *parent_window, 
 		ArrayList<BC_ListBoxItem*> *list_items,
-		char *default_text,
+		const char *default_text,
 		int x, 
 		int y, 
 		int text_w,
@@ -252,7 +261,7 @@ public:
 	int get_y();
 	int get_w();
 	int get_h();
-	void update(char *text);
+	void update(const char *text);
 	void update_list(ArrayList<BC_ListBoxItem*> *data);
 	int  reposition_widget(int x, int y, int w = -1, int h = -1);
 	void reposition_window(int x, int y);
@@ -262,7 +271,7 @@ public:
 
 private:
 	int x, y, text_w, list_h;
-	char *default_text;
+	const char *default_text;
 	ArrayList<BC_ListBoxItem*> *list_items;
 	BC_PopupTextBoxText *textbox;
 	BC_PopupTextBoxList *listbox;

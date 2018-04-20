@@ -130,7 +130,7 @@ void FileMOV::get_parameters(BC_WindowBase *parent_window,
 	BC_WindowBase* &format_window,
 	int audio_options,
 	int video_options,
-	char *locked_compressor)
+	const char *locked_compressor)
 {
 	fix_codecs(asset);
 	if(audio_options)
@@ -206,6 +206,7 @@ int FileMOV::reset_parameters_derived()
 	samples_correction = 0;
 	temp_float = 0;
 	temp_allocated = 0;
+	return 0;
 }
 
 
@@ -296,7 +297,7 @@ void FileMOV::asset_to_format()
 	fix_codecs(asset);
 
 // Fix up the Quicktime file.
-	quicktime_set_copyright(fd, _("Made with Cinelerra for Linux"));
+	quicktime_set_copyright(fd, _("Made with Cinelerra-CV for Linux"));
 	quicktime_set_info(fd, "Quicktime for Linux");
 
 	if(asset->audio_data)
@@ -863,7 +864,7 @@ int FileMOV::write_frames(VFrame ***frames, int len)
 					}
 					else
 					{
-						eprintf("data_size=%d\n", data_size);
+						eprintf("data_size=%ld\n", data_size);
 					}
 				}
 				else
@@ -1163,7 +1164,7 @@ int FileMOV::read_samples(double *buffer, int64_t len)
 }
 
 
-char* FileMOV::strtocompression(char *string)
+const char* FileMOV::strtocompression(const char *string)
 {
 	if(!strcasecmp(string, _(DIVX_NAME))) return QUICKTIME_DIVX;
 	if(!strcasecmp(string, _(H264_NAME))) return QUICKTIME_H264;
@@ -1203,7 +1204,7 @@ char* FileMOV::strtocompression(char *string)
 	return QUICKTIME_RAW;
 }
 
-char* FileMOV::compressiontostr(char *string)
+const char* FileMOV::compressiontostr(const char *string)
 {
 	if(match4(string, QUICKTIME_H263)) return _(H263_NAME);
 	if(match4(string, QUICKTIME_H264)) return _(H264_NAME);
@@ -1306,6 +1307,7 @@ int FileMOVThread::start_encoding()
 	set_synchronous(1);
 	input_lock->lock("FileMOVThread::start_encoding");
 	start();
+	return 0;
 }
 
 int FileMOVThread::stop_encoding()
@@ -1314,11 +1316,13 @@ int FileMOVThread::stop_encoding()
 	input_lock->unlock();
 	join();
 	if(mjpeg) mjpeg_delete(mjpeg);
+	return 0;
 }
 
 int FileMOVThread::encode_buffer()
 {
 	input_lock->unlock();
+	return 0;
 }
 
 void FileMOVThread::run()
@@ -1676,7 +1680,7 @@ int MOVConfigAudioPopup::handle_event()
 
 MOVConfigVideo::MOVConfigVideo(BC_WindowBase *parent_window, 
 	Asset *asset, 
-	char *locked_compressor)
+	const char *locked_compressor)
  : BC_Window(PROGRAM_NAME ": Video Compression",
  	parent_window->get_abs_cursor_x(1),
  	parent_window->get_abs_cursor_y(1),
@@ -1838,7 +1842,7 @@ void MOVConfigVideo::update_parameters()
 	reset();
 
 
-	char *vcodec = asset->vcodec;
+	const char *vcodec = asset->vcodec;
 	if(locked_compressor) vcodec = locked_compressor;
 
 

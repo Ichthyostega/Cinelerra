@@ -64,16 +64,24 @@ void FileTIFF::get_parameters(BC_WindowBase *parent_window,
 
 int FileTIFF::check_sig(Asset *asset)
 {
+	int rs;
 	FILE *stream = fopen(asset->path, "rb");
 
 	if(stream)
 	{
 		char test[10];
-		fread(test, 10, 1, stream);
+		rs = fread(test, 10, 1, stream) != 1;
 		fclose(stream);
+
+		if(rs)
+			return 0;
 
 		if(test[0] == 'I' && test[1] == 'I')
 		{
+			// Reject cr2, libtif fails with it
+			if(test[4] == 0x10 && !test[5] && !test[6] && !test[7] &&
+					test[8] == 'C' && test[9] == 'R')
+				return 0;
 			return 1;
 		}
 		else
@@ -98,22 +106,22 @@ int FileTIFF::check_sig(Asset *asset)
 	return 0;
 }
 
-char* FileTIFF::compression_to_str(int value)
+const char* FileTIFF::compression_to_str(int value)
 {
 	switch(value)
 	{
-		case FileTIFF::NONE: return "None"; break;
+		case FileTIFF::NONE: return _("None"); break;
 		case FileTIFF::LZW: return "LZW"; break;
 		case FileTIFF::PACK_BITS: return "Pack Bits"; break;
 		case FileTIFF::DEFLATE: return "Deflate"; break;
 		case FileTIFF::JPEG: return "JPEG"; break;
 		default: 
-			return "None"; 
+			return _("None");
 			break;
 	}
 }
 
-char* FileTIFF::cmodel_to_str(int value)
+const char* FileTIFF::cmodel_to_str(int value)
 {
 	switch(value)
 	{
@@ -602,12 +610,12 @@ int TIFFConfigVideo::create_objects()
 {
 	int x = 10, y = 10;
 
-	add_subwindow(new BC_Title(x, y, "Colorspace:"));
+	add_subwindow(new BC_Title(x, y, _("Colorspace:")));
 	TIFFColorspace *menu1;
 	add_subwindow(menu1 = new TIFFColorspace(this, x + 150, y, 200));
 	menu1->create_objects();
 	y += 40;
-	add_subwindow(new BC_Title(x, y, "Compression:"));
+	add_subwindow(new BC_Title(x, y, _("Compression:")));
 	TIFFCompression *menu2;
 	add_subwindow(menu2 = new TIFFCompression(this, x + 150, y, 200));
 	menu2->create_objects();

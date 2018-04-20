@@ -231,12 +231,12 @@ public:
 	void put_shader(unsigned int handle, char *title);
 	int get_opengl_server_version();
 
-	int flash(int x, int y, int w, int h, int flush = 1);
-	int flash(int flush = 1);
+	void flash(int x, int y, int w, int h, int flush = 1);
+	void flash(int flush = 1);
 	void flush();
 	void sync_display();
 // Lock out other threads
-	int lock_window(char *location = 0);
+	int lock_window(const char *location = 0);
 	int unlock_window();
 	int get_window_lock();
 
@@ -295,8 +295,8 @@ public:
 	BC_Pixmap* get_bg_pixmap();
 	int get_text_ascent(int font);
 	int get_text_descent(int font);
-	int get_text_height(int font, char *text = 0);
-	int get_text_width(int font, char *text, int length = -1);
+	int get_text_height(int font, const char *text = 0);
+	int get_text_width(int font, const char *text, int length = -1);
 	BC_Clipboard* get_clipboard();
 	void set_dragging(int value);
 	int set_w(int w);
@@ -346,10 +346,10 @@ public:
 	void draw_box(int x, int y, int w, int h, BC_Pixmap *pixmap = 0);
 	void draw_circle(int x, int y, int w, int h, BC_Pixmap *pixmap = 0);
 	void draw_disc(int x, int y, int w, int h, BC_Pixmap *pixmap = 0);
-	void draw_text(int x, int y, char *text, int length = -1, BC_Pixmap *pixmap = 0);
+	void draw_text(int x, int y, const char *text, int length = -1, BC_Pixmap *pixmap = 0);
 	void draw_xft_text(int x, 
 		int y, 
-		char *text, 
+		const char *text, 
 		int length, 
 		BC_Pixmap *pixmap,
 		int x2,
@@ -357,7 +357,7 @@ public:
 		int y2,
 		int j,
 		int i);
-	void draw_center_text(int x, int y, char *text, int length = -1);
+	void draw_center_text(int x, int y, const char *text, int length = -1);
 	void draw_line(int x1, int y1, int x2, int y2, BC_Pixmap *pixmap = 0);
 	void draw_polygon(ArrayList<int> *x, ArrayList<int> *y, BC_Pixmap *pixmap = 0);
 	void draw_rectangle(int x, int y, int w, int h);
@@ -467,7 +467,7 @@ public:
 	void set_inverse();
 	void set_background(VFrame *bitmap);
 // Change the window title.  The title is translated internally.
-	void set_title(char *text);
+	void set_title(const char *text);
 	char* get_title();
 	void start_video();
 	void stop_video();
@@ -537,7 +537,7 @@ public:
 	int set_repeat(int64_t duration);
 // Stop a repeat event from being dispatched.
 	int unset_repeat(int64_t duration);
-	int set_tooltip(char *text);
+	int set_tooltip(const char *text);
 	int show_tooltip(int w = -1, int h = -1);
 	int hide_tooltip();
 	int set_icon(VFrame *data);
@@ -558,7 +558,7 @@ public:
 private:
 // Create a window
 	virtual int create_window(BC_WindowBase *parent_window,
-				char *title, 
+				const char *title, 
 				int x,
 				int y,
 				int w, 
@@ -569,12 +569,12 @@ private:
 				int private_color, 
 				int hide,
 				int bg_color,
-				char *display_name,
+				const char *display_name,
 				int window_type,
 				BC_Pixmap *bg_pixmap,
 				int group_it);
 
-	static Display* init_display(char *display_name);
+	static Display* init_display(const char *display_name);
 // Get display from top level
 	Display* get_display();
 	int get_screen();
@@ -591,7 +591,7 @@ private:
 	int create_color(int color);
 	int create_shared_colors();
 // Get width of a single line.  Used by get_text_width
-	int get_single_text_width(int font, char *text, int length);
+	int get_single_text_width(int font, const char *text, int length);
 	int allocate_color_table();
 	int init_gc();
 	int init_fonts();
@@ -852,7 +852,7 @@ private:
 	int id;
 
 protected:
-	Atom create_xatom(char *atom_name);
+	Atom create_xatom(const char *atom_name);
 	int send_custom_xatom(xatom_event *event); 
 
 };

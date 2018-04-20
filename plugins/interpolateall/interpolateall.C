@@ -44,7 +44,7 @@ public:
 	InterpolateAllEffect(PluginServer *server);
 	~InterpolateAllEffect();
 
-	char* plugin_title();
+	const char* plugin_title();
 	int is_realtime();
 	int is_multichannel();
 	int get_parameters();
@@ -94,7 +94,7 @@ InterpolateAllEffect::~InterpolateAllEffect()
 
 
 
-char* InterpolateAllEffect::plugin_title() { return N_("Interpolate"); }
+const char* InterpolateAllEffect::plugin_title() { return N_("Interpolate"); }
 int InterpolateAllEffect::is_realtime() { return 0; }
 int InterpolateAllEffect::is_multichannel() { return 0; }
 

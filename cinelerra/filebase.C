@@ -65,15 +65,15 @@ int FileBase::close_file()
 	close_file_derived();
 	reset_parameters();
 	delete_ima4();
-}
-
-int FileBase::set_dither()
-{
-	dither = 1;
 	return 0;
 }
 
-int FileBase::reset_parameters()
+void FileBase::set_dither()
+{
+	dither = 1;
+}
+
+void FileBase::reset_parameters()
 {
 	dither = 0;
 	audio_buffer_in = 0;
@@ -162,7 +162,7 @@ int FileBase::get_row_pointers(unsigned char *buffer, unsigned char ***pointers,
 	}
 }
 
-int FileBase::match4(char *in, char *out)
+int FileBase::match4(const char *in, const char *out)
 {
 	if(in[0] == out[0] &&
 		in[1] == out[1] &&

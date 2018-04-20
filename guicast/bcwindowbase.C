@@ -270,7 +270,7 @@ int BC_WindowBase::initialize()
 			
 
 int BC_WindowBase::create_window(BC_WindowBase *parent_window,
-				char *title, 
+				const char *title, 
 				int x,
 				int y,
 				int w, 
@@ -281,7 +281,7 @@ int BC_WindowBase::create_window(BC_WindowBase *parent_window,
 				int private_color, 
 				int hide,
 				int bg_color,
-				char *display_name,
+				const char *display_name,
 				int window_type,
 				BC_Pixmap *bg_pixmap,
 				int group_it)
@@ -355,7 +355,7 @@ int BC_WindowBase::create_window(BC_WindowBase *parent_window,
 		vis = DefaultVisual(display, screen);
 		default_depth = DefaultDepth(display, screen);
 
-		client_byte_order = (*(u_int32_t*)"a   ") & 0x00000001;
+		client_byte_order = (*(const u_int32_t*)"a   ") & 0x00000001;
 		server_byte_order = (XImageByteOrder(display) == MSBFirst) ? 0 : 1;
 
 
@@ -437,8 +437,8 @@ int BC_WindowBase::create_window(BC_WindowBase *parent_window,
 			Atom ClientLeaderXAtom;
 			if (XGroupLeader == 0)
 				XGroupLeader = win;
-			char *instance_name = "cinelerra";
-			char *class_name = "Cinelerra";
+			char *instance_name = (char*)"cinelerra";
+			char *class_name = (char*)"Cinelerra";
 			XClassHint *class_hints = XAllocClassHint(); 
 			class_hints->res_name = instance_name;
 			class_hints->res_class = class_name;
@@ -573,7 +573,7 @@ int BC_WindowBase::create_window(BC_WindowBase *parent_window,
 	return 0;
 }
 
-Display* BC_WindowBase::init_display(char *display_name)
+Display* BC_WindowBase::init_display(const char *display_name)
 {
 	Display* display;
 
@@ -1422,7 +1422,7 @@ int BC_WindowBase::hide_tooltip()
 	return 0;
 }
 
-int BC_WindowBase::set_tooltip(char *text)
+int BC_WindowBase::set_tooltip(const char *text)
 {
 	strcpy(this->tooltip_text, text);
 // Update existing tooltip if it is visible
@@ -1439,7 +1439,7 @@ int BC_WindowBase::set_repeat(int64_t duration)
 {
 	if(duration <= 0)
 	{
-		printf("BC_WindowBase::set_repeat duration=%d\n", duration);
+		printf("BC_WindowBase::set_repeat duration=%jd\n", duration);
 		return 0;
 	}
 	if(window_type != MAIN_WINDOW) return top_level->set_repeat(duration);
@@ -1538,7 +1538,7 @@ int BC_WindowBase::send_custom_xatom(xatom_event *event)
 
 
 
-Atom BC_WindowBase::create_xatom(char *atom_name)
+Atom BC_WindowBase::create_xatom(const char *atom_name)
 {
 	return XInternAtom(display, atom_name, False);
 }
@@ -2181,7 +2181,7 @@ XFontSet BC_WindowBase::get_fontset(int font)
 
 	if(get_resources()->use_fontset)
 	{
-		switch(font)
+		switch(font & 0xff)
 		{
 			case SMALLFONT:  fs = top_level->smallfontset; break;
 			case LARGEFONT:  fs = top_level->largefontset; break;
@@ -2269,7 +2269,7 @@ XFontSet BC_WindowBase::get_curr_fontset(void)
 	return 0;
 }
 
-int BC_WindowBase::get_single_text_width(int font, char *text, int length)
+int BC_WindowBase::get_single_text_width(int font, const char *text, int length)
 {
 #ifdef HAVE_XFT
 	if(get_resources()->use_xft && get_xft_struct(font))
@@ -2305,7 +2305,7 @@ int BC_WindowBase::get_single_text_width(int font, char *text, int length)
 	}
 }
 
-int BC_WindowBase::get_text_width(int font, char *text, int length)
+int BC_WindowBase::get_text_width(int font, const char *text, int length)
 {
 	int i, j, w = 0, line_w = 0;
 	if(length < 0) length = strlen(text);
@@ -2405,7 +2405,7 @@ int BC_WindowBase::get_text_descent(int font)
 	}
 }
 
-int BC_WindowBase::get_text_height(int font, char *text)
+int BC_WindowBase::get_text_height(int font, const char *text)
 {
 	if(!text) return get_text_ascent(font) + get_text_descent(font);
 
@@ -2614,7 +2614,7 @@ BC_WidgetGrid* BC_WindowBase::add_widgetgrid(BC_WidgetGrid *widgetgrid)
 }
 
 
-int BC_WindowBase::flash(int x, int y, int w, int h, int flush)
+void BC_WindowBase::flash(int x, int y, int w, int h, int flush)
 {
 	set_opaque();
 	XSetWindowBackgroundPixmap(top_level->display, win, pixmap->opaque_pixmap);
@@ -2629,10 +2629,9 @@ int BC_WindowBase::flash(int x, int y, int w, int h, int flush)
 
 	if(flush)
 		this->flush();
-	return 0;
 }
 
-int BC_WindowBase::flash(int flush)
+void BC_WindowBase::flash(int flush)
 {
 	flash(-1, -1, -1, -1, flush);
 }
@@ -2652,7 +2651,7 @@ int BC_WindowBase::get_window_lock()
 	return top_level->window_lock;
 }
 
-int BC_WindowBase::lock_window(char *location) 
+int BC_WindowBase::lock_window(const char *location) 
 {
 	if(top_level && top_level != this)
 	{
@@ -3316,7 +3315,7 @@ void BC_WindowBase::set_background(VFrame *bitmap)
 	draw_background(0, 0, w, h);
 }
 
-void BC_WindowBase::set_title(char *text)
+void BC_WindowBase::set_title(const char *text)
 {
 	XSetStandardProperties(top_level->display, top_level->win, text, text, None, 0, 0, 0); 
 	strcpy(this->title, _(text));

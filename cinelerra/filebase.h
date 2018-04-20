@@ -51,7 +51,7 @@ public:
 
 
 	int get_mode(char *mode, int rd, int wr);
-	int reset_parameters();
+	void reset_parameters();
 
 
 
@@ -62,8 +62,6 @@ public:
 			int video_options,
 			int lock_compressor) {};
 
-
-
 	virtual int get_index(char *index_path) { return 1; };
 	virtual int check_header() { return 0; };  // Test file to see if it is of this type.
 	virtual int reset_parameters_derived() {};
@@ -71,7 +69,7 @@ public:
 	virtual int open_file(int rd, int wr) {};
 	virtual int close_file();
 	virtual int close_file_derived() {};
-	int set_dither();
+	void set_dither();
 	virtual int seek_end() { return 0; };
 	virtual int seek_start() { return 0; };
 	virtual int64_t get_video_position() { return 0; };
@@ -147,7 +145,7 @@ protected:
 // allocate a buffer for translating video to VFrame
 	int get_video_buffer(unsigned char **buffer, int depth); // video
 	int get_row_pointers(unsigned char *buffer, unsigned char ***pointers, int depth);
-	static int match4(char *in, char *out);   // match 4 bytes for a quicktime type
+	static int match4(const char *in, const char *out);   // match 4 bytes for a quicktime type
 
 	int64_t ima4_samples_to_bytes(int64_t samples, int channels);
 	int64_t ima4_bytes_to_samples(int64_t bytes, int channels);

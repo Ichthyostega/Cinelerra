@@ -212,7 +212,7 @@ SET_TRACE
 	return 0;
 }
 
-int VDevicePrefs::create_dvb_objs()
+void VDevicePrefs::create_dvb_objs()
 {
 	int x1 = x + menu->get_w() + 5;
 	dialog->add_subwindow(device_title = new BC_Title(x1, y, _("Host:")));
@@ -519,7 +519,7 @@ char* VDriverMenu::driver_to_string(int driver)
 			break;
 #endif
 		default:
-			sprintf(string, "");
+			string[0] = 0;
 	}
 	return string;
 }
@@ -561,7 +561,7 @@ int VDriverMenu::create_objects()
 }
 
 
-VDriverItem::VDriverItem(VDriverMenu *popup, char *text, int driver)
+VDriverItem::VDriverItem(VDriverMenu *popup, const char *text, int driver)
  : BC_MenuItem(text)
 {
 	this->popup = popup;
@@ -592,6 +592,7 @@ VDeviceTextBox::VDeviceTextBox(int x, int y, char *output)
 int VDeviceTextBox::handle_event() 
 { 
 	strcpy(output, get_text()); 
+	return 1;
 }
 
 VDeviceTumbleBox::VDeviceTumbleBox(VDevicePrefs *prefs, 

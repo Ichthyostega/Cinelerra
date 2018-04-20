@@ -63,7 +63,7 @@ private:
 	int create_esound_objs();
 	int create_firewire_objs();
 	int create_alsa_objs();
-	int create_cine_objs();
+	void create_cine_objs();
 
 	int delete_oss_objs();
 	int delete_esound_objs();
@@ -123,7 +123,7 @@ public:
 class ADriverItem : public BC_MenuItem
 {
 public:
-	ADriverItem(ADriverMenu *popup, char *text, int driver);
+	ADriverItem(ADriverMenu *popup, const char *text, int driver);
 	~ADriverItem();
 	int handle_event();
 	ADriverMenu *popup;

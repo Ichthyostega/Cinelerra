@@ -31,8 +31,8 @@ static int signal_done = 0;
 static int table_id = 0;
 
 static bc_locktrace_t* new_bc_locktrace(void *ptr, 
-	char *title, 
-	char *location)
+	const char *title, 
+	const char *location)
 {
 	bc_locktrace_t *result = (bc_locktrace_t*)malloc(sizeof(bc_locktrace_t));
 	result->ptr = ptr;
@@ -51,10 +51,10 @@ typedef struct
 {
 	int size;
 	void *ptr;
-	char *location;
+	const char *location;
 } bc_buffertrace_t;
 
-static bc_buffertrace_t* new_bc_buffertrace(int size, void *ptr, char *location)
+static bc_buffertrace_t* new_bc_buffertrace(int size, void *ptr, const char *location)
 {
 	bc_buffertrace_t *result = (bc_buffertrace_t*)malloc(sizeof(bc_buffertrace_t));
 	result->size = size;
@@ -268,13 +268,13 @@ void BC_Signals::delete_temps()
 	pthread_mutex_unlock(lock);
 }
 
-void BC_Signals::set_temp(char *string)
+void BC_Signals::set_temp(const char *string)
 {
 	char *new_string = strdup(string);
 	append_table(&temp_files, new_string);
 }
 
-void BC_Signals::unset_temp(char *string)
+void BC_Signals::unset_temp(const char *string)
 {
 	for(int i = 0; i < temp_files.size; i++)
 	{
@@ -326,7 +326,7 @@ char* BC_Signals::sig_to_str(int number)
 
 #define TOTAL_TRACES 16
 
-void BC_Signals::new_trace(char *text)
+void BC_Signals::new_trace(const char *text)
 {
 	if(!global_signals) return;
 	pthread_mutex_lock(lock);
@@ -362,8 +362,8 @@ void BC_Signals::delete_traces()
 #define TOTAL_LOCKS 100
 
 int BC_Signals::set_lock(void *ptr, 
-	char *title, 
-	char *location)
+	const char *title, 
+	const char *location)
 {
 	if(!global_signals) return 0;
 	bc_locktrace_t *table = 0;
@@ -475,7 +475,7 @@ void BC_Signals::disable_memory()
 }
 
 
-void BC_Signals::set_buffer(int size, void *ptr, char* location)
+void BC_Signals::set_buffer(int size, void *ptr, const char* location)
 {
 	if(!global_signals) return;
 	if(!trace_memory) return;

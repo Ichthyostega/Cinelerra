@@ -110,7 +110,7 @@ public:
 
 	int load_defaults();
 	int save_defaults();
-	int set_filename(char *filename);
+	int set_filename(const char *filename);
 // Total vertical pixels in timeline
 	int get_tracks_height();
 // Total horizontal pixels in timeline
@@ -181,7 +181,7 @@ public:
 // Cause the project filename on the top of the window to be updated.
 // Not wanted for loading backups.
 		int update_filename = 1,
-		char *reel_name = "cin0000",
+		const char *reel_name = "cin0000",
 		int reel_number = 0,
 		int overwrite_reel = 0);
 	
@@ -282,11 +282,11 @@ public:
 	void cut();
 
 // Calculate aspect ratio from pixel counts
-	static int create_aspect_ratio(float &w, float &h, int width, int height);
+	static int create_aspect_ratio(double &w, double &h, int width, int height);
 // Calculate defaults path
 	static void create_defaults_path(char *string);
 
-	void delete_folder(char *folder);
+	void delete_folder(const char *folder);
 	void delete_inpoint();
 	void delete_outpoint();    
 
@@ -296,7 +296,6 @@ public:
 	void detach_transition(Transition *transition);
 	int feather_edits(int64_t feather_samples, int audio, int video);
 	int64_t get_feather(int audio, int video);
-	float get_aspect_ratio();
 	void insert(double position, 
 		FileXML *file,
 		int edit_labels,
@@ -339,8 +338,8 @@ public:
 	void move_tracks_down();
 	void move_track_up(Track *track);
 	void move_tracks_up();
+	void new_folder(const char *new_folder);
 	void mute_selection();
-	void new_folder(char *new_folder);
 	void overwrite(EDL *source);
 // For clipboard commands
 	void paste();

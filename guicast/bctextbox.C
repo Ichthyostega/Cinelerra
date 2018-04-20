@@ -29,6 +29,7 @@
 #include <ctype.h>
 #include "cursors.h"
 #include "keys.h"
+#include <inttypes.h>
 #include <math.h>
 #include "bctimer.h"
 #include "vframe.h"
@@ -44,7 +45,7 @@ BC_TextBox::BC_TextBox(int x,
 	int y, 
 	int w, 
 	int rows, 
-	char *text, 
+	const char *text, 
 	int has_border, 
 	int font)
  : BC_SubWindow(x, y, w, 0, -1)
@@ -65,7 +66,7 @@ BC_TextBox::BC_TextBox(int x,
 {
 	skip_cursor = 0;
 	reset_parameters(rows, has_border, font);
-	sprintf(this->text, "%lld", text);
+	sprintf(this->text, "%" PRId64, text);
 }
 
 BC_TextBox::BC_TextBox(int x, 
@@ -73,6 +74,22 @@ BC_TextBox::BC_TextBox(int x,
 	int w, 
 	int rows, 
 	float text, 
+	int has_border, 
+	int font,
+	int precision)
+ : BC_SubWindow(x, y, w, 0, -1)
+{
+	skip_cursor = 0;
+	this->precision = precision;
+	reset_parameters(rows, has_border, font);
+	sprintf(this->text, "%0.*f", precision, text);
+}
+
+BC_TextBox::BC_TextBox(int x, 
+	int y, 
+	int w, 
+	int rows, 
+	double text, 
 	int has_border, 
 	int font,
 	int precision)
@@ -195,7 +212,7 @@ void BC_TextBox::set_selection(int char1, int char2, int ibeam)
 	draw();
 }
 
-int BC_TextBox::update(char *text)
+int BC_TextBox::update(const char *text)
 {
 //printf("BC_TextBox::update 1 %d %s %s\n", strcmp(text, this->text), text, this->text);
 	int text_len = strlen(text);
@@ -214,7 +231,7 @@ int BC_TextBox::update(char *text)
 int BC_TextBox::update(int64_t value)
 {
 	char string[BCTEXTLEN];
-	sprintf(string, "%lld", value);
+	sprintf(string, "%" PRId64, value);
 
 
 	update(string);
@@ -222,6 +239,15 @@ int BC_TextBox::update(int64_t value)
 }
 
 int BC_TextBox::update(float value)
+{
+	char string[BCTEXTLEN];
+	sprintf(string, "%0.*f", precision, value);
+
+	update(string);
+	return 0;
+}
+
+int BC_TextBox::update(double value)
 {
 	char string[BCTEXTLEN];
 	sprintf(string, "%0.*f", precision, value);
@@ -875,10 +901,8 @@ int BC_TextBox::keypress_event()
 		case UP:
 			if(ibeam_letter > 0)
 			{
-//printf("BC_TextBox::keypress_event 1 %d %d %d\n", ibeam_x, ibeam_y, ibeam_letter);
 				int new_letter = get_cursor_letter(ibeam_x + text_x, 
 					ibeam_y + text_y - text_height);
-//printf("BC_TextBox::keypress_event 2 %d %d %d\n", ibeam_x, ibeam_y, new_letter);
 
 // Extend selection
 				if(top_level->shift_down())
@@ -1247,7 +1271,7 @@ void BC_TextBox::delete_selection(int letter1, int letter2, int text_len)
 	do_separators(1);
 }
 
-void BC_TextBox::insert_text(char *string)
+void BC_TextBox::insert_text(const char *string)
 {
 	int i, j, text_len, string_len;
 
@@ -1536,7 +1560,7 @@ void BC_TextBox::set_ibeam_letter(int number, int redraw)
 	}
 }
 
-void BC_TextBox::set_separators(char *separators)
+void BC_TextBox::set_separators(const char *separators)
 {
 	this->separators = separators;
 }
@@ -1561,7 +1585,7 @@ BC_ScrollTextBox::BC_ScrollTextBox(BC_WindowBase *parent_window,
 	int y, 
 	int w,
 	int rows,
-	char *default_text)
+	const char *default_text)
 {
 	this->parent_window = parent_window;
 	this->x = x;
@@ -1778,7 +1802,7 @@ int BC_PopupTextBoxList::handle_event()
 
 BC_PopupTextBox::BC_PopupTextBox(BC_WindowBase *parent_window, 
 		ArrayList<BC_ListBoxItem*> *list_items,
-		char *default_text,
+		const char *default_text,
 		int x, 
 		int y, 
 		int text_w,
@@ -1812,7 +1836,7 @@ int BC_PopupTextBox::create_objects()
 	return 0;
 }
 
-void BC_PopupTextBox::update(char *text)
+void BC_PopupTextBox::update(const char *text)
 {
 	textbox->update(text);
 }

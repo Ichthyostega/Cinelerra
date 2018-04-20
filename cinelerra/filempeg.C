@@ -36,6 +36,7 @@
 #include "language.h"
 #include "mainerror.h"
 #include "mwindow.inc"
+#include "pipe.h"
 #include "preferences.h"
 #include "vframe.h"
 #include "videodevice.inc"
@@ -43,6 +44,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <inttypes.h>
 
 #define MPEG_YUV420 0
 #define MPEG_YUV422 1
@@ -175,6 +177,7 @@ int FileMPEG::reset_parameters_derived()
 	lame_output_allocation = 0;
 	lame_fd = 0;
 	lame_started = 0;
+	return 0;
 }
 
 
@@ -321,6 +324,12 @@ SET_TRACE
 			char string[BCTEXTLEN];
 			sprintf(mjpeg_command, MJPEG_EXE);
 
+			if(Pipe::search_executable(MJPEG_EXE, mjpeg_command) == 0)
+			{
+				eprintf("Could not find encoder " MJPEG_EXE);
+				return 1;
+			}
+
 // Must disable interlacing if MPEG-1
 			switch (asset->vmpeg_preset)
 			{
@@ -329,7 +338,8 @@ SET_TRACE
 				case 2: asset->vmpeg_progressive = 1; break;
 			}
 
-
+// Be quiet
+			strcat(mjpeg_command, " -v0");
 
 // The current usage of mpeg2enc requires bitrate of 0 when quantization is fixed and
 // quantization of 1 when bitrate is fixed.  Perfectly intuitive.
@@ -434,6 +444,7 @@ SET_TRACE
 			if(!(mjpeg_out = popen(mjpeg_command, "w")))
 			{
 				eprintf("Error while opening \"%s\" for writing. \n%m\n", mjpeg_command);
+				return 1;
 			}
 
 			video_out = new FileMPEGVideo(this);
@@ -588,7 +599,7 @@ int FileMPEG::create_index()
 				int64_t eta = total_seconds - elapsed_seconds;
 				progress->update(bytes_processed, 1);
 				sprintf(string, 
-					"%sETA: %lldm%llds",
+					"%sETA: %" PRId64 "m%" PRId64 "s",
 					progress_title,
 					eta / 60,
 					eta % 60);
@@ -1295,12 +1306,12 @@ int FileMPEG::read_samples_float(float *buffer, int64_t len)
 
 
 
-char* FileMPEG::strtocompression(char *string)
+const char* FileMPEG::strtocompression(char *string)
 {
 	return "";
 }
 
-char* FileMPEG::compressiontostr(char *string)
+const char* FileMPEG::compressiontostr(char *string)
 {
 	return "";
 }

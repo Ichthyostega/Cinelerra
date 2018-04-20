@@ -185,14 +185,16 @@ int Tracks::delete_tracks()
 	{
 		done = 1;
 		for (Track* current = first;
-			current && done;
+			current;
 			current = NEXT)
 		{
 			if(current->record)
 			{
 				delete_track(current);
+				current = NULL;
 				total_deleted++;
 				done = 0;
+				break;
 			}
 		}
 	}
@@ -525,7 +527,7 @@ int Tracks::copy(double start,
 	double end, 
 	int all, 
 	FileXML *file, 
-	char *output_path)
+	const char *output_path)
 {
 // nothing selected
 	if(start == end && !all) return 1;
@@ -682,7 +684,7 @@ void Tracks::paste_automation(double selectionstart,
 	double frame_rate = edl->session->frame_rate;
 	int64_t sample_rate = edl->session->sample_rate;
 	char string[BCTEXTLEN];
-	sprintf(string, "");
+	string[0] = 0;
 
 // Search for start
 	do{

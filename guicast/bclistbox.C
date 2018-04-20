@@ -228,6 +228,8 @@ int BC_ListBoxToggle::cursor_leave_event(int *redraw_toggles)
 		state = BC_ListBoxToggle::TOGGLE_CHECKED;
 	else
 		state = BC_ListBoxToggle::TOGGLE_UP;
+
+    return 0;
 }
 
 int BC_ListBoxToggle::button_press_event()
@@ -331,7 +333,7 @@ BC_ListBox::BC_ListBox(int x,
 	int h,
 	int display_format,
 	ArrayList<BC_ListBoxItem*> *data,
-	char **column_titles,
+	const char **column_titles,
 	int *column_width,
 	int columns,
 	int yposition,
@@ -1470,7 +1472,7 @@ void BC_ListBox::delete_columns()
 }
 
 // Need to copy titles so EDL can change
-void BC_ListBox::set_columns(char **column_titles, 
+void BC_ListBox::set_columns(const char **column_titles, 
 	int *column_width, 
 	int columns)
 {
@@ -1509,7 +1511,7 @@ void BC_ListBox::set_columns(char **column_titles,
 
 
 int BC_ListBox::update(ArrayList<BC_ListBoxItem*> *data,
-	char **column_titles,
+	const char **column_titles,
 	int *column_widths,
 	int columns,
 	int xposition,
@@ -4313,7 +4315,7 @@ void BC_ListBox::draw_text_recursive(ArrayList<BC_ListBoxItem*> *data,
 
 
 
-int BC_ListBox::draw_border(int flash)
+void BC_ListBox::draw_border(int flash)
 {
 	BC_Resources *resources = top_level->get_resources();
 	gui->draw_3d_border(0, 
@@ -4334,10 +4336,9 @@ int BC_ListBox::draw_border(int flash)
 		gui->flash();
 		gui->flush();
 	}
-	return 0;
 }
 
-int BC_ListBox::draw_titles(int flash)
+void BC_ListBox::draw_titles(int flash)
 {
 	if(column_titles && display_format == LISTBOX_TEXT)
 	{

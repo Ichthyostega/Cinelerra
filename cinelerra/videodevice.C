@@ -45,12 +45,10 @@
 #include "vdevicev4l2.h"
 #include "vdevicev4l2jpeg.h"
 #include "vdevicex11.h"
-#include "videoconfig.h"
 #include "videodevice.h"
-#include "videowindow.h"
-#include "videowindowgui.h"
 #include "vframe.h"
 
+#include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
 
@@ -71,7 +69,7 @@ KeepaliveThread::~KeepaliveThread()
 	delete startup_lock;
 }
 
-int KeepaliveThread::start_keepalive()
+void KeepaliveThread::start_keepalive()
 {
 	startup_lock->lock("KeepaliveThread::start_keepalive 1");
 	start();
@@ -100,7 +98,7 @@ void KeepaliveThread::run()
 	}
 }
 
-int KeepaliveThread::reset_keepalive()
+void KeepaliveThread::reset_keepalive()
 {
 	still_alive = 1;
 }
@@ -110,7 +108,7 @@ int KeepaliveThread::get_failed()
 	if(failed) return 1; else return 0;
 }
 
-int KeepaliveThread::stop()
+void KeepaliveThread::stop()
 {
 	interrupted = 1;
 
@@ -151,7 +149,7 @@ VideoDevice::~VideoDevice()
 	delete picture_lock;
 }
 
-int VideoDevice::initialize()
+void VideoDevice::initialize()
 {
 	sharing = 0;
 	done_sharing = 0;
@@ -279,9 +277,9 @@ VDeviceBase* VideoDevice::new_device_base()
 	return 0;
 }
 
-static char* get_channeldb_path(VideoInConfig *vconfig_in)
+static const char* get_channeldb_path(VideoInConfig *vconfig_in)
 {
-	char *path = "";
+	const char *path = "";
 	switch(vconfig_in->driver)
 	{
 		case VIDEO4LINUX:
@@ -367,7 +365,7 @@ void VideoDevice::fix_asset(Asset *asset, int driver)
 }
 
 
-char* VideoDevice::drivertostr(int driver)
+const char* VideoDevice::drivertostr(int driver)
 {
 	switch(driver)
 	{
@@ -522,6 +520,7 @@ int VideoDevice::set_channel(Channel *channel)
 		if(input_base) return input_base->set_channel(channel);
 		if(output_base) return output_base->set_channel(channel);
 	}
+	return 0;
 }
 
 void VideoDevice::set_quality(int quality)
@@ -742,11 +741,13 @@ int VideoDevice::write_buffer(VFrame *output, EDL *edl)
 int VideoDevice::output_visible()
 {
 	if(output_base) return output_base->output_visible();
+	return 0;
 }
 
 BC_Bitmap* VideoDevice::get_bitmap()
 {
 	if(output_base) return output_base->get_bitmap();
+	return 0;
 }
 
 

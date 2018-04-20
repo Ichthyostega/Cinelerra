@@ -43,6 +43,7 @@
 #include <unistd.h>
 #include <string.h>
 #include <errno.h>
+#include <inttypes.h>
 
 // Needed for packaging engine
 #include "preferences.h"
@@ -133,7 +134,7 @@ int FileOGG::reset_parameters_derived()
 	stream = 0;
 	flush_lock = 0;
 	pcm_history = 0;
-
+	return 0;
 }
 
 static int read_buffer(FILE *in, sync_window_t *sw, int buflen)
@@ -387,7 +388,10 @@ int FileOGG::open_file(int rd, int wr)
 
 			/* create the remaining theora headers */
 			theora_comment_init (&tf->tc);
-			theora_comment_add_tag (&tf->tc, "ENCODER", PACKAGE_STRING);
+			/* cast to work around missing const in libtheora */
+			theora_comment_add_tag (&tf->tc,
+						const_cast<char*>("ENCODER"),
+						const_cast<char*>(PACKAGE_STRING));
 			theora_encode_comment (&tf->tc, &tf->op);
 			ogg_stream_packetin (&tf->to, &tf->op);
 			theora_comment_clear(&tf->tc);
@@ -1316,28 +1320,25 @@ int FileOGG::ogg_seek_to_keyframe(sync_window_t *sw, long serialno, int64_t fram
 
 int FileOGG::check_sig(Asset *asset)
 {
-
+	int rs;
 	FILE *fd = fopen(asset->path, "rb");
 
 // Test for "OggS"
 	fseek(fd, 0, SEEK_SET);
 	char data[4];
 
-	fread(data, 4, 1, fd);
+	rs = fread(data, 4, 1, fd) != 1;
 
-	if(data[0] == 'O' &&
+	fclose(fd);
+
+	if(!rs && data[0] == 'O' &&
 		data[1] == 'g' &&
 		data[2] == 'g' &&
 		data[3] == 'S')
 	{
-
-		fclose(fd);
-//		printf("Yay, we have an ogg file\n");
-
 		return 1;
 	}
 
-	fclose(fd);
 
 	return 0;
 	
@@ -1404,6 +1405,7 @@ int FileOGG::close_file_derived()
 //printf("FileOGG::close_file_derived(): 1\n");
 	if (stream) fclose(stream);
 	stream = 0;
+	return 0;
 }
 
 int64_t FileOGG::get_video_position()
@@ -1462,16 +1464,16 @@ int FileOGG::read_frame(VFrame *frame)
 	{
 		if (!ogg_seek_to_keyframe(tf->videosync, tf->to.serialno, next_frame_position, &ogg_frame_position))
 		{
-			eprintf("Error while seeking to frame's keyframe (frame: %lli, keyframe: %lli)\n", next_frame_position, ogg_frame_position);
+			eprintf("Error while seeking to frame's keyframe (frame: %" PRId64 ", keyframe: %" PRId64 ")\n", next_frame_position, ogg_frame_position);
 			return 1;
 		}
-//		printf("For frame: %lli, keyframe is: %lli\n", next_frame_position,ogg_frame_position);
+//		printf("For frame: %" PRId64 ", keyframe is: %" PRId64 "\n", next_frame_position,ogg_frame_position);
 		// skip frames must be > 0 here
 		decode_frames = next_frame_position - ogg_frame_position + 1; 
 		ogg_frame_position --; // ogg_frame_position is at last decoded frame, so it will point right 
 		if (decode_frames <= 0) 
 		{
-			eprintf("Error while seeking to keyframe, wrong keyframe number (frame: %lli, keyframe: %lli)\n", next_frame_position, ogg_frame_position);
+			eprintf("Error while seeking to keyframe, wrong keyframe number (frame: %" PRId64 ", keyframe: %" PRId64 ")\n", next_frame_position, ogg_frame_position);
 			return 1;
 			
 		}
@@ -1744,7 +1746,7 @@ int FileOGG::read_samples(double *buffer, int64_t len)
 	// now we can be sure our history is correct, just copy it out
 	if (next_sample_position < history_start || next_sample_position + len > history_start + history_size)
 	{
-		eprintf("History not aligned properly \n\tnext_sample_position: %lli, length: %i\n\thistory_start: %lli, length: %i\n", next_sample_position, len, history_start, history_size);
+		eprintf("History not aligned properly \n\tnext_sample_position: %ji, length: %ji\n\thistory_start: %ji, length: %ji\n", next_sample_position, len, history_start, history_size);
 		return 1;
 	}
 	float *input = pcm_history[file->current_channel] + next_sample_position - history_start;
@@ -2427,6 +2429,7 @@ int PackagingEngineOGG::create_packages_single_farm(
 			local_current_package++;
 		}
 	}
+	return 0;
 }
 
 RenderPackage* PackagingEngineOGG::get_package_single_farm(double frames_per_second, 

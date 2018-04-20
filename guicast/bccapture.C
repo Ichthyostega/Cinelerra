@@ -37,8 +37,7 @@
 // 24 bpp packed:         bgr
 // 24 bpp unpacked:       0bgr
 
-
-BC_Capture::BC_Capture(int w, int h, char *display_path)
+BC_Capture::BC_Capture(int w, int h, const char *display_path)
 {
 	this->w = w;
 	this->h = h;
@@ -56,7 +55,7 @@ BC_Capture::~BC_Capture()
 	XCloseDisplay(display);
 }
 
-int BC_Capture::init_window(char *display_path)
+int BC_Capture::init_window(const char *display_path)
 {
 	int bits_per_pixel;
 	if(display_path && display_path[0] == 0) display_path = NULL;
@@ -73,7 +72,7 @@ int BC_Capture::init_window(char *display_path)
 	rootwin = RootWindow(display, screen);
 	vis = DefaultVisual(display, screen);
 	default_depth = DefaultDepth(display, screen);
-	client_byte_order = (*(u_int32_t*)"a   ") & 0x00000001;
+	client_byte_order = (*(const u_int32_t*)"a   ") & 0x00000001;
 	server_byte_order = (XImageByteOrder(display) == MSBFirst) ? 0 : 1;
 	char *data = 0;
 	XImage *ximage;
