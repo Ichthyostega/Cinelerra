@@ -1,4 +1,8 @@
-BUILDDATE=$(shell date)
+BUILDDATE=$(shell LC_ALL=C date)
+
+if NEED_OPENEXR
+    EXR_FILE_NAME=fileexr.C
+endif
 
 if BUILDINFO_RECOMPILE
 BUILDINFO_NONRC_S=
@@ -15,34 +19,26 @@ aboutprefs.o: versioninfo.h
 
 versioninfo.h:
 endif
-	echo '#define BUILDDATE "$(BUILDDATE)"' > versioninfo.h
+	echo >versioninfo.h
+	echo '#define CINELERRA_VERSION "$(VERSION)"' >> versioninfo.h
+	echo >> versioninfo.h
+	echo '#define BUILDDATE "$(BUILDDATE)"' >> versioninfo.h
 
 if BUILDINFO_GIT
 GITVERSION=$(shell if [ -d $(top_srcdir)/.git ]; then cd $(top_srcdir); git rev-parse HEAD; else echo "unknown"; fi)
-	echo '#define REPOMAINTXT " GIT::$(GITVERSION) $(BUILDINFO_NONRC_S) (C) 2010 Heroine Virtual Ltd.\n@FFMPEG_EXTERNALTEXT@\nCompiled on $(BUILDDATE)"' >> versioninfo.h
-	echo '#define REPOABOUTPREFTXT "Git SHA-1: $(GITVERSION)"' >> versioninfo.h
-else
-
-if BUILDINFO_SVN
-SVNVERSION=$(shell if [ -d $(top_srcdir)/.svn ]; then svnversion $(top_srcdir); else echo "unknown"; fi)
-	echo '#define REPOMAINTXT      " SVN $(SVNVERSION) $(BUILDINFO_NONRC_S) (C) 2010 Heroine Virtual Ltd.\n@FFMPEG_EXTERNALTEXT@\nCompiled on $(BUILDDATE)"' >> versioninfo.h
-	echo '#define REPOABOUTPREFTXT "SVN Version: $(SVNVERSION) $(BUILDINFO_NONRC_S)"' >> versioninfo.h
+	echo '#define REPOMAINTXT "GIT::$(GITVERSION) $(BUILDINFO_NONRC_S)"' >> versioninfo.h
 
 else
+
 if BUILDINFO_CUST
 
-	echo '#define REPOMAINTXT      " $(BUILDINFO_CUSTOM_TAG) (C) 2010 Heroine Virtual Ltd.\n@FFMPEG_EXTERNALTEXT@\nCompiled on $(BUILDDATE)"' >> versioninfo.h
-	echo '#define REPOABOUTPREFTXT "$(BUILDINFO_CUSTOM_TAG)"' >> versioninfo.h
+	echo '#define REPOMAINTXT      "$(BUILDINFO_CUSTOM_TAG)"' >> versioninfo.h
 
-
-else # (no repository)
-
-
-	echo '#define REPOMAINTXT      "(C) 2010 Heroine Virtual Ltd.\nCompiled on $(BUILDDATE)"' >> versioninfo.h
-	echo '#define REPOABOUTPREFTXT ""' >> versioninfo.h
 endif
 endif
-endif
+	echo '#define COPYRIGHTTEXT1 "(C) 2006 Heroine Virtual Ltd."' >> versioninfo.h
+	echo '#define COPYRIGHTTEXT2 "(C) 2006-2018 The CinelerraCV Community"' >> versioninfo.h
+	echo '#define COMPILEDATE "Compiled on $(BUILDDATE)"' >> versioninfo.h
 	echo '#define FFMPEG_EXTERNALTEXT "@FFMPEG_EXTERNALTEXT@"' >> versioninfo.h
 
 SUBDIRS = data
@@ -148,7 +144,7 @@ cinelerra_SOURCES = aattachmentpoint.C \
 		    filecr2.C \
 		    filedv.C \
 		    fileogg.C \
-		    fileexr.C \
+		    $(EXR_FILE_NAME) \
 		    fileformat.C \
 		    filejpeg.C \
 		    filelist.C \
@@ -341,10 +337,10 @@ cinelerra_SOURCES = aattachmentpoint.C \
 	$(firewire_SOURCES)
 
 # guicast must come first, to pick up correct workarounds.h
-INCLUDES = \
+AM_CPPFLAGS = \
 	-I$(top_srcdir)/guicast \
 	-I$(top_srcdir)/quicktime \
-	-I$(top_srcdir)/libmpeg3
+	$(LIBMPEG3_CFLAGS)
 
 AM_CXXFLAGS = \
 	$(LARGEFILE_CFLAGS) \
@@ -355,7 +351,8 @@ AM_CXXFLAGS = \
 	$(OPENEXR_CFLAGS) \
 	$(LIBDV_CFLAGS) \
 	$(FFMPEG_CFLAGS) \
-	-DPLUGIN_DIR=\"$(plugindir)\"
+	-DPLUGIN_DIR=\"$(plugindir)\" \
+	-DLOCALE_DIR=\"$(localedir)\"
 
 AM_LDFLAGS = -export-dynamic
 
@@ -676,20 +673,26 @@ cinelerra_LDADD = \
 	data/libimagedata.a \
 	$(top_builddir)/mpeg2enc/libmpeg2enc.la \
 	$(top_builddir)/toolame-02l/libtoolame.la \
-	$(top_builddir)/quicktime/libquicktimehv.la \
-	$(top_builddir)/guicast/libguicast.la \
-	$(top_builddir)/libmpeg3/libmpeg3hv.la \
+	$(top_builddir)/quicktime/libquicktimecv.la \
+	$(top_builddir)/guicast/libguicastcv.la \
+	$(LIBMPEG3_LIBS) \
 	@FFMPEG_LIBS@ \
 	$(XIPH_LIBS) \
 	$(MP3LAME_LIBS) \
 	$(A52DEC_LIBS) \
 	$(OPENEXR_LIBS) \
+	$(OPENGL_LIBS) \
 	-lsndfile \
+	-lmp3lame \
 	-lpng -ljpeg -ltiff -lz \
 	$(SOUND_LDFLAGS) \
 	$(FIREWIRE_LDFLAGS) \
 	$(LIBDV_LIBS) \
 	-luuid \
-	$(MJPEG_LIBS)
+	$(MJPEG_LIBS) \
+	-lstdc++
 
 EXTRA_DIST = gen-feather-h
+
+clean-local:
+	$(RM) versioninfo.h

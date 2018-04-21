@@ -40,7 +40,7 @@ int main(int argc, char *argv[])
 		printf(
 "Dump information or extract audio to a 24 bit pcm file.\n"
 "Custom version included with Cinelerra-CV.\n"
-"Example: mpeg3dump_cv -a0 outputfile.pcm take1.vob\n"
+"Example: mpeg3cvdump -a0 outputfile.pcm take1.vob\n"
 		);
 		exit(1);
 	}

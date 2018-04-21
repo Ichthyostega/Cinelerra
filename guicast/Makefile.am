@@ -1,9 +1,9 @@
-lib_LTLIBRARIES = libguicast.la
-noinst_PROGRAMS=bootstrap
+lib_LTLIBRARIES = libguicastcv.la
+noinst_PROGRAMS = bootstrap pngtoh
 
-libguicast_la_LIBADD = $(OPENGL_LIBS) -lXxf86vm -lXv -lXext -lX11 $(X_EXTRA_LIBS)
-libguicast_la_LDFLAGS = $(X_LIBS) -version-info 1:0:0 
-libguicast_la_SOURCES = \
+libguicastcv_la_LIBADD = $(OPENGL_LIBS) -lXxf86vm -lXv -lXext -lX11 -lpng $(X_EXTRA_LIBS) $(XFT_LIBS)
+libguicastcv_la_LDFLAGS = $(X_LIBS) -version-info 1:0:0
+libguicastcv_la_SOURCES = \
 	bcbar.C \
 	bcbitmap.C \
 	bcbutton.C \
@@ -195,7 +195,7 @@ noinst_HEADERS = \
 	workarounds.h \
 	condition.h
 
-INCLUDES = -I$(top_srcdir)/quicktime
+AM_CPPFLAGS = -I$(top_srcdir)/quicktime
 AM_CXXFLAGS = $(LARGEFILE_CFLAGS) $(X_CFLAGS)
 LIBTOOL = $(SHELL) $(top_builddir)/libtool $(LTCXX_FLAGS)
 
@@ -208,8 +208,9 @@ bootstrap_LDADD =
 bootstrap.$(OBJEXT): bootstrap.c
 	$(CC) $(BOOTSTRAP_CFLAGS) -c $<
 
-EXTRA_DIST = images pngtoh.c
+pngtoh_SOURCES = pngtoh.c
 
-dist-hook:
-	-rm -rf $(distdir)/images/CVS
-	-rm -rf $(distdir)/images/7seg_small/CVS
+pngtoh$(EXEEXT): pngtoh.c
+	$(CC) -o pngtoh$(EXEEXT) $<
+
+EXTRA_DIST = images

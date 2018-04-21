@@ -5,15 +5,90 @@ AC_CANONICAL_SYSTEM
 # Test for minimal version of autoconf
 AC_PREREQ(2.57)
 
-AM_INIT_AUTOMAKE
+AM_INIT_AUTOMAKE([foreign subdir-objects])
+m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 AC_CONFIG_HEADER(config.h)
-AM_GNU_GETTEXT([external])
-AM_GNU_GETTEXT_VERSION(0.12.1)
+AC_CONFIG_MACRO_DIR([m4])
+IT_PROG_INTLTOOL
+GETTEXT_PACKAGE="AC_PACKAGE_NAME"
+AC_SUBST(GETTEXT_PACKAGE)
+AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE,"$GETTEXT_PACKAGE",[The prefix for our gettext translation domains])
+AM_ICONV
 AM_PROG_AS
 
 AC_LANG_CPLUSPLUS
 AC_LANG_C
 AC_PROG_CXX
+AX_CXX_COMPILE_STDCXX(11, ext, optional)
+
+dnl
+dnl GREP_CXXFLAGS(flag, cmd_if_missing, cmd_if_present)
+dnl
+AC_DEFUN([GREP_CXXFLAGS],
+[case "$CXXFLAGS" in
+"$1" | "$1 "* | *" $1" | *" $1 "* )
+  ifelse($#, 3, [$3], [:])
+  ;;
+*)
+  $2
+  ;;
+esac
+])
+dnl
+dnl GREP_CFLAGS(flag, cmd_if_missing, cmd_if_present)
+dnl
+AC_DEFUN([GREP_CFLAGS],
+[case "$CFLAGS" in
+"$1" | "$1 "* | *" $1" | *" $1 "* )
+  ifelse($#, 3, [$3], [:])
+  ;;
+*)
+  $2
+  ;;
+esac
+])
+
+if eval "test x$GCC = xyes"; then
+  for flag in \
+      -Wformat \
+      -Werror=format-security
+  do
+    GREP_CXXFLAGS($flag, [ CXXFLAGS="$CXXFLAGS $flag" ])
+  done
+  for flag in \
+      -Wformat \
+      -Werror=format-security
+  do
+    GREP_CFLAGS($flag, [ CFLAGS="$CFLAGS $flag" ])
+  done
+  AC_ARG_WITH([lots-of-warnings],
+	AC_HELP_STRING([--with-lots-of-warnings], [ask the compiler to enable lots of warning flags]),[
+  for flag in \
+      -Wall \
+      -Werror=format-security \
+      -Wextra \
+      -Wcast-qual \
+      -Wpointer-arith \
+      -Wreturn-type \
+      -Wunused \
+      -pedantic
+  do
+    GREP_CXXFLAGS($flag, [ CXXFLAGS="$CXXFLAGS $flag" ])
+  done
+  for flag in \
+      -Wall \
+      -Werror=format-security \
+      -Wextra \
+      -Wcast-qual \
+      -Wpointer-arith \
+      -Wreturn-type \
+      -Wunused \
+      -pedantic
+  do
+    GREP_CFLAGS($flag, [ CFLAGS="$CFLAGS $flag" ])
+  done
+])
+fi
 
 AC_ENABLE_SHARED
 AC_DISABLE_STATIC
@@ -25,6 +100,15 @@ LTCXX_FLAGS="--tag=CXX"
 AC_SUBST(LTC_FLAGS)
 AC_SUBST(LTCXX_FLAGS)
 
+dnl Check for nasm
+AC_CHECK_PROG(HAVE_NASM, nasm, yes)
+if test x$HAVE_NASM != "xyes"; then
+    AC_MSG_ERROR(nasm is missing. Please install it.)
+fi
+
+if test "$am_cv_func_iconv" = "yes"; then
+    funiconv=yes
+fi
 
 # hack for using nasm for .S files
 CCAS="\$(top_srcdir)/admin/nasm"
@@ -35,9 +119,8 @@ dnl Check for Video4Linux2
 AH_TEMPLATE(HAVE_VIDEO4LINUX2, [Define to 1 if Video4Linux2 is available.])
 AC_CHECK_HEADER([linux/videodev2.h], 
 	[AC_CHECK_MEMBER(struct v4l2_buffer.index, [AC_DEFINE(HAVE_VIDEO4LINUX2)], [],
-  		[#include <linux/time.h>
-#include <linux/videodev2.h>])],
-	[],[#include <linux/time.h>] )
+		[#include <linux/videodev2.h>])],
+	[],[] )
 
 ############## SPECIAL DIRECTORIES
 AC_ARG_WITH(plugindir,
@@ -67,6 +150,33 @@ fi
 AH_TEMPLATE(HAVE_LIBXXF86VM, [Define to 1 if libXxf86vm is available.])
 AC_DEFINE(HAVE_LIBXXF86VM)
 ############## END XLIB
+
+############## UTF8 suppport
+AC_CHECK_DECL([X_HAVE_UTF8_STRING],,[no_utf=yes],[#include <X11/Xlib.h>])
+if test "$no_utf" = "yes"; then
+	AC_MSG_ERROR([Cinelerra requires utf8 support in X Windows.])
+fi
+############## UTF8 suppport
+
+############## Freetype2 and fontconfig suppport
+PKG_CHECK_MODULES(FREETYPE,freetype2,[freetype2=yes],:)
+PKG_CHECK_MODULES(FONTCONFIG,fontconfig >= 2.4.2,[fontconfig=yes],:)
+if test "x$freetype2" != "xyes" -o "x$fontconfig" != "xyes"; then
+	AC_MSG_ERROR([Cinelerra requires freetype2 and fontconfig ver 2.4.2 or later])
+fi
+############## End of freetype2 and fontconfig suppport
+
+############# XFT
+AH_TEMPLATE(HAVE_XFT, [Define to 1 if libXft is available.])
+PKG_CHECK_MODULES(XFT, xft, [libxft=yes],:)
+if test "$libxft" = "yes"; then
+	AC_DEFINE(HAVE_XFT)
+	AC_SUBST(XFT_CFLAGS)
+	AC_SUBST(XFT_LIBS)
+	AC_DEFINE([PNG_SETJMP_NOT_SUPPORTED], [1], [Workaround to fix compile with xft])
+	CXXFLAGS="$XFT_CFLAGS $CXXFLAGS"
+fi
+############## END XFT
 
 ############## SOUND
 # the sound options are propagated by SOUND_CFLAGS and SOUND_LDFLAGS
@@ -156,23 +266,27 @@ AC_CHECK_LIB(jpeg,jpeg_start_decompress,[libjpeg=yes])
 AC_CHECK_HEADER(tiffio.h,[libtiffh=yes])
 AC_CHECK_LIB(tiff,TIFFOpen,[libtiff=yes])
 
-AC_ARG_ENABLE(freetype2,
-	AC_HELP_STRING([--enable-freetype2],[enables freetype2 usage (default is use pkg-config detection)]),
-	[ 
-	  [freetype2=yes] ],
-	[ PKG_CHECK_MODULES(FREETYPE,freetype2,[freetype2=yes],:) ])
 ############## END OF MISC LIBRARIES
 
-LARGEFILE_CFLAGS="-D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64"
+LARGEFILE_CFLAGS="-D_LARGEFILE_SOURCE -D_LARGEFILE64_SOURCE -D_FILE_OFFSET_BITS=64 -D__STDC_FORMAT_MACROS"
 AC_SUBST(LARGEFILE_CFLAGS)
 
 ############## A52DEC
 AC_CHECK_LIB(a52,a52_init,[liba52=yes])
 AC_CHECK_HEADER(a52dec/a52.h,[liba52h=yes])
+AH_TEMPLATE(A52_INIT_NEEDS_ARG, [Define to 1 if an argument must be passed to a52_init.])
 
 if test "x$liba52$liba52h" = "xyesyes"; then
     A52DEC_CFLAGS=
     A52DEC_LIBS=-la52
+    AC_MSG_CHECKING(whether a52_init requires an argument)
+    AC_TRY_COMPILE([
+	#include <stdint.h>
+	#include <a52dec/a52.h>],
+	[a52_init(0)],
+	a52_init_needs_arg=yes,a52_init_needs_arg=no)
+    AC_MSG_RESULT([$a52_init_needs_arg])
+    test "$a52_init_needs_arg" = yes && AC_DEFINE(A52_INIT_NEEDS_ARG)
 fi
 AC_SUBST(A52DEC_CFLAGS)
 AC_SUBST(A52DEC_LDFLAGS)
@@ -184,9 +298,14 @@ AC_CHECK_HEADERS(sndfile.h,[libsndfileh=yes])
 ############## END OF LIBSNDFILE
 
 ############## OpenEXR
+AH_TEMPLATE(HAVE_OPENEXR, [Define 1 if OpenEXR is used])
 PKG_CHECK_MODULES(OPENEXR, OpenEXR,[libOpenEXR=yes],:)
-AC_SUBST(OPENEXR_CFLAGS)
-AC_SUBST(OPENEXR_LIBS)
+if test "$libOpenEXR" = "yes"; then
+    AC_SUBST(OPENEXR_CFLAGS)
+    AC_SUBST(OPENEXR_LIBS)
+    AC_DEFINE(HAVE_OPENEXR)
+fi
+AM_CONDITIONAL(NEED_OPENEXR, test "x$libOpenEXR" = "xyes")
 ############## END OF OpenEXR
 
 ############## LIBFAAD, LIBFAAC
@@ -255,13 +374,56 @@ rm -f cinelerra/versioninfo.h > /dev/null 2>&1
 
 ############# END BUILDINFO display, (for displaying version / date)
 
-############# CSS SUPPORT IN LIBMPEG3
+############ external libmpeg3
+AC_ARG_WITH([external-libmpeg3], AC_HELP_STRING([--with-external-libmpeg3], [use external libmpeg3 library (experimental)]))
+
+if test "x$with_external_libmpeg3" = "xyes"; then
+	PKG_CHECK_MODULES(LIBMPEG3, libmpeg3,[libmpeg3_system=yes],:)
+	AC_CHECK_HEADER(mpeg3/libmpeg3.h)
+	# the mpeg3io_eof macro in mpeg3protos.h is used by mplexlo,
+	# make sure it is available
+	old_LIBS="$LIBS"
+	LIBS="$LIBS -lmpeg3"
+	AC_LINK_IFELSE([AC_LANG_PROGRAM(
+[[#include <mpeg3/libmpeg3.h>
+#include <mpeg3/mpeg3protos.h>
+void test() { mpeg3io_eof(0); }]])],
+	[libmpeg3_mpeg3io_eof=1], [libmpeg3_mpeg3io_eof=0])
+	LIBS="$old_LIBS"
+	unset old_LIBS
+
+	# Check if libmpeg3 1.7 or later is used.  It is needed for
+	# several functions not present in earlier versions.
+	AC_CHECK_LIB(mpeg3, mpeg3_open)
+	AC_TRY_LINK([#include <mpeg3/libmpeg3.h>],
+		[char *s; int e; mpeg3_open(s, &e);],
+		libmpeg3_open_return_error=1, libmpeg3_open_return_error=0)
+	if test 1 = $libmpeg3_open_return_error ; then
+		echo "external libmpeg3 version with mpeg3_open(char*, int*) (present in 1.7 or later) found"
+	else
+		echo "error: external libmpeg3 without mpeg3_open(char*, int*) (before version 1.7) found"
+		echo "error: Upgrade libmpeg3 or drop the --with-external-libmpeg3 configure flag."
+		exit 1
+fi
+else
+	LIBMPEG3_CFLAGS="-I\$(top_srcdir)/libmpeg3"
+	LIBMPEG3_LIBS="\$(top_builddir)/libmpeg3/libmpeg3cv.la"
+	libmpeg3_mpeg3io_eof=1
+	AC_SUBST(LIBMPEG3_CFLAGS)
+	AC_SUBST(LIBMPEG3_LIBS)
+fi
+
+AM_CONDITIONAL(HAVE_MPEG3IO_EOF, [test "x$libmpeg3_mpeg3io_eof" = "x1"])
+AM_CONDITIONAL(HAVE_LIBMPEG3_INTERNAL, [test "x$libmpeg3_system" != "xyes"])
+############# END external libmpeg3
+
+############# CSS SUPPORT IN INTERNAL LIBMPEG3
 if test "x$enable_css" = "xyes"; then
 	CSS_CFLAGS="-DHAVE_CSS"
 fi
 AC_SUBST(CSS_CFLAGS)
 AC_ARG_ENABLE(css, 
-							AC_HELP_STRING([--disable-css], [disable support for css in libmpeg3 (default=enabled)]),,
+	AC_HELP_STRING([--disable-css], [disable support for css in internal libmpeg3 (default=enabled)]),,
 							[ enable_css=$enableval ],
 							[ enable_css=yes ])
 ############## END OF CSS SUPPORT IN LIBMPEG3
@@ -444,8 +606,8 @@ AC_ARG_ENABLE(opengl,
 	AC_HELP_STRING([--disable-opengl],
 		[disables hardware accelerated rendering (default=autodetect, requires OpenGL 2.0)]),
 	[ enable_opengl=$enableval ],
-	[ enable_opengl=yes ])
-if test "x$enableval" = "xyes"; then
+	[ enable_opengl=auto ])
+if test "x$enable_opengl" = "xauto"; then
 	AC_CHECK_LIB([GL], [glUseProgram],
 		[OPENGL_LIBS="-lGL"; libGL=yes],
 # On SUSE/OpenSUSE, NVidia places the OpenGL 2.0 capable library in /usr/X11R6/lib
@@ -462,14 +624,30 @@ if test "x$enableval" = "xyes"; then
 		done
 		LIBS="$save_LIBS"
 	)
-fi
-if test "x$libGL" = "xyes"; then
-	enable_opengl=ok
-	OPENGL_LIBS="-lGLU $OPENGL_LIBS"
-	AC_DEFINE(HAVE_GL)
+	if test "x$libGL" = "xyes"; then
+		enable_opengl=ok
+		OPENGL_LIBS="-lGLU $OPENGL_LIBS"
+		AC_DEFINE(HAVE_GL)
+	fi
+else
+	if test "x$enable_opengl" = "xyes"; then
+		enable_opengl=ok
+		libGL=skip
+		OPENGL_LIBS="-lGLU -lGL"
+		AC_DEFINE(HAVE_GL)
+	fi
 fi
 AC_SUBST(OPENGL_LIBS)
 # END OpenGL
+
+############## ask for extra debug output from X
+AC_ARG_ENABLE(x-error-output,
+	AC_HELP_STRING([--enable-x-error-output], [enable output when X report errors (default=no)])
+	[],
+	[if test yes = "$enableval" ; then
+	AC_DEFINE(OUTPUT_X_ERROR, [1], [enable output when X report errors])
+fi])
+# END --enable-x-error-output
 
 ############## .png TO .o CONVERSION
 
@@ -493,95 +671,133 @@ AC_SUBST(OBJCOPYARCH, $ocarch)
 ############## END of .png TO .o CONVERSION
 
 
-AC_OUTPUT(Makefile cinelerra-cvs-current.spec po/Makefile.in \
+AC_OUTPUT(Makefile cinelerra-cvs-current.spec \
 	m4/Makefile \
-					libmpeg3/Makefile libmpeg3/video/Makefile libmpeg3/audio/Makefile \
-					quicktime/Makefile \
-					quicktime/encore50/Makefile \
-					mpeg2enc/Makefile toolame-02l/Makefile \
-					guicast/Makefile cinelerra/Makefile \
+	po/Makefile.in \
+	libmpeg3/Makefile \
+	libmpeg3/video/Makefile \
+	libmpeg3/audio/Makefile \
+	quicktime/Makefile \
+	quicktime/encore50/Makefile \
+	mpeg2enc/Makefile \
+	toolame-02l/Makefile \
+	guicast/Makefile \
+	cinelerra/Makefile \
 	cinelerra/data/Makefile \
 	mplexlo/Makefile \
-					plugins/colors/Makefile \
-					plugins/libfourier/Makefile \
-					plugins/libeffecttv/Makefile \
-					plugins/Makefile
-					plugins/1080to540/Makefile \
-					plugins/histogram/Makefile \
-					plugins/720to480/Makefile \
-					plugins/bandslide/Makefile \
-					plugins/bandwipe/Makefile 
-					plugins/blur/Makefile 
-					plugins/brightness/Makefile \
-					plugins/burn/Makefile plugins/parametric/Makefile plugins/aging/Makefile \
-					plugins/cdripper/Makefile \
-					plugins/chromakey/Makefile \
-					plugins/chromakeyhsv/Makefile \
-					plugins/colorbalance/Makefile \
-					plugins/compressor/Makefile \
-					plugins/crossfade/Makefile \
-					plugins/decimate/Makefile \
-					plugins/deinterlace/Makefile plugins/delayaudio/Makefile plugins/delayvideo/Makefile \
-					plugins/denoise/Makefile plugins/denoisefft/Makefile plugins/denoisevideo/Makefile \
-					plugins/denoisemjpeg/Makefile \
-					plugins/despike/Makefile plugins/dissolve/Makefile plugins/dot/Makefile \
-					plugins/fieldframe/Makefile plugins/flip/Makefile plugins/framefield/Makefile \
-					plugins/freeverb/Makefile plugins/freezeframe/Makefile plugins/gain/Makefile \
-	plugins/gamma/Makefile \
-					plugins/holo/Makefile plugins/huesaturation/Makefile \
-					plugins/interpolate/Makefile \
-					plugins/interpolateaudio/Makefile \
-					plugins/interpolatevideo/Makefile \
-					plugins/invertaudio/Makefile plugins/invertvideo/Makefile plugins/irissquare/Makefile \
-					plugins/ivtc/Makefile \
-	plugins/liveaudio/Makefile \
-	plugins/livevideo/Makefile \
-					plugins/loopaudio/Makefile \
-					plugins/loopvideo/Makefile \
-					plugins/motion/Makefile \
-					plugins/motionblur/Makefile \
-					plugins/normalize/Makefile \
-					plugins/oilpainting/Makefile \
-					plugins/overlay/Makefile \
-	plugins/overlayaudio/Makefile \
-					plugins/pitch/Makefile \
-					plugins/polar/Makefile \
-					plugins/reroute/Makefile
-					plugins/reframert/Makefile
-					plugins/reframe/Makefile plugins/resample/Makefile plugins/reverb/Makefile \
-					plugins/reverseaudio/Makefile plugins/reversevideo/Makefile plugins/rgb601/Makefile \
-					plugins/rotate/Makefile \
-					plugins/scale/Makefile \
-					plugins/denoiseseltempavg/Makefile \
-					plugins/shapewipe/Makefile \
-					plugins/sharpen/Makefile \
-					plugins/shiftinterlace/Makefile plugins/slide/Makefile plugins/spectrogram/Makefile \
-	plugins/suv/Makefile \
-	plugins/suv/data/Makefile \
-	plugins/bluedottheme/Makefile \
-	plugins/bluedottheme/data/Makefile \
+	plugins/Makefile \
 	plugins/defaulttheme/Makefile \
 	plugins/defaulttheme/data/Makefile \
-					plugins/swapchannels/Makefile \
-					plugins/synthesizer/Makefile \
-					plugins/threshold/Makefile \
-					plugins/timeavg/Makefile \
-					plugins/timestretch/Makefile plugins/titler/Makefile plugins/translate/Makefile \
-					plugins/unsharp/Makefile \
-					plugins/videoscope/Makefile plugins/wave/Makefile plugins/whirl/Makefile \
-					plugins/wipe/Makefile \
-					plugins/yuv/Makefile \
-					plugins/downsample/Makefile plugins/flash/Makefile plugins/gradient/Makefile \
-					plugins/level/Makefile plugins/linearblur/Makefile \
-					plugins/perspective/Makefile plugins/radialblur/Makefile plugins/zoomblur/Makefile \
-					plugins/timefront/Makefile \
-					plugins/svg/Makefile \
-					plugins/diffkey/Makefile \
-					plugins/fonts/Makefile \
-					image/Makefile)
+	plugins/bluedottheme/Makefile \
+	plugins/bluedottheme/data/Makefile \
+	plugins/suv/Makefile \
+	plugins/suv/data/Makefile \
+	plugins/libfourier/Makefile \
+	plugins/colors/Makefile \
+	plugins/libeffecttv/Makefile \
+	plugins/1080to540/Makefile \
+	plugins/720to480/Makefile \
+	plugins/aging/Makefile \
+	plugins/bandslide/Makefile \
+	plugins/bandwipe/Makefile \
+	plugins/blur/Makefile \
+	plugins/brightness/Makefile \
+	plugins/burn/Makefile \
+	plugins/cdripper/Makefile \
+	plugins/chromakey/Makefile \
+	plugins/chromakeyhsv/Makefile \
+	plugins/colorbalance/Makefile \
+	plugins/compressor/Makefile \
+	plugins/crossfade/Makefile \
+	plugins/decimate/Makefile \
+	plugins/deinterlace/Makefile \
+	plugins/delayaudio/Makefile \
+	plugins/delayvideo/Makefile \
+	plugins/denoise/Makefile \
+	plugins/denoisefft/Makefile \
+	plugins/denoisemjpeg/Makefile \
+	plugins/denoiseseltempavg/Makefile \
+	plugins/denoisevideo/Makefile \
+	plugins/despike/Makefile \
+	plugins/diffkey/Makefile \
+	plugins/dissolve/Makefile \
+	plugins/dot/Makefile \
+	plugins/downsample/Makefile \
+	plugins/fieldframe/Makefile \
+	plugins/flash/Makefile \
+	plugins/flip/Makefile \
+	plugins/framefield/Makefile \
+	plugins/freeverb/Makefile \
+	plugins/freezeframe/Makefile \
+	plugins/gain/Makefile \
+	plugins/gamma/Makefile \
+	plugins/gradient/Makefile \
+	plugins/histogram/Makefile \
+	plugins/holo/Makefile \
+	plugins/huesaturation/Makefile \
+	plugins/interpolate/Makefile \
+	plugins/interpolateaudio/Makefile \
+	plugins/interpolatevideo/Makefile \
+	plugins/invertaudio/Makefile \
+	plugins/invertvideo/Makefile \
+	plugins/irissquare/Makefile \
+	plugins/ivtc/Makefile \
+	plugins/level/Makefile \
+	plugins/linearblur/Makefile \
+	plugins/liveaudio/Makefile \
+	plugins/livevideo/Makefile \
+	plugins/loopaudio/Makefile \
+	plugins/loopvideo/Makefile \
+	plugins/motion/Makefile \
+	plugins/motionblur/Makefile \
+	plugins/normalize/Makefile \
+	plugins/oilpainting/Makefile \
+	plugins/overlay/Makefile \
+	plugins/overlayaudio/Makefile \
+	plugins/parametric/Makefile \
+	plugins/perspective/Makefile \
+	plugins/pitch/Makefile \
+	plugins/polar/Makefile \
+	plugins/radialblur/Makefile \
+	plugins/reframe/Makefile \
+	plugins/reframert/Makefile \
+	plugins/reroute/Makefile \
+	plugins/resample/Makefile \
+	plugins/reverb/Makefile \
+	plugins/reverseaudio/Makefile \
+	plugins/reversevideo/Makefile \
+	plugins/rgb601/Makefile \
+	plugins/rotate/Makefile \
+	plugins/scale/Makefile \
+	plugins/shapewipe/Makefile \
+	plugins/sharpen/Makefile \
+	plugins/shiftinterlace/Makefile \
+	plugins/slide/Makefile \
+	plugins/spectrogram/Makefile \
+	plugins/svg/Makefile \
+	plugins/swapchannels/Makefile \
+	plugins/synthesizer/Makefile \
+	plugins/threshold/Makefile \
+	plugins/timeavg/Makefile \
+	plugins/timefront/Makefile \
+	plugins/timestretch/Makefile \
+	plugins/titler/Makefile \
+	plugins/translate/Makefile \
+	plugins/unsharp/Makefile \
+	plugins/videoscope/Makefile \
+	plugins/wave/Makefile \
+	plugins/whirl/Makefile \
+	plugins/wipe/Makefile \
+	plugins/yuv/Makefile \
+	plugins/zoomblur/Makefile \
+	plugins/fonts/Makefile \
+	image/Makefile)
 
 succeeded=yes
-AC_DEFUN([RPT],[if test "x$$1" = "xyes"; then status=found; else status=missing; succeeded=no; fi
+AC_DEFUN([RPT],[if test "x$$1" = "xskip"; then status="not probed"
+elif test "x$$1" = "xyes"; then status=found
+else status=missing; succeeded=no
+fi
 echo "AC_HELP_STRING($2,$status)"])
 
 echo
@@ -591,7 +807,6 @@ RPT(libvorbis,libvorbis)
 RPT(libvorbisenc,libvorbisenc)
 RPT(libvorbisfile,libvorbisfile)
 RPT(libtheora,libtheora)
-RPT(libOpenEXR,OpenEXR)
 RPT(libdv,libdv)
 RPT(libpng,libpng)
 RPT(libjpeg,libjpeg libraries)
@@ -599,6 +814,8 @@ RPT(libjpegh,libjpeg headers)
 RPT(libtiff,libtiff libraries)
 RPT(libtiffh,libtiff headers)
 RPT(freetype2,FreeType 2)
+RPT(libxft,libXft library)
+RPT(funiconv,iconv function)
 RPT(libx264,libx264 libraries)
 RPT(libx264h,libx264 headers)
 RPT(libuuid,libuuid libraries)
@@ -640,6 +857,7 @@ ORPT(enable_firewire,Firewire,--disable-firewire,
 ORPT(enable_opengl,Hardware acceleration using OpenGL 2.0,--disable-opengl,
 	RPT(libGL,OpenGL 2.0 libraries)
 )
+RPT(libOpenEXR,OpenEXR)
 
 if test "x$mandatory" = "xno"; then
 	echo

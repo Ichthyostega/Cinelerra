@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
 		fprintf(stderr, "Table of contents generator version %d.%d.%d\n"
 			"Create a table of contents for a DVD or mpeg stream.\n"
 			"Custom version included with Cinelerra-CV.\n"
-			"Usage: mpeg3toc_cv <path> <output>\n"
+			"Usage: mpeg3cvtoc <path> <output>\n"
 			"\n"
 			"-v Print tracking information\n"
 			"\n"
@@ -36,7 +36,7 @@ int main(int argc, char *argv[])
 			"as the filename.  For renderfarms the filesystem prefix\n"
 			"should be / and the movie directory mounted under the same\n"
 			"directory on each node.\n\n"
-			"Example: mpeg3toc_cv -v /cdrom/video_ts/vts_01_0.ifo titanic.toc\n",
+			"Example: mpeg3cvtoc -v /cdrom/video_ts/vts_01_0.ifo titanic.toc\n",
 			mpeg3_major(),
 			mpeg3_minor(),
 			mpeg3_release());
@@ -266,7 +266,8 @@ int main(int argc, char *argv[])
 	if(argc < 3)
 	{
 		fprintf(stderr, "Create a table of contents for a DVD or mpeg stream.\n"
-			"	Usage: [-a audio streams] mpeg3toc <path> <output>\n"
+			"	Custom version included with Cinelerra-CV.\n"
+			"	Usage: [-a audio streams] mpeg3cvtoc <path> <output>\n"
 			"\n"
 			" -a override the number of audio streams to scan.  Must be less than\n"
 			"the total number of audio streams.\n"
@@ -276,7 +277,7 @@ int main(int argc, char *argv[])
 			"	as the filename.  For renderfarms the filesystem prefix\n"
 			"	should be / and the movie directory mounted under the same\n"
 			"	directory on each node.\n"
-			"Example: mpeg3toc /cd2/video_ts/vts_01_0.ifo titanic.toc\n");
+			"Example: mpeg3cvtoc /cd2/video_ts/vts_01_0.ifo titanic.toc\n");
 		exit(1);
 	}
 
