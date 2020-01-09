@@ -60,7 +60,7 @@ public:
 
 // ===================================== editing
 
-	int copy_derived(long start, long end, FileXML *xml);
+	void copy_derived(long start, long end, FileXML *xml);
 	int paste_derived(long start, long end, long total_length, FileXML *xml, int &current_channel);
 // use samples for paste_output
 	int paste_output(long startproject, long endproject, long startsource, long endsource, int layer, Asset *asset);
@@ -88,9 +88,9 @@ public:
 	BezierAutos *projector_autos;
 	long length();
 // rounds up to integer frames for editing
-	long samples_to_units(long &samples);
+	void samples_to_units(long &samples);
 // no rounding for drawing
-	int get_dimensions(float &view_start, float &view_units, float &zoom_units);
+	void get_dimensions(float &view_start, float &view_units, float &zoom_units);
 
 private:
 };

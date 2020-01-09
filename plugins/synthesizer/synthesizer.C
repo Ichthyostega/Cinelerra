@@ -272,14 +272,14 @@ double Synth::get_total_power()
 }
 
 
-double Synth::solve_eqn(double *output, 
+void Synth::solve_eqn(double *output, 
 	double x1, 
 	double x2, 
 	double normalize_constant,
 	int oscillator)
 {
 	SynthOscillatorConfig *config = this->config.oscillator_config.values[oscillator];
-	if(config->level <= INFINITYGAIN) return 0;
+	if(config->level <= INFINITYGAIN) return;
 
 	double result;
 	register double x;
@@ -375,6 +375,8 @@ double Synth::get_oscillator_point(float x,
 		case NOISE:
 			return function_noise() * power;
 			break;
+		default:
+			return 0.0;
 	}
 }
 
@@ -1175,6 +1177,7 @@ int SynthLevelZero::handle_event()
 
 	synth->thread->window->update_gui();
 	synth->send_configure_change();
+	return 1;
 }
 
 SynthLevelMax::SynthLevelMax(Synth *synth)
@@ -1195,6 +1198,7 @@ int SynthLevelMax::handle_event()
 	}
 	synth->thread->window->update_gui();
 	synth->send_configure_change();
+    return 1;
 }
 
 SynthLevelNormalize::SynthLevelNormalize(Synth *synth)
@@ -1231,6 +1235,7 @@ int SynthLevelNormalize::handle_event()
 
 	synth->thread->window->update_gui();
 	synth->send_configure_change();
+    return 1;
 }
 
 SynthLevelSlope::SynthLevelSlope(Synth *synth)
@@ -1254,6 +1259,7 @@ int SynthLevelSlope::handle_event()
 
 	synth->thread->window->update_gui();
 	synth->send_configure_change();
+    return 1;
 }
 
 SynthLevelRandom::SynthLevelRandom(Synth *synth)
@@ -1275,6 +1281,7 @@ int SynthLevelRandom::handle_event()
 
 	synth->thread->window->update_gui();
 	synth->send_configure_change();
+    return 1;
 }
 
 SynthLevelInvert::SynthLevelInvert(Synth *synth)
@@ -1296,6 +1303,7 @@ int SynthLevelInvert::handle_event()
 
 	synth->thread->window->update_gui();
 	synth->send_configure_change();
+    return 1;
 }
 
 SynthLevelSine::SynthLevelSine(Synth *synth)
@@ -1320,6 +1328,7 @@ int SynthLevelSine::handle_event()
 
 	synth->thread->window->update_gui();
 	synth->send_configure_change();
+    return 1;
 }
 
 // ============================ phase calculations
@@ -1343,6 +1352,7 @@ int SynthPhaseInvert::handle_event()
 
 	synth->thread->window->update_gui();
 	synth->send_configure_change();
+    return 1;
 }
 
 SynthPhaseZero::SynthPhaseZero(Synth *synth)
@@ -1363,6 +1373,7 @@ int SynthPhaseZero::handle_event()
 
 	synth->thread->window->update_gui();
 	synth->send_configure_change();
+    return 1;
 }
 
 SynthPhaseSine::SynthPhaseSine(Synth *synth)
@@ -1386,6 +1397,7 @@ int SynthPhaseSine::handle_event()
 
 	synth->thread->window->update_gui();
 	synth->send_configure_change();
+    return 1;
 }
 
 SynthPhaseRandom::SynthPhaseRandom(Synth *synth)
@@ -1408,6 +1420,7 @@ int SynthPhaseRandom::handle_event()
 
 	synth->thread->window->update_gui();
 	synth->send_configure_change();
+    return 1;
 }
 
 
@@ -1432,6 +1445,7 @@ int SynthFreqRandom::handle_event()
 
 	synth->thread->window->update_gui();
 	synth->send_configure_change();
+    return 1;
 }
 
 SynthFreqEnum::SynthFreqEnum(Synth *synth)
@@ -1452,6 +1466,7 @@ int SynthFreqEnum::handle_event()
 
 	synth->thread->window->update_gui();
 	synth->send_configure_change();
+    return 1;
 }
 
 SynthFreqEven::SynthFreqEven(Synth *synth)
@@ -1475,6 +1490,7 @@ int SynthFreqEven::handle_event()
 
 	synth->thread->window->update_gui();
 	synth->send_configure_change();
+    return 1;
 }
 
 SynthFreqOdd::SynthFreqOdd(Synth *synth)
@@ -1493,6 +1509,7 @@ int SynthFreqOdd::handle_event()
 
 	synth->thread->window->update_gui();
 	synth->send_configure_change();
+    return 1;
 }
 
 SynthFreqFibonacci::SynthFreqFibonacci(Synth *synth)
@@ -1517,6 +1534,7 @@ int SynthFreqFibonacci::handle_event()
 
 	synth->thread->window->update_gui();
 	synth->send_configure_change();
+    return 1;
 }
 
 SynthFreqPrime::SynthFreqPrime(Synth *synth)
@@ -1539,6 +1557,7 @@ int SynthFreqPrime::handle_event()
 
 	synth->thread->window->update_gui();
 	synth->send_configure_change();
+    return 1;
 }
 
 float SynthFreqPrime::get_next_prime(float number)

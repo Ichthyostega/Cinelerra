@@ -398,7 +398,7 @@ void LoadPrevious::run()
 //	loadfile->mwindow->load(path, loadfile->append);
 }
 
-int LoadPrevious::set_path(char *path)
+void LoadPrevious::set_path(char *path)
 {
 	strcpy(this->path, path);
 }
@@ -550,4 +550,5 @@ int OverwriteReel::handle_event()
 		rwindow->reel_name->disable();
 		rwindow->reel_number->disable();
 	}
+	return 1;
 }

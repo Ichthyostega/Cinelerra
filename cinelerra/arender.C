@@ -222,7 +222,6 @@ int ARender::process_buffer(double **buffer_out,
 
 
 	return result;
-	return 0;
 }
 
 
@@ -265,11 +264,10 @@ void ARender::send_last_buffer()
 	renderengine->audio->set_last_buffer();
 }
 
-int ARender::wait_device_completion()
+void ARender::wait_device_completion()
 {
 // audio device should be entirely cleaned up by vconsole
 	renderengine->audio->wait_for_completion();
-	return 0;
 }
 
 void ARender::run()
@@ -410,7 +408,7 @@ int ARender::arm_playback(int64_t current_position,
 // 	return 0;
 // }
 
-int ARender::reverse_buffer(double *buffer, int64_t len)
+void ARender::reverse_buffer(double *buffer, int64_t len)
 {
 	register int64_t start, end;
 	double temp;

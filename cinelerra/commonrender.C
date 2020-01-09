@@ -201,7 +201,7 @@ void CommonRender::delete_vconsole()
 	vconsole = 0;
 }
 
-int CommonRender::get_boundaries(int64_t &current_render_length)
+void CommonRender::get_boundaries(int64_t &current_render_length)
 {
 	int64_t loop_end = tounits(renderengine->edl->local_session->loop_end, 1);
 	int64_t loop_start = tounits(renderengine->edl->local_session->loop_start, 0);
@@ -260,7 +260,6 @@ int CommonRender::get_boundaries(int64_t &current_render_length)
 		current_render_length = 1;
 
 	if(current_render_length < 0) current_render_length = 0;
-	return 0;
 }
 
 void CommonRender::run()

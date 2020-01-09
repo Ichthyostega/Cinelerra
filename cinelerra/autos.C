@@ -625,7 +625,7 @@ void Autos::clear(int64_t start,
 	}
 }
 
-int Autos::clear_auto(int64_t position)
+void Autos::clear_auto(int64_t position)
 {
 	Auto *current;
 	current = autoof(position);

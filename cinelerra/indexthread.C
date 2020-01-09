@@ -101,7 +101,7 @@ IndexThread::~IndexThread()
 	asset->index_buffer = 0;
 }
 
-int IndexThread::start_build()
+void IndexThread::start_build()
 {
 	set_synchronous(1);
 	interrupt_flag = 0;
@@ -110,7 +110,7 @@ int IndexThread::start_build()
 	start();
 }
 
-int IndexThread::stop_build()
+void IndexThread::stop_build()
 {
 	join();
 }

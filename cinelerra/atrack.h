@@ -78,7 +78,7 @@ public:
 	int modify_handles(int64_t oldposition, int64_t newposition, int currentend);
 
 	int64_t length();
-	int get_dimensions(double &view_start, 
+	void get_dimensions(double &view_start, 
 		double &view_units, 
 		double &zoom_units);
 };

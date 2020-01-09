@@ -112,7 +112,7 @@ private:
 		float in_x1, float in_y1, float in_x2, float in_y2,
 		float out_x1, float out_y1, float out_x2, float out_y2, 
 		int use_float, int interpolate);
-	int reset_parameters_derived();
+	void reset_parameters_derived();
 	int quicktime_atracks;
 	int quicktime_vtracks;
 // current positions for when the file descriptor doesn't have the right position

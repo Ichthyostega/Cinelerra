@@ -148,6 +148,7 @@ int BC_WidgetGrid::getw_h(int row, int column) {
 	case BC_WT_RelocatableWidget: 
 		return(widget_widgs[row][column]->get_h());
 	}
+	return 0;
 }
 
 int BC_WidgetGrid::getw_w(int row, int column) {
@@ -157,6 +158,7 @@ int BC_WidgetGrid::getw_w(int row, int column) {
 	case BC_WT_RelocatableWidget: 
 		return(widget_widgs[row][column]->get_w());
 	}
+	return 0;
 }
 
 int BC_WidgetGrid::guess_x(int colno){

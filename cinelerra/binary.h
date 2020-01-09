@@ -25,14 +25,14 @@
 #include "sizes.h"
 #include <stdio.h>
 
-inline int putfourswap(int32_t number, FILE *file){
+inline void putfourswap(int32_t number, FILE *file){
   fputc(number & 0xff, file);
   fputc((number & 0xff00) >> 8, file);
   fputc((number & 0xff0000) >> 16, file);
   fputc((number & 0xff000000) >> 24, file);
 }
 
-inline int putfour(int32_t number, FILE *file){
+inline void putfour(int32_t number, FILE *file){
   fputc((number & 0xff000000) >> 24, file);
   fputc((number & 0xff0000) >> 16, file);
   fputc((number & 0xff00) >> 8, file);
@@ -67,7 +67,7 @@ inline int16_t gettwo(FILE *in){
 	return number;
 }
 
-inline int puttwo(int16_t number, FILE *file){
+inline void puttwo(int16_t number, FILE *file){
   fputc((number & 0xff00) >> 8, file);
   fputc(number & 0xff, file);
 }

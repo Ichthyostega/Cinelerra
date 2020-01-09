@@ -299,24 +299,8 @@ int VirtualAConsole::process_buffer(int64_t len,
 
 
 
-
-
-
-
-
-
-
-
-
-int VirtualAConsole::init_rendering(int duplicate)
-{
-	return 0;
-}
-
-
-int VirtualAConsole::send_last_output_buffer()
+void VirtualAConsole::send_last_output_buffer()
 {
 	renderengine->audio->set_last_buffer();
-	return 0;
 }
 

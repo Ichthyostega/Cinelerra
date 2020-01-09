@@ -780,6 +780,8 @@ float PerspectiveMain::get_current_x()
 		case 3:
 			return config.x4;
 			break;
+		default:
+			return 0.0f;
 	}
 }
 
@@ -799,6 +801,8 @@ float PerspectiveMain::get_current_y()
 		case 3:
 			return config.y4;
 			break;
+		default:
+			return 0.0f;
 	}
 }
 
@@ -1067,8 +1071,8 @@ int PerspectiveMain::handle_opengl()
 		config.y4,
 		config.forward);
 	engine->set_opengl(0);
-	return 0;
 #endif
+	return 0;
 }
 
 

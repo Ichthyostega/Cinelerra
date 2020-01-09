@@ -108,6 +108,7 @@ int ScaleMain::load_defaults()
 	config.h = defaults->get("HEIGHT", config.h);
 	config.constrain = defaults->get("CONSTRAIN", config.constrain);
 //printf("ScaleMain::load_defaults %f %f\n",config.w  , config.h);
+    return 0;
 }
 
 int ScaleMain::save_defaults()
@@ -116,6 +117,7 @@ int ScaleMain::save_defaults()
 	defaults->update("HEIGHT", config.h);
 	defaults->update("CONSTRAIN", config.constrain);
 	defaults->save();
+    return 0;
 }
 
 LOAD_CONFIGURATION_MACRO(ScaleMain, ScaleConfig)
@@ -340,6 +342,7 @@ int ScaleMain::handle_opengl()
 		out_y2);
 	get_output()->set_opengl_state(VFrame::SCREEN);
 #endif
+	return 0;
 }
 
 

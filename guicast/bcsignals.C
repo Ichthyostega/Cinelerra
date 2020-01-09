@@ -78,7 +78,7 @@ typedef struct
 	int current_value;
 } bc_table_t;
 
-static void* append_table(bc_table_t *table, void *ptr)
+static void append_table(bc_table_t *table, void *ptr)
 {
 	if(table->allocation <= table->size)
 	{
@@ -99,16 +99,16 @@ static void* append_table(bc_table_t *table, void *ptr)
 	}
 
 	table->values[table->size++] = ptr;
-	return ptr;
 }
 
 // Replace item in table pointed to by current_value and advance
 // current_value
-static void* overwrite_table(bc_table_t *table, void *ptr)
+static void overwrite_table(bc_table_t *table, void *ptr)
 {
 	free(table->values[table->current_value]);
 	table->values[table->current_value++] = ptr;
-	if(table->current_value >= table->size) table->current_value = 0;
+	if(table->current_value >= table->size)
+	  table->current_value = 0;
 }
 
 static void clear_table(bc_table_t *table, int delete_objects)

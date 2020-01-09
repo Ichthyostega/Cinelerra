@@ -708,6 +708,7 @@ int Overlay::handle_opengl()
 
 	dst->set_opengl_state(VFrame::SCREEN);
 #endif
+	return 0;
 }
 
 

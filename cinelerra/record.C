@@ -1327,7 +1327,7 @@ int Record::get_vu_format() { return mwindow->edl->session->meter_format; }
 float Record::get_min_db() { return mwindow->edl->session->min_meter_db; }
 
 int Record::get_rec_mode() { return record_mode; }
-int Record::set_rec_mode(int value) { record_mode = value; }
+void Record::set_rec_mode(int value) { record_mode = value; }
 
 int Record::get_video_buffersize() { return mwindow->edl->session->video_write_length; }
 int Record::get_everyframe() { return mwindow->edl->session->video_every_frame; }

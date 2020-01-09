@@ -99,7 +99,7 @@ int FileVorbis::check_sig(Asset *asset)
 	}
 }
 
-int FileVorbis::reset_parameters_derived()
+void FileVorbis::reset_parameters_derived()
 {
 	fd = 0;
 	memset(&vf, 0, sizeof(vf));
@@ -279,8 +279,7 @@ int FileVorbis::close_file()
 	}
 
 	reset_parameters();
-	FileBase::close_file();
-	return 0;
+	return FileBase::close_file();
 }
 
 

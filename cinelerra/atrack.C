@@ -193,7 +193,7 @@ int64_t ATrack::length()
 	return edits->length();
 }
 
-int ATrack::get_dimensions(double &view_start, 
+void ATrack::get_dimensions(double &view_start, 
 	double &view_units, 
 	double &zoom_units)
 {

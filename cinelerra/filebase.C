@@ -97,7 +97,7 @@ void FileBase::reset_parameters()
 	reset_parameters_derived();
 }
 
-int FileBase::get_mode(char *mode, int rd, int wr)
+void FileBase::get_mode(char *mode, int rd, int wr)
 {
 	if(rd && !wr) sprintf(mode, "rb");
 	else
@@ -143,7 +143,7 @@ int FileBase::get_video_buffer(unsigned char **buffer, int depth)
 	return 0;
 }
 
-int FileBase::get_row_pointers(unsigned char *buffer, unsigned char ***pointers, int depth)
+void FileBase::get_row_pointers(unsigned char *buffer, unsigned char ***pointers, int depth)
 {
 // This might be fooled if a new VFrame is created at the same address with a different height.
 	if(*pointers && (*pointers)[0] != &buffer[0])

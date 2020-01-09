@@ -48,6 +48,7 @@ MaskPoint& MaskPoint::operator=(MaskPoint& ptr)
 	this->control_y1 = ptr.control_y1;
 	this->control_x2 = ptr.control_x2;
 	this->control_y2 = ptr.control_y2;
+	return *this;
 }
 
 int MaskPoint::operator==(MaskPoint& ptr)

@@ -70,6 +70,7 @@ int FlipWindow::create_objects()
 		y));
 	show_window();
 	flush();
+	return 0;
 }
 
 int FlipWindow::close_event()

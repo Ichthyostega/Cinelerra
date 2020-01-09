@@ -287,6 +287,7 @@ int* GWindowToggle::get_main_value(MWindow *mwindow, toggleinfo toggleinf)
 				break;
 		}
 	}
+	return NULL;
 }
 
 void GWindowToggle::update()

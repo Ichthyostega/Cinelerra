@@ -567,23 +567,21 @@ int RecordEngine::toggle_label()
 	return 0;
 }
 
-int RecordEngine::calibrate_dc_offset()
+void RecordEngine::calibrate_dc_offset()
 {
 	if(record->do_audio)
 	{
 		get_dc_offset(record->dc_offset, gui->dc_offset_text);
 	}
-	return 0;
 }
 
-int RecordEngine::calibrate_dc_offset(long new_value, int channel)
+void RecordEngine::calibrate_dc_offset(long new_value, int channel)
 {
 	if(record->do_audio)
 	{
 		set_dc_offset(new_value, channel);
 		record->dc_offset[channel] = new_value;
 	}
-	return 0;
 }
 
 int RecordEngine::reset_over()

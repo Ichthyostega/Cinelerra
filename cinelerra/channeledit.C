@@ -157,6 +157,8 @@ char *ChannelEditThread::value_to_freqtable(int value)
 		case PAL_NEWZEALAND:
 			return _("PAL_NEWZEALAND");
 			break;
+		default:
+		    return "??";
 	}
 }
 
@@ -173,6 +175,8 @@ char* ChannelEditThread::value_to_norm(int value)
 		case SECAM:
 			return _("SECAM");
 			break;
+		default:
+		    return "??";
 	}
 }
 

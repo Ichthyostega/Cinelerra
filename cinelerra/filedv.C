@@ -127,7 +127,7 @@ void FileDV::get_parameters(BC_WindowBase *parent_window,
 
 }
 
-int FileDV::reset_parameters_derived()
+void FileDV::reset_parameters_derived()
 {
 	if(decoder) dv_decoder_free(decoder);
 	if(encoder) dv_encoder_free(encoder);
@@ -171,7 +171,6 @@ TRACE("FileDV::reset_parameters_derived: 30")
 	output_size = 0;
 	
 UNTRACE
-	return 0;
 }
 
 int FileDV::open_file(int rd, int wr)
@@ -355,12 +354,10 @@ int FileDV::check_sig(Asset *asset)
 	return 0;
 }
 
-int FileDV::close_file_derived()
+void FileDV::close_file_derived()
 {
 	if(stream) fclose(stream);
 	stream = 0;
-
-	return 0;
 }
 
 int64_t FileDV::get_video_position()

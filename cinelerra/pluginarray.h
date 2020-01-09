@@ -65,19 +65,13 @@ public:
  */
 	virtual void process_realtime(int module, 
 		int64_t input_position, 
-		int64_t len) {};
-	virtual int process_loop(int module, int64_t &write_length) {};
-	virtual int write_buffers(int64_t len) { return 0; };
-	virtual int64_t get_bufsize() { return 0; };
-	virtual int total_tracks() { return 0; };
-	virtual void get_recordable_tracks() {};
-	virtual Track* track_number(int number) { return 0; };
-	virtual int write_samples_derived(int64_t samples_written) { return 0; };
-	virtual int write_frames_derived(int64_t frames_written) { return 0; };
-	virtual int start_plugins_derived() { return 0; };
-	virtual int start_realtime_plugins_derived() { return 0; };
-	virtual int stop_plugins_derived() { return 0; };
-	virtual int render_track(int track, int64_t fragment_len, int64_t position) { return 0; };
+		int64_t len) =0;
+	virtual int process_loop(int module, int64_t &write_length) =0;
+	virtual int write_buffers(int64_t len) =0;
+	virtual int64_t get_bufsize() =0;
+	virtual int total_tracks() =0;
+	virtual void get_recordable_tracks() =0;
+	virtual Track* track_number(int number) =0;
 
 	Module **modules;
 	MWindow *mwindow;

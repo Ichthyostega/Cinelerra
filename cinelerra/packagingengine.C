@@ -45,7 +45,7 @@ PackagingEngineDefault::~PackagingEngineDefault()
 }
 
 
-int PackagingEngineDefault::create_packages_single_farm(
+void PackagingEngineDefault::create_packages_single_farm(
 		EDL *edl,
 		Preferences *preferences,
 		Asset *default_asset, 

@@ -474,7 +474,7 @@ int MWindowGUI::translation_event()
 }
 
 
-int MWindowGUI::save_defaults(BC_Hash *defaults)
+void MWindowGUI::save_defaults(BC_Hash *defaults)
 {
 	defaults->update("MWINDOWWIDTH", get_w());
 	defaults->update("MWINDOWHEIGHT", get_h());
@@ -707,9 +707,10 @@ int MWindowGUI::keypress_event()
 }
 
 
-int MWindowGUI::close_event() 
+int MWindowGUI::close_event()
 { 
-	mainmenu->quit(); 
+	mainmenu->quit();
+	return 1;
 }
 
 int MWindowGUI::menu_h()

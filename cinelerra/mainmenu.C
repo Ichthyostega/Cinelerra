@@ -498,6 +498,7 @@ DumpCICache::DumpCICache(MWindow *mwindow)
 int DumpCICache::handle_event()
 {
 //	mwindow->cache->dump();
+    return 1;
 }
 
 DumpEDL::DumpEDL(MWindow *mwindow)
@@ -536,6 +537,7 @@ DumpAssets::DumpAssets(MWindow *mwindow)
 int DumpAssets::handle_event()
 {
 	mwindow->assets->dump();
+    return 1;
 }
 
 // ================================================= edit
@@ -549,7 +551,7 @@ int Undo::handle_event()
 	mwindow->undo_entry(mwindow->gui);
 	return 1;
 }
-int Undo::update_caption(char *new_caption)
+void Undo::update_caption(char *new_caption)
 {
 	char string[1024];
 	sprintf(string, _("Undo %s"), new_caption);
@@ -569,7 +571,7 @@ int Redo::handle_event()
 
 	return 1;
 }
-int Redo::update_caption(char *new_caption)
+void Redo::update_caption(char *new_caption)
 {
 	char string[1024];
 	sprintf(string, _("Redo %s"), new_caption);
@@ -586,6 +588,7 @@ CutKeyframes::CutKeyframes(MWindow *mwindow)
 int CutKeyframes::handle_event()
 {
 	mwindow->cut_automation(); 
+    return 1;
 }
 
 CopyKeyframes::CopyKeyframes(MWindow *mwindow)
@@ -611,6 +614,7 @@ PasteKeyframes::PasteKeyframes(MWindow *mwindow)
 int PasteKeyframes::handle_event()
 {
 	mwindow->paste_automation(); 
+    return 1;
 }
 
 ClearKeyframes::ClearKeyframes(MWindow *mwindow)
@@ -1072,6 +1076,7 @@ int LabelsFollowEdits::handle_event()
 {
 	set_checked(get_checked() ^ 1);
 	mwindow->set_labels_follow_edits(get_checked());
+    return 1;
 }
 
 
@@ -1088,6 +1093,7 @@ int PluginsFollowEdits::handle_event()
 {
 	set_checked(get_checked() ^ 1);
 	mwindow->edl->session->plugins_follow_edits = get_checked(); 
+    return 1;
 }
 
 
@@ -1104,6 +1110,7 @@ int AutosFollowEdits::handle_event()
 { 
 	mwindow->edl->session->autos_follow_edits ^= 1; 
 	set_checked(!get_checked());
+    return 1;
 }
 
 
@@ -1118,6 +1125,7 @@ int CursorOnFrames::handle_event()
 {
 	mwindow->edl->session->cursor_on_frames = !mwindow->edl->session->cursor_on_frames; 
 	set_checked(mwindow->edl->session->cursor_on_frames);
+    return 1;
 }
 
 
@@ -1138,6 +1146,7 @@ int ScrubSpeed::handle_event()
 		mwindow->edl->session->scrub_speed = .5;
 		set_text(_("Fast Shuttle"));
 	}
+    return 1;
 }
 
 SaveSettingsNow::SaveSettingsNow(MWindow *mwindow) : BC_MenuItem(_("Save settings now")) 

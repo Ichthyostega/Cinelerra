@@ -36,7 +36,7 @@ public:
 	FileAC3(Asset *asset, File *file);
 	~FileAC3();
 
-	int reset_parameters_derived();
+	void reset_parameters_derived();
 	static void get_parameters(BC_WindowBase *parent_window, 
 			Asset *asset, 
 			BC_WindowBase* &format_window,

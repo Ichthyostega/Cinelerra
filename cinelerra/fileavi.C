@@ -543,6 +543,7 @@ int FileAVI::close_file()
 #endif
 	if(temp_audio) delete [] temp_audio;
 	reset();
+	return 0;
 }
 
 int FileAVI::cmodel_bc_to_avi(int input)
@@ -624,6 +625,8 @@ int FileAVI::set_audio_position(int64_t x)
 		return astream_in[file->current_layer]->Seek(x);
 	else
 		return 1;
+#else
+	return 0;
 #endif
 }
 
@@ -634,6 +637,8 @@ int FileAVI::set_video_position(int64_t x)
 		return vstream_in[file->current_layer]->Seek(x);
 	else
 		return 1;
+#else
+    return 0;
 #endif
 }
 
@@ -763,6 +768,7 @@ int AVIConfigAudio::calculate_w(int format)
 		case FILE_AVI_AVIFILE: return 400; break;
 		case FILE_AVI_ARNE2: return 250; break;
 	}
+	return 0;
 }
 
 int AVIConfigAudio::calculate_h(int format)
@@ -772,6 +778,7 @@ int AVIConfigAudio::calculate_h(int format)
 		case FILE_AVI_AVIFILE: return 200; break;
 		case FILE_AVI_ARNE2: return 100; break;
 	}
+	return 0;
 }
 
 int AVIConfigAudio::create_objects()
@@ -906,6 +913,7 @@ int AVIConfigVideo::calculate_w(int format)
 		case FILE_AVI_AVIFILE: return 400; break;
 		case FILE_AVI_ARNE2: return 250; break;
 	}
+	return 0;
 }
 
 int AVIConfigVideo::calculate_h(int format)
@@ -915,6 +923,7 @@ int AVIConfigVideo::calculate_h(int format)
 		case FILE_AVI_AVIFILE: return 320; break;
 		case FILE_AVI_ARNE2: return 100; break;
 	}
+    return 0;
 }
 
 int AVIConfigVideo::create_objects()

@@ -184,6 +184,7 @@ int Device1394Output::get_dv1394()
 {
 	if(adevice) return adevice->out_config->driver == AUDIO_DV1394;
 	if(vdevice) return vdevice->out_config->driver == PLAYBACK_DV1394;
+	return false;
 }
 
 int Device1394Output::open(char *path,

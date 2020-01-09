@@ -170,7 +170,6 @@ public:
 	virtual int get_handle_parameters(int64_t &left, int64_t &right, int64_t &left_sample, int64_t &right_sample, float view_start, float zoom_units) { return 0; };
 	virtual int64_t get_source_end(int64_t default_);
 	int dump();
-	virtual int dump_derived() { return 0; };
 
 };
 

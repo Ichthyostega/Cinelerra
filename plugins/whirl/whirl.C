@@ -427,6 +427,7 @@ int WhirlEffect::load_defaults()
 	config.angle = defaults->get("ANGLE", config.angle);
 	config.pinch = defaults->get("PINCH", config.pinch);
 	config.radius = defaults->get("RADIUS", config.radius);
+    return 0;
 }
 
 int WhirlEffect::save_defaults()
@@ -435,6 +436,7 @@ int WhirlEffect::save_defaults()
 	defaults->update("PINCH", config.pinch);
 	defaults->update("RADIUS", config.radius);
 	defaults->save();
+    return 0;
 }
 
 void WhirlEffect::save_data(KeyFrame *keyframe)
@@ -508,6 +510,7 @@ int WhirlEffect::process_realtime(VFrame *input, VFrame *output)
 		
 		engine->process_packages();
 	}
+	return 0;
 }
 
 

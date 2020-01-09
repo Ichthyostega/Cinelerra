@@ -184,12 +184,12 @@ public:
 
 
 	int set_loop_status(int value);
-	int update_duration_boxes(); // Redraw the loop duration textboxes for a script.
+	void update_duration_boxes(); // Redraw the loop duration textboxes for a script.
 
 	int keypress_event();
 	int delete_all_labels();
-	int calibrate_dc_offset();
-	int calibrate_dc_offset(long new_value, int channel);
+//	int calibrate_dc_offset();
+//	int calibrate_dc_offset(long new_value, int channel);
 	int update_dropped_frames(long new_dropped);
 	int update_clipped_samples(long new_clipped);
 	void set_translation(int x, int y, float z);

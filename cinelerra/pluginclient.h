@@ -431,7 +431,7 @@ public:
 
 // Realtime operations.
 	void reset();
-	virtual int plugin_command_derived(int plugin_command) {}; // Extension of plugin_run for derived plugins
+//	virtual int plugin_command_derived(int plugin_command) {}; // Extension of plugin_run for derived plugins
 	int plugin_get_range();
 	int plugin_init_realtime(int realtime_priority, 
 		int total_in_buffers,

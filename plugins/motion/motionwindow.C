@@ -881,6 +881,7 @@ int Mode1::from_text(char *text)
 	if(!strcmp(text, _("Stabilize Subpixel"))) return MotionConfig::STABILIZE;
 	if(!strcmp(text, _("Stabilize Pixel"))) return MotionConfig::STABILIZE_PIXEL;
 	if(!strcmp(text, _("Do Nothing"))) return MotionConfig::NOTHING;
+	return MotionConfig::NOTHING;
 }
 
 char* Mode1::to_text(int mode)
@@ -899,9 +900,11 @@ char* Mode1::to_text(int mode)
 		case MotionConfig::STABILIZE_PIXEL:
 			return _("Stabilize Pixel");
 			break;
-		case MotionConfig::NOTHING:
-			return _("Do Nothing");
-			break;
+        case MotionConfig::NOTHING:
+            return _("Do Nothing");
+            break;
+        default:
+            return "??";
 	}
 }
 
@@ -951,6 +954,7 @@ int Mode2::from_text(char *text)
 	if(!strcmp(text, _("Recalculate"))) return MotionConfig::RECALCULATE;
 	if(!strcmp(text, _("Save coords to /tmp"))) return MotionConfig::SAVE;
 	if(!strcmp(text, _("Load coords from /tmp"))) return MotionConfig::LOAD;
+	return MotionConfig::NO_CALCULATE;
 }
 
 char* Mode2::to_text(int mode)
@@ -969,6 +973,8 @@ char* Mode2::to_text(int mode)
 		case MotionConfig::LOAD:
 			return _("Load coords from /tmp");
 			break;
+		default:
+			return "??";
 	}
 }
 

@@ -75,7 +75,7 @@ public:
 	int keypress_event();
 	int close_event();
 	int quit();
-	int save_defaults(BC_Hash *defaults);
+	void save_defaults(BC_Hash *defaults);
 	int menu_h();
 // Draw on the status bar only.
 	int show_message(char *message, int color = -1);

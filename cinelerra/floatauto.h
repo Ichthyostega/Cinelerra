@@ -99,7 +99,7 @@ private:
 	int64_t control_in_position, control_out_position;
 
 	int64_t pos_valid;                  // 'dirty flag' to recalculate ctrl point positions on demand
-	int value_to_str(char *string, float value);
+	void value_to_str(char *string, float value);
 };
 
 

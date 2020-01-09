@@ -128,7 +128,7 @@ public:
 
 	int load_defaults(Asset *asset);
 	int save_defaults(Asset *asset);
-	int load_profile(int profile_slot, Asset *asset);
+	void load_profile(int profile_slot, Asset *asset);
 // force asset parameters regardless of window
 // This should be integrated into the Asset Class.
 	static int check_asset(EDL *edl, Asset &asset); 
@@ -254,7 +254,7 @@ public:
 
 	int create_objects();
 	void update_range_type(int range_type);
-	int load_profile(int profile_slot);
+	void load_profile(int profile_slot);
 	
 	RenderRangeProject *rangeproject;
 	RenderRangeSelection *rangeselection;

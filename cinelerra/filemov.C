@@ -194,7 +194,7 @@ int FileMOV::check_sig(Asset *asset)
 }
 
 
-int FileMOV::reset_parameters_derived()
+void FileMOV::reset_parameters_derived()
 {
 	fd = 0;
 	prev_track = 0;
@@ -206,7 +206,6 @@ int FileMOV::reset_parameters_derived()
 	samples_correction = 0;
 	temp_float = 0;
 	temp_allocated = 0;
-	return 0;
 }
 
 
@@ -279,9 +278,8 @@ int FileMOV::close_file()
 
 //printf("FileMOV::close_file 1\n");
 	reset_parameters();
-	FileBase::close_file();
+	return FileBase::close_file();
 //printf("FileMOV::close_file 2\n");
-	return 0;
 }
 
 void FileMOV::set_frame_start(int64_t offset)

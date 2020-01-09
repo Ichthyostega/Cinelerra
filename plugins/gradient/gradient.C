@@ -333,6 +333,7 @@ int GradientShape::handle_event()
 	plugin->config.shape = from_text(get_text());
 	gui->update_shape();
 	plugin->send_configure_change();
+	return 1;
 }
 
 
@@ -1028,6 +1029,7 @@ int GradientMain::handle_opengl()
 	get_output()->set_opengl_state(VFrame::SCREEN);
 	
 #endif
+	return 0;
 }
 
 

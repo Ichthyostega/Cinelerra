@@ -61,7 +61,7 @@ public:
 
 	int create_objects();
 //	int set_strategy(int strategy);
-	int get_buffer_bytes();
+//	int get_buffer_bytes();
 
 	static char* strategy_to_string(int strategy);
 	void delete_strategy();

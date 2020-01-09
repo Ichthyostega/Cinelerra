@@ -87,10 +87,12 @@ void CropVideo::run()
 
 int CropVideo::load_defaults()
 {
+    return 0;
 }
 
 int CropVideo::save_defaults()
 {
+    return 0;
 }
 
 CropVideoWindow::CropVideoWindow(MWindow *mwindow, CropVideo *thread)

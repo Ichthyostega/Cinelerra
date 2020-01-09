@@ -123,11 +123,10 @@ public:
 		int64_t end, 
 		int shift_autos);
 	virtual void straighten(int64_t start, int64_t end);
-	int clear_auto(int64_t position);
+	void clear_auto(int64_t position);
 	int save(FileXML *xml);
 	virtual int slope_adjustment(int64_t ax, double slope);
 	int release_auto();
-	virtual int release_auto_derived() {};
 	Auto* append_auto();
 	int scale_time(float rate_scale, int scale_edits, int scale_autos, int64_t start, int64_t end);
 

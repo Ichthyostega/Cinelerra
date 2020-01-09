@@ -231,7 +231,7 @@ public:
 	int copy_assets(double start, 
 		double end, 
 		ArrayList<Asset*> *asset_list);
-	virtual int copy_derived(int64_t start, int64_t end, FileXML *file) { return 0; };
+	virtual void copy_derived(int64_t start, int64_t end, FileXML *file) {}
 	virtual int paste_derived(int64_t start, int64_t end, int64_t total_length, FileXML *file, int &current_channel) { return 0; };
 	int clear(double start, 
 		double end, 
@@ -330,9 +330,9 @@ public:
 
 // get_dimensions is used for getting drawing regions so use floats for partial frames
 // get the display dimensions in SAMPLES OR FRAMES
-	virtual int get_dimensions(double &view_start, 
-		double &view_units, 
-		double &zoom_units) { return 0; };   
+	virtual void get_dimensions(double &view_start,
+		double &view_units,
+		double &zoom_units) {};
 // Longest time from current_position in which nothing changes
 	int64_t edit_change_duration(int64_t input_position, 
 		int64_t input_length, 

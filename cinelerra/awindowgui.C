@@ -1093,12 +1093,14 @@ Asset* AWindowGUI::selected_asset()
 {
 	AssetPicon *picon = (AssetPicon*)asset_list->get_selection(0, 0);
 	if(picon) return picon->asset;
+	return NULL;
 }
 
 PluginServer* AWindowGUI::selected_plugin()
 {
 	AssetPicon *picon = (AssetPicon*)asset_list->get_selection(0, 0);
 	if(picon) return picon->plugin;
+    return NULL;
 }
 
 AssetPicon* AWindowGUI::selected_folder()

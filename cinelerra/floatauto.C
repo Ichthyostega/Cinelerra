@@ -370,7 +370,7 @@ void FloatAuto::adjust_to_new_coordinates(int64_t position, float value)
 
 
 
-int FloatAuto::value_to_str(char *string, float value)
+void FloatAuto::value_to_str(char *string, float value)
 {
 	int j = 0, i = 0;
 	if(value > 0) 
@@ -398,8 +398,6 @@ int FloatAuto::value_to_str(char *string, float value)
 	
 	while(string[j] != 0) string[i++] = string[j++];
 	string[i] = 0;
-
-	return 0;
 }
 
 void FloatAuto::copy(int64_t start, int64_t end, FileXML *file, int default_auto)

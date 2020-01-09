@@ -1277,6 +1277,7 @@ int BatchRenderList::drag_stop_event()
 		}
 		BC_ListBox::drag_stop_event();
 	}
+	return 0;
 }
 
 

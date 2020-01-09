@@ -218,14 +218,14 @@ int VDeviceV4L::v4l1_get_inputs()
 	return 0;
 }
 
-int VDeviceV4L::set_mute(int muted)
+void VDeviceV4L::set_mute(int muted)
 {
 // Open audio, which obviously is controlled by the video driver.
 // and apparently resets the input source.
 	v4l1_set_mute(muted);
 }
 
-int VDeviceV4L::v4l1_set_mute(int muted)
+void VDeviceV4L::v4l1_set_mute(int muted)
 {
 	struct video_audio audio;
 
@@ -243,7 +243,6 @@ int VDeviceV4L::v4l1_set_mute(int muted)
 
     if(ioctl(input_fd, VIDIOCSAUDIO, &audio) < 0)
 		perror("VDeviceV4L::ioctl VIDIOCSAUDIO");
-	return 0;
 }
 
 
@@ -366,7 +365,7 @@ int VDeviceV4L::v4l1_get_norm(int norm)
 
 int VDeviceV4L::set_picture(PictureConfig *picture)
 {
-	v4l1_set_picture(picture);
+	return v4l1_set_picture(picture);
 }
 
 

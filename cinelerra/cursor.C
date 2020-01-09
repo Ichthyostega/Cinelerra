@@ -95,6 +95,6 @@ return 0;
 	if(flash) canvas->flash();
 }
 
-int Cursor_::resize(int w, int h)
+void Cursor_::resize(int w, int h)
 {
 }

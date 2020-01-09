@@ -54,10 +54,10 @@ public:
 	void update_edl_asset();
 	int redraw_edits(int force);
 	int draw_index(ResourcePixmap *pixmap, Edit *edit, int x, int w);
-	int close_index();
-	int remove_index();
+	void close_index();
+	void remove_index();
 	int read_info(Asset *test_asset = 0);
-	int write_info();
+	void write_info();
 
 	MWindow *mwindow;
 	char index_filename[BCTEXTLEN], source_filename[BCTEXTLEN];

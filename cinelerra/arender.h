@@ -44,7 +44,7 @@ public:
 				int64_t module_render_fragment, 
 				int64_t playback_buffer, 
 				int64_t output_length);
-	int wait_for_startup();
+	void wait_for_startup();
 	int64_t tounits(double position, int round);
 	double fromunits(int64_t position);
 
@@ -93,13 +93,11 @@ public:
 	int process_buffer(int64_t input_len, int64_t input_position);
 
 	void send_last_buffer();
-	int wait_device_completion();
 
 // reverse the data in a buffer	
-	int reverse_buffer(double *buffer, int64_t len);
+	void reverse_buffer(double *buffer, int64_t len);
 // advance the buffer count
-	int swap_current_buffer();
-	int64_t get_render_length(int64_t current_render_length);
+//	int swap_current_buffer();
 
 //	int64_t playback_buffer;            // maximum length to send to audio device
 //	int64_t output_length;              // maximum length to send to audio device after speed
@@ -113,6 +111,8 @@ private:
 	int init_meters();
 // Samples since start of playback
 	int64_t session_position;
+    void wait_device_completion();
+    int64_t get_render_length(int64_t current_render_length);
 };
 
 

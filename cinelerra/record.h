@@ -253,7 +253,7 @@ public:
 	int get_video_driver();
 	int get_vu_format();
 	int get_rec_mode();
-	int set_rec_mode(int value);
+	void set_rec_mode(int value);
 	int set_loop_duration(int64_t value);
 	int use_floatingpoint();
 

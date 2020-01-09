@@ -516,7 +516,7 @@ public:
 	double get_oscillator_point(float x, 
 		double normalize_constant, 
 		int oscillator);
-	double solve_eqn(double *output, 
+	void solve_eqn(double *output, 
 		double x1, 
 		double x2, 
 		double normalize_constant,

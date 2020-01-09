@@ -90,8 +90,8 @@ public:
 	int wait_completion();
 	int create_matrix();
 	int coords_to_pixel(int &input_y, int &input_x);
-	int coords_to_pixel(SourceCoord &float_pixel, float &input_y, float &input_x);
-	int perform_rotation();
+	void coords_to_pixel(SourceCoord &float_pixel, float &input_y, float &input_x);
+	void perform_rotation();
 	void run();
 	
 	int row1, row2;

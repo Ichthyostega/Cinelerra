@@ -107,11 +107,11 @@ public:
 		int audio_options,
 		int video_options);
 	
-	int reset_parameters_derived();
+	void reset_parameters_derived();
 	int open_file(int rd, int wr);
 	static int check_sig(Asset *asset);
 	int close_file();
-	int close_file_derived();
+	void close_file_derived();
 	int64_t get_video_position();
 	int64_t get_audio_position();
 	int set_video_position(int64_t x);
@@ -321,7 +321,7 @@ class PackagingEngineOGG : public PackagingEngine
 public:
 	PackagingEngineOGG();
 	~PackagingEngineOGG();
-	int create_packages_single_farm(
+	void create_packages_single_farm(
 		EDL *edl,
 		Preferences *preferences,
 		Asset *default_asset, 

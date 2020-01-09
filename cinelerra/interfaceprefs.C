@@ -244,7 +244,7 @@ char* InterfacePrefs::behavior_to_text(int mode)
 	}
 }
 
-int InterfacePrefs::update(int new_value)
+void InterfacePrefs::update(int new_value)
 {
 	pwindow->thread->redraw_times = 1;
 	pwindow->thread->edl->session->time_format = new_value;
@@ -301,6 +301,7 @@ IndexPathText::~IndexPathText() {}
 int IndexPathText::handle_event()
 {
 	strcpy(pwindow->thread->preferences->index_directory, get_text());
+	return 1;
 }
 
 
@@ -368,7 +369,7 @@ TimeFormatHMS::TimeFormatHMS(PreferencesWindow *pwindow, InterfacePrefs *tfwindo
 int TimeFormatHMS::handle_event()
 {
 	tfwindow->update(TIME_HMS);
-	return 1;
+	return 0;
 }
 
 TimeFormatHMSF::TimeFormatHMSF(PreferencesWindow *pwindow, InterfacePrefs *tfwindow, int value, int x, int y)
@@ -378,6 +379,7 @@ TimeFormatHMSF::TimeFormatHMSF(PreferencesWindow *pwindow, InterfacePrefs *tfwin
 int TimeFormatHMSF::handle_event()
 {
 	tfwindow->update(TIME_HMSF);
+    return 0;
 }
 
 TimeFormatSamples::TimeFormatSamples(PreferencesWindow *pwindow, InterfacePrefs *tfwindow, int value, int x, int y)
@@ -387,6 +389,7 @@ TimeFormatSamples::TimeFormatSamples(PreferencesWindow *pwindow, InterfacePrefs 
 int TimeFormatSamples::handle_event()
 {
 	tfwindow->update(TIME_SAMPLES);
+    return 0;
 }
 
 TimeFormatFrames::TimeFormatFrames(PreferencesWindow *pwindow, InterfacePrefs *tfwindow, int value, int x, int y)
@@ -396,6 +399,7 @@ TimeFormatFrames::TimeFormatFrames(PreferencesWindow *pwindow, InterfacePrefs *t
 int TimeFormatFrames::handle_event()
 {
 	tfwindow->update(TIME_FRAMES);
+    return 0;
 }
 
 TimeFormatHex::TimeFormatHex(PreferencesWindow *pwindow, InterfacePrefs *tfwindow, int value, int x, int y)
@@ -405,6 +409,7 @@ TimeFormatHex::TimeFormatHex(PreferencesWindow *pwindow, InterfacePrefs *tfwindo
 int TimeFormatHex::handle_event()
 {
 	tfwindow->update(TIME_SAMPLES_HEX);
+    return 0;
 }
 
 TimeFormatSeconds::TimeFormatSeconds(PreferencesWindow *pwindow, InterfacePrefs *tfwindow, int value, int x, int y)
@@ -417,6 +422,7 @@ TimeFormatSeconds::TimeFormatSeconds(PreferencesWindow *pwindow, InterfacePrefs 
 int TimeFormatSeconds::handle_event()
 {
 	tfwindow->update(TIME_SECONDS);
+    return 0;
 }
 
 TimeFormatFeet::TimeFormatFeet(PreferencesWindow *pwindow, InterfacePrefs *tfwindow, int value, int x, int y)
@@ -426,6 +432,7 @@ TimeFormatFeet::TimeFormatFeet(PreferencesWindow *pwindow, InterfacePrefs *tfwin
 int TimeFormatFeet::handle_event()
 {
 	tfwindow->update(TIME_FEET_FRAMES);
+    return 0;
 }
 
 TimeFormatFeetSetting::TimeFormatFeetSetting(PreferencesWindow *pwindow, int x, int y, char *string)
@@ -458,6 +465,7 @@ ViewBehaviourText::~ViewBehaviourText()
 
 int ViewBehaviourText::handle_event()
 {
+    return 1;
 }
 
 int ViewBehaviourText::create_objects()
@@ -486,6 +494,7 @@ int ViewBehaviourItem::handle_event()
 {
 	popup->set_text(get_text());
 	*(popup->output) = behaviour;
+	return 1;
 }
 
 
@@ -549,7 +558,7 @@ int MeterVUInt::handle_event()
 	pwindow->thread->redraw_meters = 1;
 	vu_db->update(0); 
 	pwindow->thread->edl->session->meter_format = METER_INT; 
-	return 1;
+	return 0;
 }
 
 
@@ -582,7 +591,7 @@ void ViewTheme::create_objects()
 
 int ViewTheme::handle_event()
 {
-	return 1;
+	return 0;
 }
 
 

@@ -98,7 +98,7 @@ public:
 
 // ===================================== editing
 
-	int copy_derived(int64_t start, int64_t end, FileXML *xml);
+	void copy_derived(int64_t start, int64_t end, FileXML *xml);
 	int paste_derived(int64_t start, int64_t end, int64_t total_length, FileXML *xml, int &current_channel);
 // use samples for paste_output
 	int paste_output(int64_t startproject, int64_t endproject, int64_t startsource, int64_t endsource, int layer, Asset *asset);
@@ -118,7 +118,7 @@ public:
 // rounds up to integer frames for editing
 	int identical(int64_t sample1, int64_t sample2);
 // no rounding for drawing
-	int get_dimensions(double &view_start, 
+	void get_dimensions(double &view_start, 
 		double &view_units, 
 		double &zoom_units);
 

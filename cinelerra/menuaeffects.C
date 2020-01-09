@@ -110,7 +110,7 @@ int64_t MenuAEffectThread::to_units(double position, int round)
 	return 0;
 }
 
-int MenuAEffectThread::fix_menu(char *title)
+void MenuAEffectThread::fix_menu(char *title)
 {
 	mwindow->gui->mainmenu->add_aeffect(title); 
 }

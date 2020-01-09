@@ -127,14 +127,13 @@ void FileOGG::get_parameters(BC_WindowBase *parent_window,
 	}
 }
 
-int FileOGG::reset_parameters_derived()
+void FileOGG::reset_parameters_derived()
 {
 	tf = 0;
 	temp_frame = 0;
 	stream = 0;
 	flush_lock = 0;
 	pcm_history = 0;
-	return 0;
 }
 
 static int read_buffer(FILE *in, sync_window_t *sw, int buflen)
@@ -1396,16 +1395,16 @@ int FileOGG::close_file()
 			
 		if (stream) fclose(stream);
 		stream = 0;
-
 	}
+
+    return FileBase::close_file();
 }
 
-int FileOGG::close_file_derived()
+void FileOGG::close_file_derived()
 {
 //printf("FileOGG::close_file_derived(): 1\n");
 	if (stream) fclose(stream);
 	stream = 0;
-	return 0;
 }
 
 int64_t FileOGG::get_video_position()
@@ -2360,7 +2359,7 @@ PackagingEngineOGG::~PackagingEngineOGG()
 
 
 
-int PackagingEngineOGG::create_packages_single_farm(
+void PackagingEngineOGG::create_packages_single_farm(
 		EDL *edl,
 		Preferences *preferences,
 		Asset *default_asset, 
@@ -2429,7 +2428,6 @@ int PackagingEngineOGG::create_packages_single_farm(
 			local_current_package++;
 		}
 	}
-	return 0;
 }
 
 RenderPackage* PackagingEngineOGG::get_package_single_farm(double frames_per_second, 

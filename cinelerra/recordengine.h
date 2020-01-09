@@ -104,8 +104,8 @@ public:
 // ======================================= transport
 
 	int delete_all_labels();
-	int calibrate_dc_offset();
-	int calibrate_dc_offset(long new_value, int channel);
+	void calibrate_dc_offset();
+	void calibrate_dc_offset(long new_value, int channel);
 
 	int update_position(long new_position);
 	int update_total_length(long new_length);

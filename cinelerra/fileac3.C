@@ -41,7 +41,7 @@ FileAC3::~FileAC3()
 	close_file();
 }
 
-int FileAC3::reset_parameters_derived()
+void FileAC3::reset_parameters_derived()
 {
 	codec = 0;
 	codec_context = 0;
@@ -148,7 +148,7 @@ int FileAC3::close_file()
 		temp_compressed = 0;
 	}
 	reset_parameters();
-	FileBase::close_file();
+	return FileBase::close_file();
 }
 
 // Channel conversion matrices because ffmpeg encodes a

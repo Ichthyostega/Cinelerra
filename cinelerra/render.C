@@ -1039,7 +1039,7 @@ int Render::load_defaults(Asset *asset)
 	return 0;
 }
 
-int Render::load_profile(int profile_slot, Asset *asset)
+void Render::load_profile(int profile_slot, Asset *asset)
 {
 	char string_name[100];
 	sprintf(string_name, "RENDER_%i_STRATEGY", profile_slot);
@@ -1059,9 +1059,6 @@ int Render::load_profile(int profile_slot, Asset *asset)
 		1,
 		1,
 		1);
-
-
-	return 0;
 }
 
 
@@ -1117,7 +1114,7 @@ RenderWindow::~RenderWindow()
 }
 
 
-int RenderWindow::load_profile(int profile_slot)
+void RenderWindow::load_profile(int profile_slot)
 {
 	render->load_profile(profile_slot, asset);
 	update_range_type(render->range_type);

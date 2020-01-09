@@ -1230,5 +1230,6 @@ SET_TRACE
 SET_TRACE
 
 #endif
+  return 0;
 }
 

@@ -64,13 +64,12 @@ FileList::~FileList()
 	delete table_lock;
 }
 
-int FileList::reset_parameters_derived()
+void FileList::reset_parameters_derived()
 {
 	data = 0;
 	writer = 0;
 	temp = 0;
 	first_number = 0;
-	return 0;
 }
 
 int FileList::open_file(int rd, int wr)
@@ -166,8 +165,7 @@ int FileList::close_file()
 	if(temp) delete temp;
 	reset_parameters();
 
-	FileBase::close_file();
-	return 0;
+	return FileBase::close_file();
 }
 
 int FileList::write_list_header()
@@ -567,6 +565,7 @@ int FileList::get_units()
 FrameWriterUnit* FileList::get_unit(int number)
 {
 	if(writer) return (FrameWriterUnit*)writer->get_client(number);
+	return NULL;
 }
 
 

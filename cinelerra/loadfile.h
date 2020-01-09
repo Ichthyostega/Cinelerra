@@ -144,7 +144,7 @@ public:
 	int handle_event();
 	void run();
 	
-	int set_path(char *path);
+	void set_path(char *path);
 	
 	MWindow *mwindow;
 	Load *loadfile;

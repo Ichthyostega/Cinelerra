@@ -846,6 +846,7 @@ int ScaleSizeText::handle_event()
 	if(*output > 10000) *output = 10000;
 	*output *= -1;
 	thread->update_window();
+	return 1;
 }
 
 
@@ -889,6 +890,7 @@ int ScaleAspectAuto::handle_event()
 {
 	thread->auto_aspect = get_value();
 	thread->update_aspect();
+	return 1;
 }
 
 ScaleAspectText::ScaleAspectText(int x, int y, SetFormatThread *thread, double *output)

@@ -297,6 +297,7 @@ double ZoomPanel::text_to_zoom(char *text, int use_table)
 			break;
 		}
 	}
+	return ZOOM_PERCENTAGE;
 }
 
 

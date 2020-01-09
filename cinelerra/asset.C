@@ -1208,6 +1208,7 @@ double Asset::total_length_framealigned(double fps)
 	
 	if (video_data)
 		return (double)video_length / frame_rate;
+	return 0.0;
 }
 
 void Asset::update_index(Asset *asset)

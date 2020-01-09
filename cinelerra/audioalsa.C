@@ -184,6 +184,8 @@ snd_pcm_format_t AudioALSA::translate_format(int format)
 		case 32:
 			return SND_PCM_FORMAT_S32_LE;
 			break;
+		default:
+		    return SND_PCM_FORMAT_UNKNOWN;
 	}
 }
 
@@ -419,6 +421,7 @@ int AudioALSA::close_all()
 	samples_written = 0;
 	delay = 0;
 	interrupted = 0;
+	return 0;
 }
 
 // Undocumented

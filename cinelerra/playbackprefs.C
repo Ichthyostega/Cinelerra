@@ -257,10 +257,10 @@ void PlaybackPrefs::update(int interpolation)
 }
 
 
-int PlaybackPrefs::get_buffer_bytes()
-{
+//int PlaybackPrefs::get_buffer_bytes()
+//{
 //	return pwindow->thread->edl->aconfig->oss_out_bits / 8 * pwindow->thread->preferences->aconfig->oss_out_channels * pwindow->thread->preferences->playback_buffer;
-}
+//}
 
 int PlaybackPrefs::draw_framerate()
 {

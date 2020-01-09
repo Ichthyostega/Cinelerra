@@ -53,9 +53,9 @@ public:
 				int output_h);
 
 	void run();
-	int wait_for_startup();
+	void wait_for_startup();
 
-	int start_playback();     // start the thread
+	void start_playback();     // start the thread
 
 // get data type for certain commonrender routines
 	int get_datatype();
@@ -81,7 +81,7 @@ public:
 	int get_colormodel(Edit* &playable_edit, 
 		int use_vconsole,
 		int use_brender);
-	int insert_timecode(Edit* &playable_edit,
+	void insert_timecode(Edit* &playable_edit,
 		int64_t position,
 		VFrame *output);
 
@@ -120,7 +120,7 @@ public:
 	int first_frame;
 
 private:
-	int init_device_buffers();
+//	void init_device_buffers();
 	Timer timer;
 
 // for getting actual framerate

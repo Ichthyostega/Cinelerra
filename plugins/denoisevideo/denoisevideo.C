@@ -159,6 +159,7 @@ int DenoiseVideoToggle::handle_event()
 {
 	*output = get_value();
 	plugin->send_configure_change();
+	return 1;
 }
 
 
@@ -339,6 +340,7 @@ int DenoiseVideo::process_realtime(VFrame *input, VFrame *output)
 			DENOISE_MACRO(uint16_t, 4, 0xffff);
 			break;
 	}
+	return 0;
 }
 
 

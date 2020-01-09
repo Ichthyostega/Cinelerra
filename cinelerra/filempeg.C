@@ -150,7 +150,7 @@ void FileMPEG::get_info(Asset *asset, int64_t *bytes, int *stracks)
 	return;
 }
 
-int FileMPEG::reset_parameters_derived()
+void FileMPEG::reset_parameters_derived()
 {
 	wrote_header = 0;
 	mjpeg_out = 0;
@@ -177,7 +177,6 @@ int FileMPEG::reset_parameters_derived()
 	lame_output_allocation = 0;
 	lame_fd = 0;
 	lame_started = 0;
-	return 0;
 }
 
 
@@ -713,8 +712,7 @@ int FileMPEG::close_file()
 
 	reset_parameters();
 
-	FileBase::close_file();
-	return 0;
+	return FileBase::close_file();
 }
 
 int FileMPEG::get_best_colormodel(Asset *asset, int driver)
@@ -756,6 +754,8 @@ int FileMPEG::get_best_colormodel(Asset *asset, int driver)
 		case CAPTURE_IEC61883:
 			return BC_YUV422P;
 			break;
+        default:
+            return BC_YUV420P;
 	}
 //printf("FileMPEG::get_best_colormodel 100\n");
 }
@@ -856,6 +856,7 @@ int FileMPEG::set_video_position(int64_t x)
 	{
 //printf("FileMPEG::set_video_position 1 %lld\n", x);
 		mpeg3_set_frame(fd, x, file->current_layer);
+		return 0;
 	}
 	else
 		return 1;

@@ -64,7 +64,7 @@ public:
 	int64_t position;
 
 private:
-	virtual int value_to_str(char *string, float value) {};
+	virtual void value_to_str(char *string, float value) {};
 };
 
 

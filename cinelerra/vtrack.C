@@ -223,7 +223,7 @@ int VTrack::create_derived_objs(int flash)
 }
 
 
-int VTrack::get_dimensions(double &view_start, 
+void VTrack::get_dimensions(double &view_start, 
 	double &view_units, 
 	double &zoom_units)
 {
@@ -233,10 +233,9 @@ int VTrack::get_dimensions(double &view_start,
 	zoom_units = edl->local_session->zoom_sample / edl->session->sample_rate * edl->session->frame_rate;
 }
 
-int VTrack::copy_derived(int64_t start, int64_t end, FileXML *xml)
+void VTrack::copy_derived(int64_t start, int64_t end, FileXML *xml)
 {
 // automation is copied in the Track::copy
-	return 0;
 }
 
 int VTrack::copy_automation_derived(AutoConf *auto_conf, int64_t start, int64_t end, FileXML *file)

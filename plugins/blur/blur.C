@@ -522,6 +522,7 @@ int BlurEngine::reconfigure()
 	std_dev = sqrt(-(double)(plugin->config.radius * plugin->config.radius) / 
 		(2 * log (1.0 / 255.0)));
 	get_constants();
+	return 0;
 }
 
 int BlurEngine::get_constants()

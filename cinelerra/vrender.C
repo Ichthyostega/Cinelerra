@@ -263,7 +263,7 @@ int VRender::get_use_vconsole(Edit* &playable_edit,
 }
 
 
-int VRender::insert_timecode(Edit* &playable_edit,
+void VRender::insert_timecode(Edit* &playable_edit,
 			int64_t position,
 			VFrame *output)
 {
@@ -615,15 +615,15 @@ VRender::VRender(MWindow *mwindow, RenderEngine *renderengine)
 	render_strategy = -1;
 }
 
-int VRender::init_device_buffers()
-{
-// allocate output buffer if there is a video device
-	if(renderengine->video)
-	{
-		video_out = 0;
-		render_strategy = -1;
-	}
-}
+//void VRender::init_device_buffers()
+//{
+//// allocate output buffer if there is a video device
+//	if(renderengine->video)
+//	{
+//		video_out = 0;
+//		render_strategy = -1;
+//	}
+//}
 
 int VRender::get_datatype()
 {
@@ -631,7 +631,7 @@ int VRender::get_datatype()
 }
 
 
-int VRender::start_playback()
+void VRender::start_playback()
 {
 // start reading input and sending to vrenderthread
 // use a thread only if there's a video device
@@ -641,7 +641,7 @@ int VRender::start_playback()
 	}
 }
 
-int VRender::wait_for_startup()
+void VRender::wait_for_startup()
 {
 }
 
